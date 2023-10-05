@@ -119,8 +119,9 @@ public class MecanumDrive extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double y   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+
             // Old: Yaw
+            double y   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
 
             double x =  gamepad1.left_stick_x;
             // Old: Lateral
