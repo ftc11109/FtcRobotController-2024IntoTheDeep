@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -82,11 +83,15 @@ public class MecanumDrive extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+         rightBackDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+         rightFrontDrive= hardwareMap.get(DcMotor.class, "right_back_drive");
+         leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
+         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit            = BNO055IMU.AngleUnit.RADIANS;
+        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
         // ########################################################################################
@@ -97,10 +102,10 @@ public class MecanumDrive extends LinearOpMode {
         // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -114,16 +119,26 @@ public class MecanumDrive extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double y   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            // Old: Yaw
+
+            double x =  gamepad1.left_stick_x;
+            // Old: Lateral
+
+            double rx     =  gamepad1.right_stick_x;
+            // Old: Axial
+
+            double botHeading = -imu.getAngularOrientation().firstAngle;
+
+            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+            double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            double leftFrontPower  = rotY + rotX + rx;
+            double rightFrontPower = rotY - rotX - rx;
+            double leftBackPower   = rotY - rotX + rx;
+            double rightBackPower  = rotY + rotX - rx;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
