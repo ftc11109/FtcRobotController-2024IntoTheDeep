@@ -80,8 +80,8 @@ public class MecanumDrive extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
         // Note: The names here do not match the hardware names -- this should be fixed in the configuration.
-        DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
 
@@ -104,8 +104,8 @@ public class MecanumDrive extends LinearOpMode {
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
