@@ -102,8 +102,8 @@ public class MecanumDrive extends LinearOpMode {
         // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
@@ -157,8 +157,8 @@ public class MecanumDrive extends LinearOpMode {
             //   2) Then make sure they run in the correct direction by modifying the
             //      the setDirection() calls above.
             if (gamepad1.left_bumper) {
-                leftFrontPower = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-                leftBackPower = gamepad1.a ? 1.0 : 0.0;   // A gamepad
+                leftFrontPower = gamepad1.x ? 1.0 : 0.0;  // X gamepad (x moved left right backwards)
+                leftBackPower = gamepad1.a ? 1.0 : 0.0;   // A gamepad (a moved left back backwards)
                 rightFrontPower = gamepad1.y ? 1.0 : 0.0; // Y gamepad
                 rightBackPower = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             }
