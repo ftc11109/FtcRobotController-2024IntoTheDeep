@@ -30,7 +30,6 @@ import java.util.List;
 
             for (AprilTagDetection detection : currentDetections) {
                 idsFound.append(detection.id);
-                idsFound.append('');
             }
             telemetry.addData("April Tags", idsFound);
         }
