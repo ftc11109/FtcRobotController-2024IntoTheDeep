@@ -9,8 +9,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
-public class SimpleAprilTags {
-    @Autonomous()
+
+    @Autonomous(name="April Tag Test", group="Autonomous OpMode")
     public class SimpleAprilTags extends OpMode {
         private AprilTagProcessor aprilTagProcessor;
         private VisionPortal visionPortal;
@@ -31,7 +31,7 @@ public class SimpleAprilTags {
 
             for (AprilTagDetection detection : currentDetections) {
                 idsFound.append(detection.id);
-                idsFound.append(’name="April Tag Test", group="Autonomous OpMode"’);
+                idsFound.append('');
             }
             telemetry.addData("April Tags", idsFound);
         }
@@ -45,4 +45,4 @@ public class SimpleAprilTags {
         public void loop() {
         }
     }
-}
+
