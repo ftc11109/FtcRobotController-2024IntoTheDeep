@@ -31,7 +31,7 @@ public class SimpleAprilTags {
 
             for (AprilTagDetection detection : currentDetections) {
                 idsFound.append(detection.id);
-                idsFound.append(’ ’);
+                idsFound.append(’name="April Tag Test", group="Autonomous OpMode"’);
             }
             telemetry.addData("April Tags", idsFound);
         }
