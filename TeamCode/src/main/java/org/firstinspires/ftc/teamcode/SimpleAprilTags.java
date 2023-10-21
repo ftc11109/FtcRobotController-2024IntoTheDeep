@@ -10,7 +10,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
-    @Autonomous(name="April Tag Test", group="Autonomous OpMode")
+    @Autonomous(name="Auto April Test", group="Autonomous OpMode")
     public class SimpleAprilTags extends OpMode {
         private AprilTagProcessor aprilTagProcessor;
         private VisionPortal visionPortal;
