@@ -132,10 +132,10 @@ public class MecanumDrive extends LinearOpMode {
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = rotY + rotX + rx;
+            double leftFrontPower = rotY + rotX + rx;
             double rightFrontPower = rotY - rotX - rx;
-            double leftBackPower   = rotY - rotX + rx;
-            double rightBackPower  = rotY + rotX - rx;
+            double leftBackPower = rotY - rotX + rx;
+            double rightBackPower = rotY + rotX - rx;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -144,10 +144,10 @@ public class MecanumDrive extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower  /= max;
+                leftFrontPower /= max;
                 rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
             }
 
             // Hold the left bumper and the corresponding button to run test code.
@@ -174,6 +174,10 @@ public class MecanumDrive extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.addLine("LB + A/B/X/Y to test single motors");
+            telemetry.addData("IMU X Rotation", rotX);
+            telemetry.addData("IMU X Rotation", rotY);
+            telemetry.addData("imu val:", imu);
             telemetry.update();
         }
-    }}
+    }
+}
