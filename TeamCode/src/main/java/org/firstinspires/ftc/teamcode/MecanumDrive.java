@@ -40,7 +40,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  *   - samples/BasicOmniOpMode_Linear.java (base class)
  *   - ftc21764/FtcRobotControllerPowerPlay/PowerPlayTeleop.java - for Field-Oriented driving
  *
- * Original Comment:
+ * Original Comment
  *
  * This file contains an example of a Linear "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -174,9 +174,11 @@ public class MecanumDrive extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.addLine("LB + A/B/X/Y to test single motors");
-            telemetry.addData("IMU X Rotation", rotX);
-            telemetry.addData("IMU X Rotation", rotY);
-            telemetry.addData("imu val:", imu);
+
+            telemetry.addLine(String.format("Heading: %6.2f", botHeading));
+            //Rounds ungodly long botHeading to two decimal places.
+            //PLEASE NOTE: botHeading does not output decimal degrees.
+
             telemetry.update();
         }
     }
