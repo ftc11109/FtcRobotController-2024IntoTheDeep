@@ -12,5 +12,9 @@ public class Intake {
 
    }
 
+   void ejectPixel() {
+       intakeMotor.setPower(-MAX_SPEED);
+       //add wait x seconds
+   }
 
 }
