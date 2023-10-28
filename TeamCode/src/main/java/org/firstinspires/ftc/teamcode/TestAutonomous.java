@@ -1,4 +1,4 @@
-/* -Pseudocode Notes-
+/** -Pseudocode Notes-
 
 Encoders:
 UltraPlanetary motor: 28 cpr (counts per rotation)
