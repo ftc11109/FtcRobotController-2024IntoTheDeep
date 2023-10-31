@@ -90,17 +90,17 @@ public class TestAutonomous extends LinearOpMode {
 //            rightDrive.setPower(0);
 //        }
 //    }
-    double MMperIN = 25.4;
-    int wheelDiaMM = 75;
-    double wheelDiaIN = wheelDiaMM / MMperIN; //or input just inches as constant
-    double wheelCircum = wheelDiaIN * 3.14; //Pi(); import math lib later
-    int ultPlanHexEncoderTicks = 28; //ticks per motor rotation
-    double threeToOne = 84/29; // real 3:1
-    double fourToOne = 76/21; // real 4:1
-    double drivetrainMotorGearRatio = threeToOne * fourToOne; //get gear ratio
+    final double MMperIN = 25.4;
+    final int wheelDiaMM = 75;
+    final double wheelDiaIN = wheelDiaMM / MMperIN; //or input just inches as constant
+    final double wheelCircum = wheelDiaIN * Math.PI;
+    final int ultPlanHexEncoderTicks = 28; //ticks per motor rotation
+    final double threeToOne = 84f/29f; // real 3:1
+    final double fourToOne = 76f/21f; // real 4:1
+    final double driveTrainGearRatio = threeToOne * fourToOne; //get gear ratio
 
     public double inchesPerTick() {
-        return (wheelCircum/(drivetrainMotorGearRatio * ultPlanHexEncoderTicks)); //Inches per tick
+        return (wheelCircum/(driveTrainGearRatio * ultPlanHexEncoderTicks)); //Inches per tick
         //return ((drivetrainMotorGearRatio * ultPlanHexEncoderTicks)/wheelCircum) * inches; //Ticks per inch
     }
 
@@ -119,12 +119,22 @@ public class TestAutonomous extends LinearOpMode {
 
     void moveRobot(double drive_speed, int direction) {
 
-        //
+        if (direction > 0) {
+            leftDrive = false;
+            rightDrive = true;
+        } else if (direction < 0) {
+            leftDrive = true;
+            rightDrive = false;
+        } else {
+            leftDrive = true;
+            rightDrive = true;
+        }
+
         //TODO: add dampening for drive_speed
-        leftDriveFront.setPower(drive_speed  * MiscFunc.boolToInt(leftDrive));
-        leftDriveBack.setPower(drive_speed   * MiscFunc.boolToInt(leftDrive));
-        rightDriveFront.setPower(drive_speed * MiscFunc.boolToInt(rightDrive));
-        rightDriveBack.setPower(drive_speed  * MiscFunc.boolToInt(rightDrive));
+        leftDriveFront.setPower  (drive_speed * MiscFunc.boolToInt(leftDrive));
+        leftDriveBack.setPower   (drive_speed * MiscFunc.boolToInt(leftDrive));
+        rightDriveFront.setPower (drive_speed * MiscFunc.boolToInt(rightDrive));
+        rightDriveBack.setPower  (drive_speed * MiscFunc.boolToInt(rightDrive));
     }
 
 
@@ -137,31 +147,44 @@ public class TestAutonomous extends LinearOpMode {
         moveRobot(0.5, 0);
     }
 
-    public void moveRobot(double driveSpeed, double direction) {
-
-
-    }
-
-    void driveToDistance(double driveSpeed, int direction, double inchesToMove) {
+    void driveToDistance(double drive_speed, int direction, double inches_to_move) {
 
         if (opModeIsActive()) {
 
-            double ticksToGo = inchesToMove / inchesPerTick(); //get amount of ticks to go for inches to move using helper function
+            double ticksToGo = inches_to_move / inchesPerTick(); //Get amount of ticks to go for inches to move using helper function
 
-            int moveCounts = (int) (ticksToGo) * direction; //convert to inches
+            int moveCounts = (int) (ticksToGo) * direction; //Convert to inches
 
-            moveRobot(driveSpeed, direction); //set motor speed and direction to defined value
-            setStraightTarget(moveCounts); //pass ticks for distance to move through target function
-            driveToTarget(); //drive motors to encoder target
+            moveRobot(driveSpeed, direction); //Set motor speed and direction to defined value
+            setStraightTarget(moveCounts); //Pass ticks for distance to move through target function
+            driveToTarget(); //Drive motors to encoder target
 
             while (opModeIsActive()) {
 
+                //Course-correction
+                moveRobot(driveSpeed,direction);
 
+                //Detects if any motor stops being busy
+                if (
+                    !(  leftDriveFront.isBusy()  ||
+                        rightDriveFront.isBusy() ||
+                        leftDriveBack.isBusy()   ||
+                        rightDriveBack.isBusy()  )
+                ) {
+                    //Ends course-correction
+                    moveRobot(0, 0);
 
+                    //Ends loop
+                    break;
+
+                }
             }
         }
     }
     public void runOpMode() {
+
+        //TODO: Inject more Groovy
+
         while (opModeInInit()) {
             telemetry.addLine("Waiting...");
             telemetry.update();
@@ -182,7 +205,7 @@ public class TestAutonomous extends LinearOpMode {
 //        rightDriveBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         driveToDistance(0.5, 1, 48);
-        telemetry.addData("Path", "Complete");
+        telemetry.addLine("Path complete"); // Used to look like this: telemetry.addData("Path", "complete"); tf???
         telemetry.update();
         leftDriveFront.setMode  (DcMotor.RunMode.RUN_USING_ENCODER);
         leftDriveBack.setMode   (DcMotor.RunMode.RUN_USING_ENCODER);
@@ -198,7 +221,7 @@ public class TestAutonomous extends LinearOpMode {
         driveFromSpikeMark(teamPropMark);
         //Step 5: drive under truss closest to wall to get to backdrop
         driveToBackdrop(isNear);
-        //Step 6: place yellow pixel on correct Apriltag
+        //Step 6: place yellow pixel on correct April tag
         depositYellowPixel(teamPropMark);
         //Step 7: drive off to side
         parkInBackstage(parkLeft);

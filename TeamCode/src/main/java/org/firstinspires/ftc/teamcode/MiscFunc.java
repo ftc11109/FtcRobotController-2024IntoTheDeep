@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 public class MiscFunc {
+
     public static int boolToInt(boolean foo) {
         return (foo) ? 1 : 0;
     }
@@ -15,5 +16,11 @@ public class MiscFunc {
         {
             Thread.currentThread().interrupt();
         }
+    }
+
+    public static void injectGroovy() {
+        /* if (!groovy) {
+            inject groovy
+        }*/
     }
 }
