@@ -56,6 +56,10 @@ public class TestAutonomous extends LinearOpMode {
     private int     leftTargetB    = 0;
     private int     rightTargetF   = 0;
     private int     rightTargetB   = 0;
+    private double  driveSpeed     = 0;
+    private double  turnSpeed      = 0;
+    private double  leftSpeed      = 0;
+    private double  rightSpeed     = 0;
 
     int moveCounts = 0;
 
@@ -113,11 +117,16 @@ public class TestAutonomous extends LinearOpMode {
         rightDriveBack.setTargetPosition(rightTargetB);
     }
 
-    void powerMotors(double driveSpeed) {
-        leftDriveFront.setPower(driveSpeed);
-        leftDriveBack.setPower(driveSpeed);
-        rightDriveFront.setPower(driveSpeed);
-        rightDriveBack.setPower(driveSpeed);
+    void moveRobot(double drive_speed, int direction) {
+
+        driveSpeed = drive_speed;
+
+
+
+        leftDriveFront.setPower(drive_speed);
+        leftDriveBack.setPower(drive_speed);
+        rightDriveFront.setPower(drive_speed);
+        rightDriveBack.setPower(drive_speed);
     }
 
 
@@ -127,7 +136,7 @@ public class TestAutonomous extends LinearOpMode {
         leftDriveBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightDriveBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        powerMotors(0.5);
+        moveRobot(0.5, 0);
     }
 
     public void moveRobot(double driveSpeed, double direction) {
@@ -143,7 +152,7 @@ public class TestAutonomous extends LinearOpMode {
 
             int moveCounts = (int) (ticksToGo) * direction; //convert to inches
 
-            powerMotors(driveSpeed); //set motor speed to defined value
+            moveRobot(driveSpeed, direction); //set motor speed and direction to defined value
             setStraightTarget(moveCounts); //pass ticks for distance to move through target function
             driveToTarget(); //drive motors to encoder target
 
