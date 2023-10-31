@@ -58,8 +58,8 @@ public class TestAutonomous extends LinearOpMode {
     private int     rightTargetB   = 0;
     private double  driveSpeed     = 0;
     private double  turnSpeed      = 0;
-    private double  leftSpeed      = 0;
-    private double  rightSpeed     = 0;
+    private boolean leftDrive      = false;
+    private boolean rightDrive     = false;
 
     int moveCounts = 0;
 
@@ -119,23 +119,21 @@ public class TestAutonomous extends LinearOpMode {
 
     void moveRobot(double drive_speed, int direction) {
 
-        driveSpeed = drive_speed;
-
-
-
-        leftDriveFront.setPower(drive_speed);
-        leftDriveBack.setPower(drive_speed);
-        rightDriveFront.setPower(drive_speed);
-        rightDriveBack.setPower(drive_speed);
+        //
+        //TODO: add dampening for drive_speed
+        leftDriveFront.setPower(drive_speed  * MiscFunc.boolToInt(leftDrive));
+        leftDriveBack.setPower(drive_speed   * MiscFunc.boolToInt(leftDrive));
+        rightDriveFront.setPower(drive_speed * MiscFunc.boolToInt(rightDrive));
+        rightDriveBack.setPower(drive_speed  * MiscFunc.boolToInt(rightDrive));
     }
 
 
     void driveToTarget() {
         //run to targets
-        leftDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftDriveBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightDriveBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftDriveFront.setMode  (DcMotor.RunMode.RUN_TO_POSITION);
+        leftDriveBack.setMode   (DcMotor.RunMode.RUN_TO_POSITION);
+        rightDriveFront.setMode (DcMotor.RunMode.RUN_TO_POSITION);
+        rightDriveBack.setMode  (DcMotor.RunMode.RUN_TO_POSITION);
         moveRobot(0.5, 0);
     }
 
@@ -168,15 +166,15 @@ public class TestAutonomous extends LinearOpMode {
             telemetry.addLine("Waiting...");
             telemetry.update();
         }
-        leftDriveFront = hardwareMap.get(DcMotor.class, "left_driveF");
+        leftDriveFront  = hardwareMap.get(DcMotor.class, "left_driveF");
         rightDriveFront = hardwareMap.get(DcMotor.class, "right_driveF");
-        leftDriveBack = hardwareMap.get(DcMotor.class, "left_driveB");
-        rightDriveBack = hardwareMap.get(DcMotor.class, "right_driveB");
+        leftDriveBack   = hardwareMap.get(DcMotor.class, "left_driveB");
+        rightDriveBack  = hardwareMap.get(DcMotor.class, "right_driveB");
 
-        leftDriveFront.setDirection(DcMotor.Direction.FORWARD);
-        leftDriveBack.setDirection(DcMotor.Direction.FORWARD);
-        rightDriveFront.setDirection(DcMotor.Direction.FORWARD);
-        rightDriveBack.setDirection(DcMotor.Direction.REVERSE);
+        leftDriveFront.setDirection   (DcMotor.Direction.FORWARD);
+        leftDriveBack.setDirection    (DcMotor.Direction.FORWARD);
+        rightDriveFront.setDirection  (DcMotor.Direction.FORWARD);
+        rightDriveBack.setDirection   (DcMotor.Direction.REVERSE);
         //Fixed motor directions (21764 had reversed motor) - this would be changed back to normal this year's robot
 //        leftDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        leftDriveBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -186,10 +184,10 @@ public class TestAutonomous extends LinearOpMode {
         driveToDistance(0.5, 1, 48);
         telemetry.addData("Path", "Complete");
         telemetry.update();
-        leftDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftDriveBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDriveBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftDriveFront.setMode  (DcMotor.RunMode.RUN_USING_ENCODER);
+        leftDriveBack.setMode   (DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDriveFront.setMode (DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDriveBack.setMode  (DcMotor.RunMode.RUN_USING_ENCODER);
         //Step 1: detect the team prop
         SpikeMark teamPropMark = detectTeamProp();
         //Step 2: drive to the team prop
