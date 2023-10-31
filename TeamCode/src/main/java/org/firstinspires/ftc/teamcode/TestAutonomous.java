@@ -129,7 +129,7 @@ public class TestAutonomous extends LinearOpMode {
         powerMotors(0.5);
     }
 
-    void move(int Direction, double inchesToMove) {
+    void driveDistanceIN(int Direction, double inchesToMove) {
         //
         double ticksToGo = inchesToMove / inchesPerTick(); //get amount of ticks to go for inches to move using helper function
 
@@ -158,7 +158,7 @@ public class TestAutonomous extends LinearOpMode {
 //        rightDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        rightDriveBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        move(1, 48);
+        driveDistanceIN(1, 48);
         telemetry.addData("Path", "Complete");
         telemetry.update();
         leftDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
