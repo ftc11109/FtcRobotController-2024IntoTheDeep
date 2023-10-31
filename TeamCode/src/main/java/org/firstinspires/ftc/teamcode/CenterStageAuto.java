@@ -92,9 +92,9 @@ import java.util.List;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Power Play Autonomous 21764", group="Robot")
+@Autonomous(name="Get Power Played", group="Robot")
 @Disabled
-public class PowerPlayAutonomous extends LinearOpMode {
+public class CenterStageAuto extends LinearOpMode {
 
     /* Declare OpMode members. */
     boolean isNear;
@@ -105,8 +105,8 @@ public class PowerPlayAutonomous extends LinearOpMode {
     protected DcMotor         rightDriveF  = null;
     protected DcMotor         rightDriveB  = null;
     protected BNO055IMU       imu          = null;      // Control/Expansion Hub IMU
-    protected SignalSleeveRecognizer    recognizer = null;
-    protected LinearSlide         linearSlide = null;
+    //protected SignalSleeveRecognizer    recognizer = null;
+    //protected LinearSlide         linearSlide = null;
     protected Intake        intake = null;
     protected SwingArmOld swingArm = null;
     protected ElapsedTime runtime = new ElapsedTime();
@@ -168,8 +168,8 @@ public class PowerPlayAutonomous extends LinearOpMode {
         leftDriveF  = hardwareMap.get(DcMotor.class, "left_driveF");
         rightDriveB = hardwareMap.get(DcMotor.class, "right_driveB");
         rightDriveF = hardwareMap.get(DcMotor.class, "right_driveF");
-        recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
-        linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
+        //recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
+        //linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
         intake = new Intake(hardwareMap, telemetry, gamepad1);
         swingArm = new SwingArmOld(hardwareMap, telemetry, gamepad2, isAutonomous);
 
