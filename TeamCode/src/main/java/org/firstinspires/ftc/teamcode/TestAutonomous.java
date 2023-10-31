@@ -120,6 +120,7 @@ public class TestAutonomous extends LinearOpMode {
         rightDriveBack.setPower(driveSpeed);
     }
 
+
     void driveToTarget() {
         //run to targets
         leftDriveFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -129,18 +130,33 @@ public class TestAutonomous extends LinearOpMode {
         powerMotors(0.5);
     }
 
-    void driveDistanceIN(int Direction, double inchesToMove) {
-        //
-        double ticksToGo = inchesToMove / inchesPerTick(); //get amount of ticks to go for inches to move using helper function
+    public void moveRobot(double driveSpeed, double direction) {
 
-        int moveCounts = (int) (ticksToGo) * Direction; //convert to inches
 
-        setStraightTarget(moveCounts); //pass ticks for distance to move through target function
-        driveToTarget(); //drive motors to encoder target
+    }
+
+    void driveToDistance(double driveSpeed, int direction, double inchesToMove) {
+
+        if (opModeIsActive()) {
+
+            double ticksToGo = inchesToMove / inchesPerTick(); //get amount of ticks to go for inches to move using helper function
+
+            int moveCounts = (int) (ticksToGo) * direction; //convert to inches
+
+            powerMotors(driveSpeed); //set motor speed to defined value
+            setStraightTarget(moveCounts); //pass ticks for distance to move through target function
+            driveToTarget(); //drive motors to encoder target
+
+            while (opModeIsActive()) {
+
+
+
+            }
+        }
     }
     public void runOpMode() {
         while (opModeInInit()) {
-            telemetry.addLine("waiting...");
+            telemetry.addLine("Waiting...");
             telemetry.update();
         }
         leftDriveFront = hardwareMap.get(DcMotor.class, "left_driveF");
@@ -158,7 +174,7 @@ public class TestAutonomous extends LinearOpMode {
 //        rightDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        rightDriveBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        driveDistanceIN(1, 48);
+        driveToDistance(0.5, 1, 48);
         telemetry.addData("Path", "Complete");
         telemetry.update();
         leftDriveFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

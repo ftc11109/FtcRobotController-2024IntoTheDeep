@@ -170,7 +170,7 @@ public class CenterStageAuto extends LinearOpMode {
         rightDriveF = hardwareMap.get(DcMotor.class, "right_driveF");
         //recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
         //linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
-        intake = new Intake(hardwareMap, telemetry, gamepad1);
+        //intake = new Intake(hardwareMap, telemetry, gamepad1);
         swingArm = new SwingArmOld(hardwareMap, telemetry, gamepad2, isAutonomous);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -268,7 +268,7 @@ public class CenterStageAuto extends LinearOpMode {
         //turnToHeading(TURN_SPEED, 180);  // TODO: suggest not running turning around. There was a small amount of variance in the direction the robot would travel after turn 180 which resulted in dropping the cone in slightly different locations sometimes missing the junction
 
         // drive to medium junction
-        driveStraight(0.3, -48.0, 180.0);
+        driveToPosition(0.3, -48.0, 180.0);
         turnToHeading(TURN_SPEED, 135.0);
         intake.pickUpCone();
 
@@ -344,9 +344,9 @@ public class CenterStageAuto extends LinearOpMode {
      *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                   If a relative angle is required, add/subtract from the current robotHeading.
      */
-    public void driveStraight(double maxDriveSpeed,
-                              double distance,
-                              double heading) {
+    public void driveToPosition(double maxDriveSpeed,
+                                double distance,
+                                double heading) {
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -357,6 +357,7 @@ public class CenterStageAuto extends LinearOpMode {
             // Determine new target position, and pass to motor controller
             int moveCounts = (int)(distance * COUNTS_PER_INCH);
 
+            //sets position
             leftTargetF = leftDriveF.getCurrentPosition() + moveCounts;
             leftTargetB = leftDriveB.getCurrentPosition() + moveCounts;
             rightTargetF = rightDriveF.getCurrentPosition() + moveCounts;
