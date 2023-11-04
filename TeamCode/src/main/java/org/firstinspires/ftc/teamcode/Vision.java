@@ -11,7 +11,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@TeleOp(name="Vision Test", group="Linear OpMode")
+@TeleOp(name="Vision", group="Linear OpMode")
 public class Vision extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -28,9 +28,10 @@ public class Vision extends LinearOpMode {
 
         VisionPortal visionPortal = new VisionPortal.Builder()
                 .addProcessor(tagProcessor)
-                .setCamera(hardwareMap.get(WebcamName.class, "Camweb1"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(640, 480))
                 .build();
+
 
         waitForStart();
 
@@ -41,12 +42,11 @@ public class Vision extends LinearOpMode {
 
                 telemetry.addLine(String.format("XYZ %6.2f %6.2f %6.2f", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z));
 
-                telemetry.addLine(String.format("RPY %6.2f %6.2f %6.2f", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw));
+                telemetry.addLine(String.format("RPY %6.2f %6.2f %6.2f", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw ));
 
             }
-
             telemetry.update();
-
         }
+
     }
 }

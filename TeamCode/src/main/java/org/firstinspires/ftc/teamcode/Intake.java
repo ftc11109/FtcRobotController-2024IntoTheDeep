@@ -1,22 +1,49 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Intake {
 
-   DcMotor intakeMotor;
-   private static final double MAX_SPEED = 0.5;
+    protected DcMotor intakeMotor;
+    private final Telemetry telemetry;
+    private final Gamepad gamepad;
+    static final double MAX_SPEED = 0.75;
 
-   void pickUpPixel() {
-       intakeMotor.setPower(MAX_SPEED);
-       MiscFunc.wait(1000); //1000 is a placeholder value
-       intakeMotor.setPower(0);
-   }
 
-   void ejectPixel() {
-       intakeMotor.setPower(-MAX_SPEED);
-       MiscFunc.wait(1000); //1000 is a placeholder value
-       intakeMotor.setPower(0);
-   }
+    public Intake(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {
+        this.telemetry = telemetry;
+        this.gamepad = gamepad;
+        intakeMotor = hardwareMap.get(DcMotor.class, "intake"); //Define hardware
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+
+    public void loop() {
+        readGamepad();
+        telemetry.addData("Intake Power:", intakeMotor.getPower());
+    }
+
+    private void readGamepad() {
+        if (gamepad.right_trigger > 0) {
+            intakeMotor.setPower(MAX_SPEED);
+        } else if (gamepad.left_trigger > 0) {
+            intakeMotor.setPower(-MAX_SPEED);
+        } else {
+            intakeMotor.setPower(0);
+        }
+    }
+
 
 }

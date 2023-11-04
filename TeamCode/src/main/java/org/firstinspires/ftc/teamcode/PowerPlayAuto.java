@@ -103,7 +103,7 @@ public class PowerPlayAutonomous extends LinearOpMode {
     protected DcMotor         rightDriveB  = null;
     protected BNO055IMU       imu          = null;      // Control/Expansion Hub IMU
     protected SignalSleeveRecognizer    recognizer = null;
-    protected LinearSlide         linearSlide = null;
+    protected org.firstinspires.ftc.teamcode.linearSlide linearSlide = null;
     protected Intake        intake = null;
     protected SwingArmOld swingArm = null;
     protected ElapsedTime runtime = new ElapsedTime();
@@ -166,7 +166,7 @@ public class PowerPlayAutonomous extends LinearOpMode {
         rightDriveB = hardwareMap.get(DcMotor.class, "right_driveB");
         rightDriveF = hardwareMap.get(DcMotor.class, "right_driveF");
         recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
-        linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
+        linearSlide = new linearSlide(hardwareMap, telemetry, gamepad2);
         intake = new Intake(hardwareMap, telemetry, gamepad1);
         swingArm = new SwingArmOld(hardwareMap, telemetry, gamepad2, isAutonomous);
 

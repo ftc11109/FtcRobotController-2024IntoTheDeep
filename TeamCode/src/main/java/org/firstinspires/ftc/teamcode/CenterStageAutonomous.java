@@ -31,17 +31,22 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.vision.VisionPortal;
 
 import java.util.List;
 
@@ -92,23 +97,20 @@ import java.util.List;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Get Power Played", group="Robot")
-@Disabled
-public class CenterStageAuto extends LinearOpMode {
+@Autonomous(name="CenterStage Autonomous 21764", group="Robot")
+//@Disabled
+public class CenterStageAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
-    boolean isNear;
-    boolean parkLeft;
-    Intake intake = new Intake();
     protected DcMotor         leftDriveF   = null;
     protected DcMotor         leftDriveB   = null;
     protected DcMotor         rightDriveF  = null;
     protected DcMotor         rightDriveB  = null;
-    protected BNO055IMU       imu          = null;      // Control/Expansion Hub IMU
+    protected IMU             imu          = null;      // Control/Expansion Hub IMU
     //protected SignalSleeveRecognizer    recognizer = null;
     //protected LinearSlide         linearSlide = null;
     protected Intake        intake = null;
-    protected SwingArmOld swingArm = null;
+    //protected SwingArm      swingArm = null;
     protected ElapsedTime runtime = new ElapsedTime();
 
     private double          robotHeading  = 0;
@@ -127,6 +129,19 @@ public class CenterStageAuto extends LinearOpMode {
     private int     rightTargetF   = 0;
     private int     rightTargetB   = 0;
 
+    boolean isMirrored = true;
+    boolean notMirrored = false;
+    boolean isRed;
+
+    boolean isNear = false;
+    boolean isFar = true;
+
+    String allianceColor = "blue";
+
+    private FirstVisionProcessor visionProcessor;
+
+    private VisionPortal visionPortal;
+
     // Calculate the COUNTS_PER_INCH for your specific drive train.
     // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
     // For external drive gearing, set DRIVE_GEAR_REDUCTION as needed.
@@ -134,16 +149,30 @@ public class CenterStageAuto extends LinearOpMode {
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
     static final double     COUNTS_PER_MOTOR_REV    = 28.0 ;   // eg: GoBILDA 312 RPM Yellow Jacket
-    static final double     DRIVE_GEAR_REDUCTION    = 18.0 ;     // No External Gearing.
+    static final double     DRIVE_GEAR_REDUCTION    = 18.0 ;    // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 3.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+            (WHEEL_DIAMETER_INCHES * Math.PI);
+
+    double MMperIN = 25.4;
+    int wheelDiaMM = 75;
+    double wheelDiaIN = wheelDiaMM / MMperIN; //or input just inches as constant
+    double wheelCircum = wheelDiaIN * Math.PI; //get circum (aka inches per wheel rev)
+    int ultPlanHexEncoderTicks = 28; //ticks per motor rotation
+    double threeToOne = 84 / 29; // real 3:1
+    double fourToOne = 76 / 21; // real 4:1
+    double drivetrainMotorGearRatio = threeToOne * fourToOne; //get gear ratio
+
+    public double inchesPerTick() {
+        return (wheelCircum / (drivetrainMotorGearRatio * ultPlanHexEncoderTicks)); //Inches per tick
+        //return ((drivetrainMotorGearRatio * ultPlanHexEncoderTicks)/wheelCircum) * inches; //Ticks per inch
+    }
 
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suit the specific robot drive train.
     static final double     DRIVE_SPEED             = 0.5;     // Max driving speed for better distance accuracy.
     static final double     TURN_SPEED              = 0.4;     // Max Turn speed to limit turn rate
-    static final double     HEADING_THRESHOLD       = 1.0 ;    // How close must the heading get to the target before moving to next step.
+    static final double     HEADING_THRESHOLD       = 4.0 ;    // How close must the heading get to the target before moving to next step.
     // Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.
     // Define the Proportional control coefficient (or GAIN) for "heading control".
     // We define one value when Turning (larger errors), and the other is used when Driving straight (smaller errors).
@@ -155,14 +184,13 @@ public class CenterStageAuto extends LinearOpMode {
     //stuff that makes the left and right side autonomous (hopefully) work! :D
     // If your robot starts on the right side in the driver's view, (A2 or F5), set to 1
     // If your robot starts on the left side in the driver's view, (A5 or F2), set to -1
-    protected int     reverseTurnsForLeftSide            = 1;
 
     protected boolean isAutonomous = true;
 
     //this sets up for bulk reads!
     protected List<LynxModule> allHubs;
 
-    protected void setupRobot(BNO055IMU.AngleUnit imuUnits) {
+    protected void setupRobot() {
         // Initialize the drive system variables.
         leftDriveB  = hardwareMap.get(DcMotor.class, "left_driveB");
         leftDriveF  = hardwareMap.get(DcMotor.class, "left_driveF");
@@ -170,14 +198,25 @@ public class CenterStageAuto extends LinearOpMode {
         rightDriveF = hardwareMap.get(DcMotor.class, "right_driveF");
         //recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
         //linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
-        //intake = new Intake(hardwareMap, telemetry, gamepad1);
-        swingArm = new SwingArmOld(hardwareMap, telemetry, gamepad2, isAutonomous);
+        intake = new Intake(hardwareMap, telemetry, gamepad2);
+        //swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, isAutonomous);
+
+        boolean isNear;
+        boolean parkLeft;
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftDriveB.setDirection(DcMotor.Direction.FORWARD);
-        leftDriveF.setDirection(DcMotor.Direction.FORWARD);
+//        21764:
+//        leftDriveB.setDirection(DcMotor.Direction.FORWARD);
+//        leftDriveF.setDirection(DcMotor.Direction.FORWARD);
+//        rightDriveB.setDirection(DcMotor.Direction.REVERSE);
+//        rightDriveF.setDirection(DcMotor.Direction.FORWARD);
+
+//        11109:
+        leftDriveB.setDirection(DcMotor.Direction.REVERSE);
+        leftDriveF.setDirection(DcMotor.Direction.REVERSE);
         rightDriveB.setDirection(DcMotor.Direction.REVERSE);
         rightDriveF.setDirection(DcMotor.Direction.FORWARD);
 
@@ -186,10 +225,13 @@ public class CenterStageAuto extends LinearOpMode {
         // That way the current orientation is not reset when the opmode starts.
 
         // define initialization values for IMU, and then initialize it.
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit            = imuUnits;
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+
+        imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                )));
 
         // Ensure the robot is stationary.  Reset the encoders and set the motors to BRAKE mode
         leftDriveF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -220,18 +262,21 @@ public class CenterStageAuto extends LinearOpMode {
      */
 
     protected void mechanismLoop() {
-        linearSlide.loop();
-        intake.loop();
-        swingArm.loop();
+        //linearSlide.loop();
+        //intake.loop();
+        //swingArm.loop();
     }
 
     @Override
     public void runOpMode() {
-        setupRobot(BNO055IMU.AngleUnit.DEGREES);
+        setupRobot();
         // Wait for the game to start (Display Gyro value while waiting)
+        visionProcessor = new FirstVisionProcessor();
+        visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), visionProcessor);
         while (opModeInInit()) {
-            telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
-            recognizer.scan();
+            telemetry.addData("", "Robot Heading = %4.0f", getRawHeading());
+            telemetry.addData("Identified", visionProcessor.getSelection());
+            visionProcessor.getSelection();
             telemetry.update();
         }
 
@@ -242,7 +287,7 @@ public class CenterStageAuto extends LinearOpMode {
         rightDriveB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetHeading();
 
-        runAutonomousProgram();
+        runAutonomousProgram("blue", isNear);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -251,76 +296,52 @@ public class CenterStageAuto extends LinearOpMode {
     }
 
 
-    //OBSOLETE DO NOT USE THE THING BELOW THIS LINE!!!!
-    public void runAutonomousProgram() {
-        // Step through each leg of the path,
-        // Notes:   Reverse movement is obtained by setting a negative distance (not speed)
-        //          holdHeading() is used after turns to let the heading stabilize
-        //          Add a sleep(2000) after any step to keep the telemetry data visible for review
+    public void runAutonomousProgram(String allianceColor, boolean isFar) {
 
-
-        //BASE DRIVE PATH:
-        //turn arodund
-        // TODO: testing observed that the first   call doesn't work on the first run, only after a second run would this first call work.
-        // TODO: adding this holdHeading call in the hope that it 'wakes up' the robot and the driveStraight command runs on first run.
-        // holdHeading(TURN_SPEED,0,1);
-        //driveStraight(0.3, 6.0, 0);
-        //turnToHeading(TURN_SPEED, 180);  // TODO: suggest not running turning around. There was a small amount of variance in the direction the robot would travel after turn 180 which resulted in dropping the cone in slightly different locations sometimes missing the junction
-
-        // drive to medium junction
-        driveToPosition(0.3, -48.0, 180.0);
-        turnToHeading(TURN_SPEED, 135.0);
-        intake.pickUpCone();
-
-        // begin setup to drop on medium junction
-        moveToMediumPosition();
-        holdHeading(TURN_SPEED, 135,2);
-       /* driveStraight(0.3, 10.0, 135.0); // TODO: changed speed parameter from DRIVE_SPEED constant to a value to test slower speed in this call due to some variance during testing.
-
-        // drop cone on medium junction
-        intake.dropCone();
-
-        // sleeps for two seconds while the intake drops the cone. if possible, decrease holdTime.
-        holdHeading(TURN_SPEED, 45, 2);
-
-        //get to center of square
-        driveStraight(DRIVE_SPEED, -6, 135);
-        turnToHeading(TURN_SPEED, -90);
-
-        // move slide and four bar back to intake position
-        moveToIntakePosition();
-
-        //check whether recognition label is null, if not, drive to parking space
-        if (recognizer.recognitionLabel == null) {
-            //stay in current place
-        } else if (recognizer.recognitionLabel.startsWith("1")) {
-            //Drive to parking 1
-            driveStraight(DRIVE_SPEED, -24.0, -90.0);
-        } else if (recognizer.recognitionLabel.startsWith("2")) {
-            //Stay in parking 2
+        if (allianceColor == "red") {
+            isRed = true;
         } else {
-            //Drive to parking 3
-            driveStraight(DRIVE_SPEED, 24.0, -90.0);
+            isRed = false;
         }
-*/ //ENDS HERE
 
-/* code from first competition!
-        driveStraight(DRIVE_SPEED, 28.0, 0.0);
-        telemetry.addData("Recognized: ", recognizer.recognitionLabel);
-        telemetry.update();
+        //move up to spike marks
+        driveStraight(DRIVE_SPEED, 26.0, 0.0, notMirrored);
 
-        if (recognizer.recognitionLabel == null) {
-        } else if (recognizer.recognitionLabel.startsWith("1")) {
-            turnToHeading(TURN_SPEED, 90.0);
-            driveStraight(DRIVE_SPEED, 24.0, 90.0);
-        } else if (recognizer.recognitionLabel.startsWith("2")) {
-        } else {
-            //Drive to parking 3
-            turnToHeading(TURN_SPEED, -90.0);
-            driveStraight(DRIVE_SPEED, 24, -90.0);
+        //push to corresponding spike mark
+        switch (visionProcessor.selection) {
+            case LEFT:
+                turnToHeading(TURN_SPEED, 50.0, notMirrored);
+                driveStraight(DRIVE_SPEED, 17.0, 50.0, notMirrored);
+                driveStraight(DRIVE_SPEED, -17.0, 50.0, notMirrored);
+                turnToHeading(TURN_SPEED, 0.0, notMirrored);
+                break;
+            case MIDDLE:
+                driveStraight(DRIVE_SPEED, 20, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, -20, 0.0, notMirrored);
+                break;
+            case RIGHT:
+                turnToHeading(TURN_SPEED, 50.0, notMirrored);
+                driveStraight(DRIVE_SPEED, 17.0, -50.0, notMirrored);
+                driveStraight(DRIVE_SPEED, -17.0, -50.0, notMirrored);
+                turnToHeading(TURN_SPEED, 0.0, notMirrored);
+                break;
+            case NONE:
+                driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, -20, 0.0, notMirrored);
+                break;
         }
-        turnToHeading(TURN_SPEED, 0.0);
-*/
+
+        driveStraight(DRIVE_SPEED, -8.0, 0.0, notMirrored);
+        turnToHeading(TURN_SPEED, 90.0, isMirrored);
+
+        if (isFar) {
+            driveStraight(DRIVE_SPEED, 48.0, 90.0, isMirrored);
+        }
+        driveStraight(DRIVE_SPEED, 24.0, 90.0, isMirrored);
+
+        //april tags or alt parking
+
+        driveStraight(DRIVE_SPEED, 6.0, 90.0, isMirrored);
     }
 
     /*
@@ -344,20 +365,24 @@ public class CenterStageAuto extends LinearOpMode {
      *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                   If a relative angle is required, add/subtract from the current robotHeading.
      */
-    public void driveToPosition(double maxDriveSpeed,
-                                double distance,
-                                double heading) {
+    public void driveStraight(double maxDriveSpeed,
+                              double distance,
+                              double heading,
+                              boolean isMirrored) {
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
+            if (isMirrored && isRed) {
+                heading *= -1;
+            }
+
             //reverse the heading if you start on the left side. this turns a right heading into a left heading and vice versa.
-            heading = heading * reverseTurnsForLeftSide;
+            //heading = heading * reverseTurnsForAllianceColor;
 
             // Determine new target position, and pass to motor controller
-            int moveCounts = (int)(distance * COUNTS_PER_INCH);
+            int moveCounts = (int)(distance / inchesPerTick());
 
-            //sets position
             leftTargetF = leftDriveF.getCurrentPosition() + moveCounts;
             leftTargetB = leftDriveB.getCurrentPosition() + moveCounts;
             rightTargetF = rightDriveF.getCurrentPosition() + moveCounts;
@@ -440,10 +465,12 @@ public class CenterStageAuto extends LinearOpMode {
      *              0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *              If a relative angle is required, add/subtract from current heading.
      */
-    public void turnToHeading(double maxTurnSpeed, double heading) {
+    public void turnToHeading(double maxTurnSpeed, double heading, boolean isMirrored) {
 
         //reverse the heading if you start on the left side. this turns a right turn into a left turn and vice versa.
-        heading = heading * reverseTurnsForLeftSide;
+        if (isMirrored && isRed) {
+            heading *= -1;
+        }
 
         // Run getSteeringCorrection() once to pre-calculate the current error
         getSteeringCorrection(heading, P_DRIVE_GAIN);
@@ -483,12 +510,14 @@ public class CenterStageAuto extends LinearOpMode {
      *                   If a relative angle is required, add/subtract from current heading.
      * @param holdTime   Length of time (in seconds) to hold the specified heading.
      */
-    public void holdHeading(double maxTurnSpeed, double heading, double holdTime) {
+    public void holdHeading(double maxTurnSpeed, double heading, double holdTime, boolean reverseSides) {
 
         ElapsedTime holdTimer = new ElapsedTime();
         holdTimer.reset();
 
-        heading = heading * reverseTurnsForLeftSide;
+        if (reverseSides) {
+            heading *= -1;
+        }
 
         // keep looping while we have time remaining.
         while (opModeIsActive() && (holdTimer.time() < holdTime)) {
@@ -608,8 +637,9 @@ public class CenterStageAuto extends LinearOpMode {
      * read the raw (un-offset Gyro heading) directly from the IMU
      */
     public double getRawHeading() {
-        Orientation angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        double botHeading = orientation.getYaw(AngleUnit.DEGREES);
+        return botHeading;
     }
 
     /**
@@ -622,96 +652,108 @@ public class CenterStageAuto extends LinearOpMode {
     }
     // TODO: can we rename these moveTo* functions for setHeightTo*
     public void moveToGroundPosition() {
-        linearSlide.setPosition(0);
-        swingArm.setPosition(1);
+        //linearSlide.setPosition(0);
+        //swingArm.setPosition(1);
     }
 
     public void moveToLowPosition() {
-        linearSlide.setPosition(3);
-        swingArm.setPosition(1);
+        //linearSlide.setPosition(3);
+        //swingArm.setPosition(1);
     }
 
     public void moveToMediumPosition() {
-        linearSlide.setPosition(1);
-        swingArm.setPosition(2);
+        //linearSlide.setPosition(1);
+        //swingArm.setPosition(2);
     }
 
     public void moveToHighPosition() {
-        linearSlide.setPosition(3);
-        swingArm.setPosition(2);
+        //linearSlide.setPosition(3);
+        //swingArm.setPosition(2);
     }
 
     public void moveToIntakePosition() {
-        linearSlide.setPosition(2);
-        swingArm.setPosition(1);
+        //linearSlide.setPosition(2);
+        //swingArm.setPosition(1);
     }
-}        //Step 1: detect the team prop
-    TestAutonomous.SpikeMark teamPropMark = detectTeamProp();
-    //Step 2: drive to the team prop
-    driveToCorrectSpikeMark(teamPropMark);
-    //Step 3: place purple pixel on same line as team prop
-    ejectPurplePixel();
-    //Step 4: return to original position
-    driveFromSpikeMark(teamPropMark);
-    //Step 5: drive under truss closest to wall to get to backdrop
-    driveToBackdrop(isNear);
-    //Step 6: place yellow pixel on correct Apriltag
-    depositYellowPixel(teamPropMark);
-    //Step 7: drive off to side
-    parkInBackstage(parkLeft);
+
+    //Step 1: detect the team prop
+//    TestAutonomous.SpikeMark teamPropMark = detectTeamProp();
+//    //Step 2: drive to the team prop
+//    //driveToCorrectSpikeMark(teamPropMark);
+//    //Step 3: place purple pixel on same line as team prop
+//    //ejectPurplePixel();
+//    //Step 4: return to original position
+//    //driveFromSpikeMark(teamPropMark);
+//    //Step 5: drive under truss closest to wall to get to backdrop
+//    //driveToBackdrop(isNear);
+//    //Step 6: place yellow pixel on correct Apriltag
+//    //depositYellowPixel(teamPropMark);
+//    //Step 7: drive off to side
+//    //parkInBackstage(parkLeft);
+//
+//    void driveForwardInches(double amount) {
+//    }
+//    void turnDegrees(double amount) {
+//    }
+//    enum SpikeMark {RIGHT, LEFT, CENTER}
+//
+//    TestAutonomous.SpikeMark detectTeamProp() {
+//        return TestAutonomous.SpikeMark.CENTER;
+//        //
+//    }
+//
+//    final double SPIKE_MARK_DECISION_DISTANCE = -1;
+//    final double CENTER_SPIKE_MARK_INCHES = -1;
+//    final double OFFCENTER_SPIKE_MARK_INCHES = -1;
+//    final double OFFCENTER_DECISION_TURN_DEGREES = -1;
+//
+//    void driveToCorrectSpikeMark(TestAutonomous.SpikeMark teamPropMark) {
+//        driveForwardInches(SPIKE_MARK_DECISION_DISTANCE);
+//
+//        if (teamPropMark == TestAutonomous.SpikeMark.CENTER) {
+//            driveForwardInches(CENTER_SPIKE_MARK_INCHES);
+//        } else if (teamPropMark == TestAutonomous.SpikeMark.LEFT) {
+//            turnDegrees(OFFCENTER_DECISION_TURN_DEGREES);
+//            driveForwardInches(OFFCENTER_SPIKE_MARK_INCHES);
+//        }
+//        else if (teamPropMark == TestAutonomous.SpikeMark.RIGHT) {
+//            turnDegrees(-OFFCENTER_DECISION_TURN_DEGREES);
+//            driveForwardInches(OFFCENTER_SPIKE_MARK_INCHES);
+//        }
+//    }
+//
+//    void ejectPurplePixel() {
+//        intake.ejectPixel();
+//    }
+//
+//    void driveFromSpikeMark(TestAutonomous.SpikeMark teamPropMark) {
+//        driveForwardInches(-SPIKE_MARK_DECISION_DISTANCE);
+//
+//        if (teamPropMark == TestAutonomous.SpikeMark.CENTER) {
+//            driveForwardInches(-CENTER_SPIKE_MARK_INCHES);
+//        } else if (teamPropMark == TestAutonomous.SpikeMark.LEFT) {
+//            turnDegrees(-OFFCENTER_DECISION_TURN_DEGREES);
+//            driveForwardInches(-OFFCENTER_SPIKE_MARK_INCHES);
+//        }
+//        else if (teamPropMark == TestAutonomous.SpikeMark.RIGHT) {
+//            turnDegrees(OFFCENTER_DECISION_TURN_DEGREES);
+//            driveForwardInches(-OFFCENTER_SPIKE_MARK_INCHES);
+//        }
+//    }
+//
+//    void driveToBackdrop(boolean isNear) {
+//    }
+//
+//    void depositYellowPixel(TestAutonomous.SpikeMark teamPropMark) {
+//    }
+//
+//    void parkInBackstage(boolean parkLeft) {
+//    }
+//
+
 }
 
 
 
-enum SpikeMark {RIGHT, LEFT, CENTER}
-    TestAutonomous.SpikeMark detectTeamProp(){
-        return TestAutonomous.SpikeMark.CENTER;
-    }
-    void driveForwardIn(double inches) {
-        //
-    }
-    void turnDegrees(double degrees) {
-        //finish this later
-    }
-    final double CENTER_SPIKE_MARK_DIST_IN = -1 /* placeholder value */ ;
-    final double OFFCENTER_SPIKE_MARK_DIST_IN = -2 /* placeholder value */ ;
-    final double SPIKE_MARK_DECISION_DIST = -0.5 /* placeholder value */ ;
-    final double OFFCENTER_DECISION_TURN_DEG = -45 /* placeholder value */ ;
-    void driveToCorrectSpikeMark(TestAutonomous.SpikeMark teamPropMark) {
-        driveForwardIn(SPIKE_MARK_DECISION_DIST);
-//switch to case statement later
-        if(teamPropMark == TestAutonomous.SpikeMark.CENTER) {
-            driveForwardIn(CENTER_SPIKE_MARK_DIST_IN);
-        } else if (teamPropMark == TestAutonomous.SpikeMark.LEFT) {
-            turnDegrees(OFFCENTER_DECISION_TURN_DEG);
-            driveForwardIn(OFFCENTER_SPIKE_MARK_DIST_IN);
-        } else if (teamPropMark == TestAutonomous.SpikeMark.RIGHT) {
-            turnDegrees(-OFFCENTER_DECISION_TURN_DEG);
-            driveForwardIn(OFFCENTER_SPIKE_MARK_DIST_IN);
-        }
-    }
-    void ejectPurplePixel() {
-        Intake.ejectPixel();
-    }
-
-    void driveFromSpikeMark(TestAutonomous.SpikeMark teamPropMark){
-        //switch to case statement later
-        if(teamPropMark == TestAutonomous.SpikeMark.CENTER) {
-            driveForwardIn(-CENTER_SPIKE_MARK_DIST_IN);
-        } else if (teamPropMark == TestAutonomous.SpikeMark.LEFT) {
-            turnDegrees(-OFFCENTER_DECISION_TURN_DEG);
-            driveForwardIn(-OFFCENTER_SPIKE_MARK_DIST_IN);
-        } else if (teamPropMark == TestAutonomous.SpikeMark.RIGHT) {
-            turnDegrees(OFFCENTER_DECISION_TURN_DEG);
-            driveForwardIn(-OFFCENTER_SPIKE_MARK_DIST_IN);
-        }
-    }
-
-    void driveToBackdrop(boolean isNear){}
-
-    void depositYellowPixel(TestAutonomous.SpikeMark teamPropMark){}
-
-    void parkInBackstage(boolean parkLeft){}
 
 
-}
