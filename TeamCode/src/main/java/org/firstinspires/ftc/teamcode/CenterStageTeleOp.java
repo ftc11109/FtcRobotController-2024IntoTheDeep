@@ -35,6 +35,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -80,6 +81,8 @@ public class CenterStageTeleOp extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
+    private double slowMove = 0.5;
+
     @Override
     public void runOpMode() {
 
@@ -100,8 +103,8 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 )));
 
         // ########################################################################################
@@ -151,10 +154,17 @@ public class CenterStageTeleOp extends LinearOpMode {
             // initialized, and then calculate rotation
             //imu.getRobotOrientation()
             //double botHeading = -imu.getAngularOrientation().firstAngle;
+
+            //something is wrong with the drivetrain
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             double botHeading = orientation.getYaw(AngleUnit.RADIANS);
-            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+            double rotX = x * Math.cos(botHeading) + y * Math.sin(botHeading);
+            double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
+            /**
+             * Old code:
+             double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+             */
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -189,17 +199,25 @@ public class CenterStageTeleOp extends LinearOpMode {
                 rightBackPower = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             }
 
+            if(!gamepad1.left_stick_button) {
+                slowMove = 0.4;
+            } else {
+                slowMove = 0.8;
+            }
+
             // Send calculated power to wheels
-            frontLeftDrive.setPower(leftFrontPower);
-            frontRightDrive.setPower(rightFrontPower);
-            backLeftDrive.setPower(leftBackPower);
-            backRightDrive.setPower(rightBackPower);
+            frontLeftDrive.setPower(leftFrontPower * slowMove);
+            frontRightDrive.setPower(rightFrontPower * slowMove);
+            backLeftDrive.setPower(leftBackPower * slowMove);
+            backRightDrive.setPower(rightBackPower * slowMove);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime);
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.addLine("LB + A/B/X/Y to test single motors");
+            telemetry.addLine("");
+            telemetry.addData("IMU orientation", botHeading);
             telemetry.update();
         }
     }}
