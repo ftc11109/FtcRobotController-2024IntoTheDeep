@@ -81,8 +81,6 @@ public class CenterStageTeleOp extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
-    private double slowMove = 0.5;
-
     @Override
     public void runOpMode() {
 
@@ -93,7 +91,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "right_driveF");
         DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "left_driveF");
         DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "left_driveB");
-        Intake intake = new Intake(hardwareMap,telemetry,gamepad1);
+        Intake intake = new Intake(hardwareMap, telemetry, gamepad1);
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
 
@@ -118,7 +116,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
 
-       // 11109:
+        // 11109:
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -143,35 +141,45 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             intake.loop();
             swingArm.loop();
+            //TODO: servo.loop();
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
-            double y = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
+            double y = 0;
+            double x = 0;
+            double rx = 0;
+
+            if (!(gamepad1.dpad_down || gamepad1.dpad_up || gamepad1.dpad_left || gamepad1.dpad_right)) {
+                //framework for dpad precise movement
+            } else {
+                y = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+                x = gamepad1.left_stick_x;
+                rx = gamepad1.right_stick_x;
+            }
 
             // Use the IMU to determine the orientation of the robot relative to its position when
             // initialized, and then calculate rotation
             //imu.getRobotOrientation()
             //double botHeading = -imu.getAngularOrientation().firstAngle;
 
-            //something is wrong with the drivetrain
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             double botHeading = orientation.getYaw(AngleUnit.RADIANS);
             double rotX = x * Math.cos(botHeading) + y * Math.sin(botHeading);
             double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
-            /**
-             * Old code:
-             double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+
+            /*
+            Fixed(?) drivetrain weirdness.
+            Old code:
+            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
              */
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = rotY + rotX + rx;
+            double leftFrontPower = rotY + rotX + rx;
             double rightFrontPower = rotY - rotX - rx;
-            double leftBackPower   = rotY - rotX + rx;
-            double rightBackPower  = rotY + rotX - rx;
+            double leftBackPower = rotY - rotX + rx;
+            double rightBackPower = rotY + rotX - rx;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -180,10 +188,10 @@ public class CenterStageTeleOp extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower  /= max;
+                leftFrontPower /= max;
                 rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
             }
 
             // Hold the left bumper and the corresponding button to run test code.
@@ -199,17 +207,18 @@ public class CenterStageTeleOp extends LinearOpMode {
                 rightBackPower = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             }
 
-            if(!gamepad1.left_stick_button) {
-                slowMove = 0.4;
+            double speedModifier;
+            if (!gamepad1.left_stick_button) {
+                speedModifier = 0.4;
             } else {
-                slowMove = 0.8;
+                speedModifier = 1;
             }
 
             // Send calculated power to wheels
-            frontLeftDrive.setPower(leftFrontPower * slowMove);
-            frontRightDrive.setPower(rightFrontPower * slowMove);
-            backLeftDrive.setPower(leftBackPower * slowMove);
-            backRightDrive.setPower(rightBackPower * slowMove);
+            frontLeftDrive.setPower(leftFrontPower * speedModifier);
+            frontRightDrive.setPower(rightFrontPower * speedModifier);
+            backLeftDrive.setPower(leftBackPower * speedModifier);
+            backRightDrive.setPower(rightBackPower * speedModifier);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime);
@@ -220,4 +229,5 @@ public class CenterStageTeleOp extends LinearOpMode {
             telemetry.addData("IMU orientation", botHeading);
             telemetry.update();
         }
-    }}
+    }
+}
