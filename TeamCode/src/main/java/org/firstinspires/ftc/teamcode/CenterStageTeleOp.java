@@ -145,17 +145,9 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
-            double y = 0;
-            double x = 0;
-            double rx = 0;
-
-            if (!(gamepad1.dpad_down || gamepad1.dpad_up || gamepad1.dpad_left || gamepad1.dpad_right)) {
-                //framework for dpad precise movement
-            } else {
-                y = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-                x = gamepad1.left_stick_x;
-                rx = gamepad1.right_stick_x;
-            }
+            double y = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value ;
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
 
             // Use the IMU to determine the orientation of the robot relative to its position when
             // initialized, and then calculate rotation

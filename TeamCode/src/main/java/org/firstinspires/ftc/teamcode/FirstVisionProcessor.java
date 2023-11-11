@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 //package org.firstinspires.ftc.teamcode.processors;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,6 +35,10 @@ public class FirstVisionProcessor implements VisionProcessor {
         double satRectLeft = getAvgSaturation(hsvMat, rectLeft);
         double satRectMiddle = getAvgSaturation(hsvMat, rectMiddle);
         double satRectRight = getAvgSaturation(hsvMat, rectRight);
+
+        telemetry.addData("Left selection", satRectLeft);
+        telemetry.addData("Middle selection", satRectMiddle);
+        telemetry.addData("Right selection", satRectRight);
 
         if ((satRectLeft > satRectMiddle) && (satRectLeft > satRectRight)) {
             return Selected.LEFT;
