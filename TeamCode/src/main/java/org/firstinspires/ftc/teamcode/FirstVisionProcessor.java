@@ -16,13 +16,13 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 public class FirstVisionProcessor implements VisionProcessor {
-    public Rect rectLeft = new Rect(30, 165, 80, 80);
-    public Rect rectMiddle = new Rect(275, 100, 80, 80);
-    public Rect rectRight = new Rect(505, 165, 80, 80);
+    public static Rect rectLeft = new Rect(30, 165, 80, 80);
+    public static Rect rectMiddle = new Rect(275, 100, 80, 80);
+    public static Rect rectRight = new Rect(505, 165, 80, 80);
     Selected selection = Selected.NONE;
 
-    Mat submat = new Mat();
-    Mat hsvMat = new Mat();
+    public static Mat submat = new Mat();
+    public static Mat hsvMat = new Mat();
 
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
@@ -36,10 +36,6 @@ public class FirstVisionProcessor implements VisionProcessor {
         double satRectMiddle = getAvgSaturation(hsvMat, rectMiddle);
         double satRectRight = getAvgSaturation(hsvMat, rectRight);
 
-        telemetry.addData("Left selection", satRectLeft);
-        telemetry.addData("Middle selection", satRectMiddle);
-        telemetry.addData("Right selection", satRectRight);
-
         if ((satRectLeft > satRectMiddle) && (satRectLeft > satRectRight)) {
             return Selected.LEFT;
         } else if ((satRectMiddle > satRectLeft) && (satRectMiddle > satRectRight)) {
@@ -48,7 +44,7 @@ public class FirstVisionProcessor implements VisionProcessor {
         return Selected.RIGHT;
     }
 
-    protected double getAvgSaturation(Mat input, Rect rect) {
+    static double getAvgSaturation(Mat input, Rect rect) {
         submat = input.submat(rect);
         Scalar color = Core.mean(submat);
         return color.val[1];
