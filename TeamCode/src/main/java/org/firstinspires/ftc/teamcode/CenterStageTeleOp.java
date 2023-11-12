@@ -91,9 +91,12 @@ public class CenterStageTeleOp extends LinearOpMode {
         DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "right_driveF");
         DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "left_driveF");
         DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "left_driveB");
+
         Intake intake = new Intake(hardwareMap, telemetry, gamepad1);
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
+
+        //BucketDoor bucketDoor = new BucketDoor(hardwareMap, telemetry, gamepad2);
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
@@ -141,7 +144,7 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             intake.loop();
             swingArm.loop();
-            //TODO: servo.loop();
+            //bucketDoor.loop();
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 

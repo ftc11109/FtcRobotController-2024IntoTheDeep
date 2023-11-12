@@ -40,8 +40,11 @@ public class FirstVisionProcessor implements VisionProcessor {
             return Selected.LEFT;
         } else if ((satRectMiddle > satRectLeft) && (satRectMiddle > satRectRight)) {
             return Selected.MIDDLE;
+        } else if ((satRectRight > satRectLeft) && (satRectRight > satRectMiddle)) {
+            return Selected.RIGHT;
+        } else {
+            return Selected.NONE;
         }
-        return Selected.RIGHT;
     }
 
     static double getAvgSaturation(Mat input, Rect rect) {

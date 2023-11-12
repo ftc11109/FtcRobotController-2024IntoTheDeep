@@ -298,50 +298,70 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     public void runAutonomousProgram(String allianceColor, boolean isFar) {
 
-        if (allianceColor == "red") {
-            isRed = true;
-        } else {
-            isRed = false;
-        }
+        //testing driveStraight
 
-        //move up to spike marks
-        driveStraight(DRIVE_SPEED, 26.0, 0.0, notMirrored);
+            while (!(gamepad1.a || gamepad1.b || gamepad1.y || gamepad1.dpad_down || gamepad1.dpad_right || gamepad1.dpad_up) && opModeIsActive()) {
+                //do nothing
+            }
 
-        //push to corresponding spike mark
-        switch (visionProcessor.selection) {
-            case LEFT:
-                turnToHeading(TURN_SPEED, 50.0, notMirrored);
-                driveStraight(DRIVE_SPEED, 17.0, 50.0, notMirrored);
-                driveStraight(DRIVE_SPEED, -17.0, 50.0, notMirrored);
-                turnToHeading(TURN_SPEED, 0.0, notMirrored);
-                break;
-            case MIDDLE:
-                driveStraight(DRIVE_SPEED, 20, 0.0, notMirrored);
-                driveStraight(DRIVE_SPEED, -20, 0.0, notMirrored);
-                break;
-            case RIGHT:
-                turnToHeading(TURN_SPEED, 50.0, notMirrored);
-                driveStraight(DRIVE_SPEED, 17.0, -50.0, notMirrored);
-                driveStraight(DRIVE_SPEED, -17.0, -50.0, notMirrored);
-                turnToHeading(TURN_SPEED, 0.0, notMirrored);
-                break;
-            case NONE:
-                driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
-                driveStraight(DRIVE_SPEED, -20, 0.0, notMirrored);
-                break;
-        }
+            if (gamepad1.a) {
+                driveStraight(DRIVE_SPEED, 12, 0, false);
+            } else if (gamepad1.b) {
+                driveStraight(DRIVE_SPEED, 24, 0, false);
+            } else if (gamepad1.y) {
+                driveStraight(DRIVE_SPEED, 48, 0, false);
+            } else if (gamepad1.dpad_down) {
+                driveStraight(DRIVE_SPEED, -12, 0, false);
+            } else if (gamepad1.dpad_right) {
+                driveStraight(DRIVE_SPEED, -24, 0, false);
+            } else if (gamepad1.dpad_up) {
+                driveStraight(DRIVE_SPEED, -48, 0, false);
+            }
 
-        driveStraight(DRIVE_SPEED, -8.0, 0.0, notMirrored);
-        turnToHeading(TURN_SPEED, 90.0, isMirrored);
-
-        if (isFar) {
-            driveStraight(DRIVE_SPEED, 48.0, 90.0, isMirrored);
-        }
-        driveStraight(DRIVE_SPEED, 24.0, 90.0, isMirrored);
-
-        //april tags or alt parking
-
-        driveStraight(DRIVE_SPEED, 6.0, 90.0, isMirrored);
+//        if (allianceColor == "red") {
+//            isRed = true;
+//        } else {
+//            isRed = false;
+//        }
+//
+//        //move up to spike marks
+//        driveStraight(DRIVE_SPEED, 26.0, 0.0, notMirrored);
+//
+//        //push to corresponding spike mark
+//        switch (visionProcessor.selection) {
+//            case LEFT:
+//                turnToHeading(TURN_SPEED, 50.0, notMirrored);
+//                driveStraight(DRIVE_SPEED, 17.0, 50.0, notMirrored);
+//                driveStraight(DRIVE_SPEED, -17.0, 50.0, notMirrored);
+//                turnToHeading(TURN_SPEED, 0.0, notMirrored);
+//                break;
+//            case MIDDLE:
+//                driveStraight(DRIVE_SPEED, 20, 0.0, notMirrored);
+//                driveStraight(DRIVE_SPEED, -20, 0.0, notMirrored);
+//                break;
+//            case RIGHT:
+//                turnToHeading(TURN_SPEED, 50.0, notMirrored);
+//                driveStraight(DRIVE_SPEED, 17.0, -50.0, notMirrored);
+//                driveStraight(DRIVE_SPEED, -17.0, -50.0, notMirrored);
+//                turnToHeading(TURN_SPEED, 0.0, notMirrored);
+//                break;
+//            case NONE:
+//                driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
+//                driveStraight(DRIVE_SPEED, -20, 0.0, notMirrored);
+//                break;
+//        }
+//
+//        driveStraight(DRIVE_SPEED, -8.0, 0.0, notMirrored);
+//        turnToHeading(TURN_SPEED, 90.0, isMirrored);
+//
+//        if (isFar) {
+//            driveStraight(DRIVE_SPEED, 48.0, 90.0, isMirrored);
+//        }
+//        driveStraight(DRIVE_SPEED, 24.0, 90.0, isMirrored);
+//
+//        //april tags or alt parking
+//
+//        driveStraight(DRIVE_SPEED, 6.0, 90.0, isMirrored);
     }
 
     /*
