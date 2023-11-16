@@ -321,17 +321,17 @@ public class CenterStageAutonomous extends LinearOpMode {
             while (!(gamepad1.a || gamepad1.b || gamepad1.y)) {
             }
             if (gamepad1.a) {
-                driveStraight(DRIVE_SPEED, 18, 0, false);
+                driveStraight(DRIVE_SPEED, -18, 0, false);
             } else if (gamepad1.b) {
-                driveStraight(DRIVE_SPEED, 40, 0, false);
+                driveStraight(DRIVE_SPEED, -40, 0, false);
             } else if (gamepad1.y) {
-                driveStraight(DRIVE_SPEED, 80, 0, false);
+                driveStraight(DRIVE_SPEED, -80, 0, false);
             } else if (gamepad1.dpad_down) {
-                driveStraight(DRIVE_SPEED, -12, 0, false);
+                driveStraight(DRIVE_SPEED, 12, 0, false);
             } else if (gamepad1.dpad_right) {
-                driveStraight(DRIVE_SPEED, -24, 0, false);
+                driveStraight(DRIVE_SPEED, 24, 0, false);
             } else if (gamepad1.dpad_up) {
-                driveStraight(DRIVE_SPEED, -48, 0, false);
+                driveStraight(DRIVE_SPEED, 48, 0, false);
             }
         }
         //        if (allianceColor == "red") {
