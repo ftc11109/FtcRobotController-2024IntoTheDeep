@@ -317,15 +317,17 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     public void runAutonomousProgram(String allianceColor, boolean isFar) {
 
-        while (true) {
-            while (!(gamepad1.a || gamepad1.b || gamepad1.y)) {
+        while (true && opModeIsActive()) {
+            while (!(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) && opModeIsActive()) {
             }
             if (gamepad1.a) {
-                driveStraight(DRIVE_SPEED, 18, 0, false);
+                driveStraight(0.3, 19, 0, false);
             } else if (gamepad1.b) {
-                driveStraight(DRIVE_SPEED, 40, 0, false);
+                driveStraight(0.3, 40, 0, false);
+            } else if (gamepad1.x) {
+                driveStraight(0.3, 60, 0, false);
             } else if (gamepad1.y) {
-                driveStraight(DRIVE_SPEED, 80, 0, false);
+                driveStraight(0.3, 80, 0, false);
             } else if (gamepad1.dpad_down) {
                 driveStraight(DRIVE_SPEED, -12, 0, false);
             } else if (gamepad1.dpad_right) {
@@ -333,6 +335,7 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.dpad_up) {
                 driveStraight(DRIVE_SPEED, -48, 0, false);
             }
+
         }
         //        if (allianceColor == "red") {
 //            isRed = true;
@@ -418,7 +421,8 @@ public class CenterStageAutonomous extends LinearOpMode {
             //heading = heading * reverseTurnsForAllianceColor;
 
             // Determine new target position, and pass to motor controller
-            int moveCounts = (int) (distance / inchesPerTick());
+            double moveCompensation = 1.7; //Dear future Tekerz: Our robot needed this, yours might not
+            int moveCounts = (int) ((distance * moveCompensation) / inchesPerTick());
 
             leftTargetF = leftDriveF.getCurrentPosition() + moveCounts;
             leftTargetB = leftDriveB.getCurrentPosition() + moveCounts;

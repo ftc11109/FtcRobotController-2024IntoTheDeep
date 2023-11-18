@@ -102,11 +102,13 @@ public class CenterStageTeleOp extends LinearOpMode {
         // for Field-Oriented driving
         IMU imu = hardwareMap.get(IMU.class, "imu");
 
+
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
                 )));
+
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -207,6 +209,10 @@ public class CenterStageTeleOp extends LinearOpMode {
                 speedModifier = 0.4;
             } else {
                 speedModifier = 1;
+            }
+
+            if (gamepad1.start) {
+                imu.resetYaw();
             }
 
             // Send calculated power to wheels
