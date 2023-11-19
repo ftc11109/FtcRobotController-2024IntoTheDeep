@@ -97,7 +97,7 @@ import java.util.List;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="CenterStage Autonomous 21764", group="Robot")
+@Autonomous(name="11109 CenterStage Auto", group="Robot")
 //@Disabled
 public class CenterStageAutonomous extends LinearOpMode {
 
@@ -317,6 +317,8 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     public void runAutonomousProgram(String allianceColor, boolean isFar) {
 
+        /* driveStraight testing:
+
         while (true && opModeIsActive()) {
             while (!(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) && opModeIsActive()) {
             }
@@ -328,48 +330,74 @@ public class CenterStageAutonomous extends LinearOpMode {
                 driveStraight(0.3, 60, 0, false);
             } else if (gamepad1.y) {
                 driveStraight(0.3, 80, 0, false);
-            } else if (gamepad1.dpad_down) {
-                driveStraight(DRIVE_SPEED, -12, 0, false);
-            } else if (gamepad1.dpad_right) {
-                driveStraight(DRIVE_SPEED, -24, 0, false);
-            } else if (gamepad1.dpad_up) {
-                driveStraight(DRIVE_SPEED, -48, 0, false);
-            }
+            //} else if (gamepad1.dpad_down) {
+            //  driveStraight(DRIVE_SPEED, -12, 0, false);
+            //} else if (gamepad1.dpad_right) {
+            //  driveStraight(DRIVE_SPEED, -24, 0, false);
+            //} else if (gamepad1.dpad_up) {
+            //  driveStraight(DRIVE_SPEED, -48, 0, false);
+           }
 
         }
-        //        if (allianceColor == "red") {
-//            isRed = true;
-//        } else {
-//            isRed = false;
-//        }
-//
-//        //move up to spike marks
-//        driveStraight(DRIVE_SPEED, -20.0, 0.0, notMirrored);
-//
-//        //push to corresponding spike mark
-//        switch (visionProcessor.selection) {
-//            case LEFT:
-//                turnToHeading(TURN_SPEED, -50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, -25.0, -50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 31.0, -50.0, notMirrored);
-//                turnToHeading(TURN_SPEED, 0.0, notMirrored);
-//                break;
-//            case MIDDLE:
-//                driveStraight(DRIVE_SPEED, -29.0, 0.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 29.0, 0.0, notMirrored);
-//                break;
-//            case RIGHT:
-//                turnToHeading(TURN_SPEED, 50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, -25.0, 50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 31.0, 50.0, notMirrored);
-//                turnToHeading(TURN_SPEED, 0.0, notMirrored);
-//                break;
-//            case NONE:
-//                driveStraight(DRIVE_SPEED, -29.0, 0.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 29.0, 0.0, notMirrored);
-//                break;
-//        }
-//
+        */
+
+        if (allianceColor == "red") {
+            isRed = true;
+        } else {
+            isRed = false;
+        }
+
+        //move up to spike marks //not necessary
+//        driveStraight(DRIVE_SPEED, 2, 0.0, notMirrored);
+
+        FirstVisionProcessor.Selected dummySelection = FirstVisionProcessor.Selected.NONE;
+        while (!(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) && opModeIsActive()) {
+            if (gamepad1.a) {
+                dummySelection = FirstVisionProcessor.Selected.NONE;
+            } else if (gamepad1.b) {
+                dummySelection = FirstVisionProcessor.Selected.RIGHT;
+            } else if (gamepad1.x) {
+                dummySelection = FirstVisionProcessor.Selected.LEFT;
+            } else if (gamepad1.y) {
+                dummySelection = FirstVisionProcessor.Selected.MIDDLE;
+            }
+        }
+
+        //push to corresponding spike mark
+        switch (dummySelection) {
+            case LEFT:
+                driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
+                turnToHeading(TURN_SPEED, 45, notMirrored);
+                driveStraight(DRIVE_SPEED, -10, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 10, 0, notMirrored);
+                turnToHeading(TURN_SPEED, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                break;
+            case MIDDLE:
+                driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, 22, 0.0, notMirrored);
+                break;
+            case RIGHT:
+                driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
+                turnToHeading(TURN_SPEED, -45, notMirrored);
+                driveStraight(DRIVE_SPEED, -10, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 10, 0, notMirrored);
+                turnToHeading(TURN_SPEED, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                break;
+            case NONE:
+                //do nothing
+                break;
+        }
+
+        turnToHeading(TURN_SPEED, 90, notMirrored);
+        if (isFar) {
+            driveStraight(DRIVE_SPEED, -93, 90, notMirrored);
+        } else {
+            driveStraight(DRIVE_SPEED, -48, 90, notMirrored);
+        }
+        turnToHeading(TURN_SPEED, 0, notMirrored);
+
 //        driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
 //        turnToHeading(TURN_SPEED, -90.0, isMirrored);
 //
@@ -422,7 +450,7 @@ public class CenterStageAutonomous extends LinearOpMode {
 
             // Determine new target position, and pass to motor controller
             double moveCompensation = 1.7; //Dear future Tekerz: Our robot needed this, yours might not
-            int moveCounts = (int) ((distance * moveCompensation) / inchesPerTick());
+            int moveCounts = (int) (((distance * moveCompensation) - 0.56) / inchesPerTick());
 
             leftTargetF = leftDriveF.getCurrentPosition() + moveCounts;
             leftTargetB = leftDriveB.getCurrentPosition() + moveCounts;
@@ -724,6 +752,18 @@ public class CenterStageAutonomous extends LinearOpMode {
         //swingArm.setPosition(1);
     }
 
+    /*
+
+
+
+
+
+
+
+
+
+
+     */
     //Step 1: detect the team prop
 //    TestAutonomous.SpikeMark teamPropMark = detectTeamProp();
 //    //Step 2: drive to the team prop
@@ -798,8 +838,8 @@ public class CenterStageAutonomous extends LinearOpMode {
 //    void parkInBackstage(boolean parkLeft) {
 //    }
 //
-
 }
+
 
 
 

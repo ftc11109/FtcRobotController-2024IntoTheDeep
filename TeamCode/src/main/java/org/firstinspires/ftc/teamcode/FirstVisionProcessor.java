@@ -21,6 +21,8 @@ public class FirstVisionProcessor implements VisionProcessor {
     public static Rect rectRight = new Rect(505, 165, 80, 80);
     Selected selection = Selected.NONE;
 
+
+
     public static Mat submat = new Mat();
     public static Mat hsvMat = new Mat();
 
@@ -110,5 +112,12 @@ public class FirstVisionProcessor implements VisionProcessor {
         LEFT,
         MIDDLE,
         RIGHT
+    }
+
+    public static enum DummySelection {
+        NONE,c,
+        LEFT,
+        RIGHT,
+        CENTER
     }
 }

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class SwingArm {
 
     //protected DcMotor swingArmMotor;
-    protected DcMotor armMotor;
+    protected static DcMotor armMotor;
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
     private final Gamepad gamepad;

@@ -96,6 +96,11 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
 
+        //BucketDoor bucketDoor = new BucketDoor();
+        //bucketDoor.init(hardwareMap);
+
+
+
         //BucketDoor bucketDoor = new BucketDoor(hardwareMap, telemetry, gamepad2);
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
@@ -122,10 +127,10 @@ public class CenterStageTeleOp extends LinearOpMode {
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
 
         // 11109:
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
