@@ -165,7 +165,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             //double botHeading = -imu.getAngularOrientation().firstAngle;
 
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            double botHeading = orientation.getYaw(AngleUnit.RADIANS);
+            double botHeading = orientation.getYaw(AngleUnit.RADIANS) - Math.PI;
             double rotX = x * Math.cos(botHeading) + y * Math.sin(botHeading);
             double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
 

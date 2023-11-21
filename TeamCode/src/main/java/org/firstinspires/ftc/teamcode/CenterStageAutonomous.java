@@ -267,6 +267,8 @@ public class CenterStageAutonomous extends LinearOpMode {
         //swingArm.loop();
     }
 
+
+
     @Override
     public void runOpMode() {
         setupRobot();
@@ -284,9 +286,9 @@ public class CenterStageAutonomous extends LinearOpMode {
             telemetry.addData("right back starting:", rightDriveB.getCurrentPosition());
 
             visionProcessor.getSelection();
-            if (gamepad1.left_trigger > 0) {
+            if (gamepad1.dpad_up) {
                 isFar = false;
-            } else if (gamepad1.right_trigger > 0) {
+            } else if (gamepad1.dpad_down) {
                 isFar = true;
             }
             if (gamepad1.x) {
@@ -341,11 +343,11 @@ public class CenterStageAutonomous extends LinearOpMode {
         }
         */
 
-        if (allianceColor == "red") {
-            isRed = true;
-        } else {
-            isRed = false;
-        }
+//        if (allianceColor == "red") {
+//            isRed = true;
+//        } else {
+//            isRed = false;
+//        }
 
         //move up to spike marks //not necessary
 //        driveStraight(DRIVE_SPEED, 2, 0.0, notMirrored);
@@ -371,11 +373,11 @@ public class CenterStageAutonomous extends LinearOpMode {
                 driveStraight(DRIVE_SPEED, -10, 0, notMirrored);
                 driveStraight(DRIVE_SPEED, 10, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 15, 0, notMirrored);
                 break;
             case MIDDLE:
                 driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
-                driveStraight(DRIVE_SPEED, 22, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, 25, 0.0, notMirrored);
                 break;
             case RIGHT:
                 driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
@@ -383,20 +385,20 @@ public class CenterStageAutonomous extends LinearOpMode {
                 driveStraight(DRIVE_SPEED, -10, 0, notMirrored);
                 driveStraight(DRIVE_SPEED, 10, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 15, 0, notMirrored);
                 break;
-            case NONE:
+            //case NONE:
                 //do nothing
-                break;
+                //break;
         }
 
-        turnToHeading(TURN_SPEED, 90, notMirrored);
+        turnToHeading(TURN_SPEED, 90, isRed);
         if (isFar) {
-            driveStraight(DRIVE_SPEED, -93, 90, notMirrored);
+            driveStraight(DRIVE_SPEED, -93, 90, isRed);
         } else {
-            driveStraight(DRIVE_SPEED, -48, 90, notMirrored);
+            driveStraight(DRIVE_SPEED, -48, 90, isRed);
         }
-        turnToHeading(TURN_SPEED, 0, notMirrored);
+        turnToHeading(TURN_SPEED, 0, isRed);
 
 //        driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
 //        turnToHeading(TURN_SPEED, -90.0, isMirrored);
