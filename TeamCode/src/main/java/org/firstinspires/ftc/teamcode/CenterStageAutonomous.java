@@ -352,6 +352,7 @@ public class CenterStageAutonomous extends LinearOpMode {
         //move up to spike marks //not necessary
 //        driveStraight(DRIVE_SPEED, 2, 0.0, notMirrored);
 
+        /*
         FirstVisionProcessor.Selected dummySelection = FirstVisionProcessor.Selected.NONE;
         while (!(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) && opModeIsActive()) {
             if (gamepad1.a) {
@@ -364,16 +365,21 @@ public class CenterStageAutonomous extends LinearOpMode {
                 dummySelection = FirstVisionProcessor.Selected.MIDDLE;
             }
         }
+        */
+
+        FirstVisionProcessor.Selected selected = FirstVisionProcessor.selection;
 
         //push to corresponding spike mark
-        switch (dummySelection) {
+
+        //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO: fix
+        switch (selected) {
             case LEFT:
                 driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 45, notMirrored);
-                driveStraight(DRIVE_SPEED, -10, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 10, 0, notMirrored);
+                driveStraight(0.5, -10, 0, notMirrored);
+                driveStraight(0.5, 10, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 15, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 12.5, 0, notMirrored);
                 break;
             case MIDDLE:
                 driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
@@ -382,10 +388,10 @@ public class CenterStageAutonomous extends LinearOpMode {
             case RIGHT:
                 driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
                 turnToHeading(TURN_SPEED, -45, notMirrored);
-                driveStraight(DRIVE_SPEED, -10, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 10, 0, notMirrored);
+                driveStraight(0.5, -10, 0, notMirrored);
+                driveStraight(0.5, 10, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 15, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 12.5, 0, notMirrored);
                 break;
             //case NONE:
                 //do nothing
@@ -396,7 +402,7 @@ public class CenterStageAutonomous extends LinearOpMode {
         if (isFar) {
             driveStraight(DRIVE_SPEED, -93, 90, isRed);
         } else {
-            driveStraight(DRIVE_SPEED, -48, 90, isRed);
+            driveStraight(DRIVE_SPEED, -44, 90, isRed);
         }
         turnToHeading(TURN_SPEED, 0, isRed);
 
