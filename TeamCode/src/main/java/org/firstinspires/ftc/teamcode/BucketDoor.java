@@ -16,19 +16,19 @@ public class BucketDoor {
 
     public void loop() {
         if (gamepad.dpad_down) {
-            doorServo.setServoPosition(0);
+            doorServo.setServoPosition(45/90);
         } else if (gamepad.dpad_up) {
-            doorServo.setServoPosition(1);
+            doorServo.setServoPosition(-45/90);
         } else {
-            doorServo.setServoPosition(0.5);
+            //doorServo.setServoPosition(-1);
         }
     }
 
-    public void SetPosition(boolean open) {
+    public void SetDoor(boolean open) {
         if(open) {
-            doorServo.setServoPosition(1);
+            doorServo.setServoPosition(0);
         } else {
-            doorServo.setServoPosition(0.5);
+            doorServo.setServoPosition(1);
         }
     }
 }
