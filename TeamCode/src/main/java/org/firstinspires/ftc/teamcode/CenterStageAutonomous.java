@@ -301,6 +301,10 @@ public class CenterStageAutonomous extends LinearOpMode {
             telemetry.update();
         }
 
+        if (gamepad1.start || gamepad2.start) {
+            imu.resetYaw();
+        }
+
         // Set the encoders for closed loop speed control, and reset the heading.
         leftDriveF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftDriveB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -372,31 +376,32 @@ public class CenterStageAutonomous extends LinearOpMode {
         //push to corresponding spike mark
 
         //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO: fix
+
+        driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
+
         switch (selected) {
             case LEFT:
-                driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 45, notMirrored);
-                driveStraight(0.5, -10, 0, notMirrored);
-                driveStraight(0.5, 10, 0, notMirrored);
+                driveStraight(0.5, -9, 0, notMirrored);
+                driveStraight(0.5, 9, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 12.5, 0, notMirrored);
                 break;
             case MIDDLE:
-                driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
-                driveStraight(DRIVE_SPEED, 25, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, -12, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, 12, 0.0, notMirrored);
                 break;
             case RIGHT:
-                driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
                 turnToHeading(TURN_SPEED, -45, notMirrored);
-                driveStraight(0.5, -10, 0, notMirrored);
-                driveStraight(0.5, 10, 0, notMirrored);
+                driveStraight(0.5, -9, 0, notMirrored);
+                driveStraight(0.5, 9, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
-                driveStraight(DRIVE_SPEED, 12.5, 0, notMirrored);
                 break;
             //case NONE:
                 //do nothing
                 //break;
         }
+
+        driveStraight(DRIVE_SPEED, 14, 0, notMirrored);
 
         turnToHeading(TURN_SPEED, 90, isRed);
         if (isFar) {
@@ -404,7 +409,6 @@ public class CenterStageAutonomous extends LinearOpMode {
         } else {
             driveStraight(DRIVE_SPEED, -44, 90, isRed);
         }
-        turnToHeading(TURN_SPEED, 0, isRed);
 
 //        driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
 //        turnToHeading(TURN_SPEED, -90.0, isMirrored);

@@ -12,4 +12,7 @@ public class ServoController {
     public void setServoPosition(double position){
         servo.setPosition(position);
     }
+    public double getServoPosition() {
+        return servo.getPosition();
+    }
 }

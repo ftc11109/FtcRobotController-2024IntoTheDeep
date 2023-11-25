@@ -29,13 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -96,12 +93,7 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
 
-        //BucketDoor bucketDoor = new BucketDoor();
-        //bucketDoor.init(hardwareMap);
-
-
-
-        //BucketDoor bucketDoor = new BucketDoor(hardwareMap, telemetry, gamepad2);
+        BucketDoor bucketDoor = new BucketDoor(hardwareMap, gamepad2);
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
@@ -151,7 +143,7 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             intake.loop();
             swingArm.loop();
-            //bucketDoor.loop();
+            bucketDoor.loop();
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
@@ -233,6 +225,8 @@ public class CenterStageTeleOp extends LinearOpMode {
             telemetry.addLine("LB + A/B/X/Y to test single motors");
             telemetry.addLine("");
             telemetry.addData("IMU orientation", botHeading);
+            telemetry.addLine("");
+            telemetry.addData("Door servo position", bucketDoor.doorServo.getServoPosition());
             telemetry.update();
         }
     }
