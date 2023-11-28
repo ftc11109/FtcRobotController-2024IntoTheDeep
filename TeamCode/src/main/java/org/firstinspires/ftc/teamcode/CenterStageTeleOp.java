@@ -231,3 +231,25 @@ public class CenterStageTeleOp extends LinearOpMode {
         }
     }
 }
+/* Pseudocode: IMU reset edition
+
+Option 1:
+while opModeIsActive {
+
+    heading = imu.heading + crashCorrection
+
+    if !(imu.heading == 0.0) {
+        crashBackup = imu.heading
+    }
+
+    if imu.heading == 0.0 {
+        crashCorrection = crashBackup
+        imu.reset
+    }
+
+Option 2:
+-Wait until IMU resets
+-Notify drivers with controller vibration
+-Allow drivers to manually reset position
+-Allow drivers to press a button to reset IMU
+ */

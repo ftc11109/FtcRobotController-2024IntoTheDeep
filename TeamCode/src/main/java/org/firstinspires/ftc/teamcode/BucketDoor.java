@@ -16,9 +16,9 @@ public class BucketDoor {
 
     public void loop() {
         if (gamepad.dpad_down) {
-            doorServo.setServoPosition(45/90);
+            doorServo.setServoPosition(0.75);
         } else if (gamepad.dpad_up) {
-            doorServo.setServoPosition(-45/90);
+            doorServo.setServoPosition(0.25);
         } else {
             //doorServo.setServoPosition(-1);
         }
