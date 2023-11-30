@@ -16,9 +16,9 @@ public class DoorServo {
 
     public void loop() {
         if (gamepad.dpad_down) {
-            doorServo.setServoPosition(0.75);
+            doorServo.setServoPosition(0);
         } else if (gamepad.dpad_up) {
-            doorServo.setServoPosition(0.25);
+            doorServo.setServoPosition(1);
         } else {
             //doorServo.setServoPosition(-1);
         }

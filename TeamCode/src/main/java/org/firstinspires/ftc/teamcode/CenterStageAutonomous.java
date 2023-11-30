@@ -301,7 +301,7 @@ public class CenterStageAutonomous extends LinearOpMode {
             telemetry.update();
         }
 
-        if (gamepad1.start || gamepad2.start) {
+        if (gamepad1.back || gamepad2.back) {
             imu.resetYaw();
         }
 
