@@ -11,7 +11,7 @@ public class ServoTest extends OpMode {
 
     @Override
     public void init() {
-        board.init(hardwareMap);
+        board.init(hardwareMap, "doorServo");
     }
 
     @Override

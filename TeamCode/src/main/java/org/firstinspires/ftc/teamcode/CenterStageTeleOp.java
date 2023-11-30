@@ -93,7 +93,9 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
 
-        BucketDoor bucketDoor = new BucketDoor(hardwareMap, gamepad2);
+        DoorServo doorServo = new DoorServo(hardwareMap, gamepad2);
+
+        BucketServo bucketServo = new BucketServo(hardwareMap, gamepad2);
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
@@ -143,7 +145,8 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             intake.loop();
             swingArm.loop();
-            bucketDoor.loop();
+            doorServo.loop();
+            bucketServo.loop();
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
@@ -157,7 +160,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             //double botHeading = -imu.getAngularOrientation().firstAngle;
 
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            double botHeading = orientation.getYaw(AngleUnit.RADIANS) - Math.PI;
+            double botHeading = orientation.getYaw(AngleUnit.RADIANS);
             double rotX = x * Math.cos(botHeading) + y * Math.sin(botHeading);
             double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
@@ -202,14 +205,19 @@ public class CenterStageTeleOp extends LinearOpMode {
             }
 
             double speedModifier;
-            if (!gamepad1.left_stick_button) {
-                speedModifier = 0.4;
+            if (!(gamepad1.left_stick_button || gamepad1.right_bumper)) {
+                speedModifier = 0.5;
             } else {
                 speedModifier = 1;
             }
 
-            if (gamepad1.start) {
+            if (gamepad1.back) {
+                gamepad1.rumble(100);
                 imu.resetYaw();
+            }
+
+            if(orientation.getYaw(AngleUnit.RADIANS) == 0.0) {
+                gamepad1.rumble(250);
             }
 
             // Send calculated power to wheels
@@ -226,7 +234,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             telemetry.addLine("");
             telemetry.addData("IMU orientation", botHeading);
             telemetry.addLine("");
-            telemetry.addData("Door servo position", bucketDoor.doorServo.getServoPosition());
+            telemetry.addData("Door servo position", doorServo.doorServo.getServoPosition());
             telemetry.update();
         }
     }
@@ -252,4 +260,17 @@ Option 2:
 -Notify drivers with controller vibration
 -Allow drivers to manually reset position
 -Allow drivers to press a button to reset IMU
+
+Example:
+
+while opModeIsActive {
+
+    if String(imu.heading) == "0.0" {
+        gamepad.rumble(0.1);
+    }
+
+    if gamepad.start {
+        imu.reset
+    }
+
  */

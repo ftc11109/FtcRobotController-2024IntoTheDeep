@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ServoController {
     private Servo servo;
 
-    public void init(HardwareMap hwMap) {
-        servo = hwMap.get(Servo.class, "servo");
+    public void init(HardwareMap hwMap, String deviceName) {
+        servo = hwMap.get(Servo.class, deviceName);
     }
     public void setServoPosition(double position){
         servo.setPosition(position);
