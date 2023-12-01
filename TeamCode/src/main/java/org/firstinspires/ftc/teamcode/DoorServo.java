@@ -15,19 +15,30 @@ public class DoorServo {
     }
 
     public void loop() {
-        if (gamepad.dpad_down) {
-            doorServo.setServoPosition(0);
-        } else if (gamepad.dpad_up) {
-            doorServo.setServoPosition(1);
+        if (SwingArm.currentSetPosition == 1) {
+            SetState(2);
+        } else if (SwingArm.currentSetPosition == 2) {
+            SetState(0);
         } else {
-            //doorServo.setServoPosition(-1);
+            if(gamepad.right_trigger > 0) {
+                SetState(2);
+            } else if (gamepad.left_trigger > 0) {
+                SetState(1);
+            }
         }
     }
 
-    public void SetState(boolean isOpen) {
-        if(isOpen) {
+    /** This is fine.
+     * @param state 0: Door is closed
+     *              1: Door is halfway open
+     *              2: Door is fully open
+     */
+    public void SetState(int state) {
+        if(state == 0) {
             doorServo.setServoPosition(0);
-        } else {
+        } else if (state == 1) {
+            doorServo.setServoPosition(0.5);
+        } else if (state == 2) {
             doorServo.setServoPosition(1);
         }
     }

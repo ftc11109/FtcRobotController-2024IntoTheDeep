@@ -33,6 +33,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -97,6 +98,9 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         BucketServo bucketServo = new BucketServo(hardwareMap, gamepad2);
 
+        DroneLauncherServo droneLauncherServo = new DroneLauncherServo(hardwareMap, gamepad2);
+
+
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -147,6 +151,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             swingArm.loop();
             doorServo.loop();
             bucketServo.loop();
+            droneLauncherServo.loop();
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 

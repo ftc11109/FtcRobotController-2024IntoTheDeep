@@ -15,19 +15,11 @@ public class BucketServo {
     }
 
     public void loop() {
-        if (gamepad.dpad_left) {
-            doorServo.setServoPosition(0.75);
-        } else if (gamepad.dpad_right) {
-            doorServo.setServoPosition(0.25);
-        } else {
-            //doorServo.setServoPosition(-1);
-        }
-    }
-
-    public void SetState(boolean isDeployed) {
-        if(isDeployed) {
+        if (SwingArm.currentSetPosition == 1) {
             doorServo.setServoPosition(0);
-        } else {
+        } else if (SwingArm.currentSetPosition == 2) {
+            doorServo.setServoPosition(0.5);
+        } else if (SwingArm.currentSetPosition == 3) {
             doorServo.setServoPosition(1);
         }
     }

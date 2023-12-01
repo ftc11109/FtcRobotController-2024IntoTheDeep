@@ -51,6 +51,8 @@ public class SwingArm {
     static final int HIGH_HARDSTOP = DELIVERY_POINT_COUNT + 200;
     static final int LOW_HARDSTOP = PICKUP_POINT_COUNT;
 
+    static int currentSetPosition = 0;
+
     public SwingArm(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -88,10 +90,13 @@ public class SwingArm {
     public void setPosition(int position) {
         if (position == 1) {
             targetPositionCount = PICKUP_POINT_COUNT;
+            currentSetPosition = 1;
         } else if (position == 2) {
             targetPositionCount = CARRY_POINT_COUNT;
+            currentSetPosition = 2;
         } else if (position == 3) {
             targetPositionCount = DELIVERY_POINT_COUNT;
+            currentSetPosition = 3;
         } else {
             return;
         }
