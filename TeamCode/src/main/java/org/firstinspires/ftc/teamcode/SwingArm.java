@@ -38,7 +38,7 @@ public class SwingArm {
 
     //    11109
     static final int PICKUP_POINT_COUNT = 10;  // 10
-    static final int CARRY_POINT_COUNT = 700;
+    static final int CARRY_POINT_COUNT = 600;
     static final int DELIVERY_POINT_COUNT = 2110;
 
     static final double UP_MAXIMUM_SPEED = 1.0;

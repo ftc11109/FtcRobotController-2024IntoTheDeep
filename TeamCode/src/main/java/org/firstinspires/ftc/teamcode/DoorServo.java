@@ -15,15 +15,17 @@ public class DoorServo {
     }
 
     public void loop() {
-        if (SwingArm.currentSetPosition == 1) {
+        if (SwingArm.armMotor.getCurrentPosition() < 25) {
             SetState(2);
-        } else if (SwingArm.currentSetPosition == 2) {
+        } else if (SwingArm.armMotor.getCurrentPosition() < 800) {
             SetState(0);
         } else {
             if(gamepad.right_trigger > 0) {
                 SetState(2);
             } else if (gamepad.left_trigger > 0) {
                 SetState(1);
+            } else {
+                SetState(0);
             }
         }
     }
@@ -37,7 +39,7 @@ public class DoorServo {
         if(state == 0) {
             doorServo.setServoPosition(0);
         } else if (state == 1) {
-            doorServo.setServoPosition(0.5);
+            doorServo.setServoPosition(0.43);
         } else if (state == 2) {
             doorServo.setServoPosition(1);
         }

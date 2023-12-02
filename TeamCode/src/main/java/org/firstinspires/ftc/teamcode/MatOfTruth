@@ -3,7 +3,7 @@
           /|             /|
          / |            / |
         *--+-----------*  |
-        |  |           |  |   ~ Matrix of Truth ~ (ambrose)
+        |  |           |  |   ~ Matrix of Truth ~
         |  +-----------+--+
         | /            | /
         |/             |/
@@ -28,9 +28,9 @@ Controls:
         a: Arm load position
         b/x: Arm carry position
         y: Arm delivery position
+        right_stick_y: Manually set arm position
 
+        right_trigger: Fully open bucket door (while arm is in delivery position)
+        left_trigger: Halfway open bucket door (while arm is in delivery position)
 
-
-        dpad_up: Launch drone
-        dpad_down Reset drone launcher
-
+        right_bumper: Launch drone

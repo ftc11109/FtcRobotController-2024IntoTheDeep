@@ -96,7 +96,7 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         DoorServo doorServo = new DoorServo(hardwareMap, gamepad2);
 
-        BucketServo bucketServo = new BucketServo(hardwareMap, gamepad2);
+        BucketServo bucketServo = new BucketServo(hardwareMap);
 
         DroneLauncherServo droneLauncherServo = new DroneLauncherServo(hardwareMap, gamepad2);
 
@@ -157,7 +157,7 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             double y = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value ;
             double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
+            double rx = -gamepad1.right_stick_x;
 
             // Use the IMU to determine the orientation of the robot relative to its position when
             // initialized, and then calculate rotation

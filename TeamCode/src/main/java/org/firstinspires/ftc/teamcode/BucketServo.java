@@ -1,26 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class BucketServo {
-    ServoController doorServo = new ServoController();
+    ServoController bucketServo = new ServoController();
     private HardwareMap hardwareMap;
-    private Gamepad gamepad;
 
-
-    public BucketServo(HardwareMap hardwareMap, Gamepad gamepad) {
-        this.gamepad = gamepad;
-        doorServo.init(hardwareMap, "bucketServo");
+    public BucketServo(HardwareMap hardwareMap) {
+        bucketServo.init(hardwareMap, "bucketServo");
+        bucketServo.setServoPosition(0);
     }
 
     public void loop() {
-        if (SwingArm.currentSetPosition == 1) {
-            doorServo.setServoPosition(0);
-        } else if (SwingArm.currentSetPosition == 2) {
-            doorServo.setServoPosition(0.5);
-        } else if (SwingArm.currentSetPosition == 3) {
-            doorServo.setServoPosition(1);
+        if (SwingArm.armMotor.getCurrentPosition() < 1500) {
+            bucketServo.setServoPosition(0);
+        } else {
+            bucketServo.setServoPosition(((double)(SwingArm.armMotor.getCurrentPosition() - 1500) / 1200));
         }
     }
 }

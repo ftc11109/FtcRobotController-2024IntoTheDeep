@@ -382,8 +382,8 @@ public class CenterStageAutonomous extends LinearOpMode {
         switch (selected) {
             case LEFT:
                 turnToHeading(TURN_SPEED, 45, notMirrored);
-                driveStraight(0.5, -9, 0, notMirrored);
-                driveStraight(0.5, 9, 0, notMirrored);
+                driveStraight(0.5, -9.5, 0, notMirrored);
+                driveStraight(0.5, 9.5, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
                 break;
             case MIDDLE:
@@ -392,8 +392,8 @@ public class CenterStageAutonomous extends LinearOpMode {
                 break;
             case RIGHT:
                 turnToHeading(TURN_SPEED, -45, notMirrored);
-                driveStraight(0.5, -9, 0, notMirrored);
-                driveStraight(0.5, 9, 0, notMirrored);
+                driveStraight(0.5, -9.5, 0, notMirrored);
+                driveStraight(0.5, 9.5, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
                 break;
             //case NONE:
