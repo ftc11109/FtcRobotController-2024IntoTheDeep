@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -39,6 +40,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import java.io.File;
 
 /*
  * This file is heavily derived from the following samples; refer back to them for original source:
@@ -99,6 +102,8 @@ public class CenterStageTeleOp extends LinearOpMode {
         BucketServo bucketServo = new BucketServo(hardwareMap);
 
         DroneLauncherServo droneLauncherServo = new DroneLauncherServo(hardwareMap, gamepad2);
+
+
 
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
@@ -218,6 +223,7 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             if (gamepad1.back) {
                 gamepad1.rumble(100);
+                SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, new File("C:\\Users\\TekersRobotics\\StudioProjects\\FtcRobotController-2023CenterStage\\TeamCode\\src\\main\\java\\org\\firstinspires\\ftc\\teamcode\\Alert.mp3"));
                 imu.resetYaw();
             }
 
