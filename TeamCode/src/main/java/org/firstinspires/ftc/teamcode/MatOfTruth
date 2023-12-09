@@ -11,22 +11,22 @@
 
 Controls:
     Gamepad 1:
-        left_bumper+a,b,x,y: Test motors
+        left_bumper & a, b, x, y: Test motors
             a:
             b:
             x:
             y:
 
-        left_stick_x,y: Move robot (field-orientated)
+        left_stick_x, y: Move robot (field-orientated)
         right_stick_x: Rotate robot
-        left_stick_button/right_bumper: Sprint
+        left_stick_button / right_bumper: Sprint
 
         right_trigger: Intake IN
         left_trigger: Intake OUT
 
     Gamepad 2:
         a: Arm load position
-        b/x: Arm carry position
+        b / x: Arm carry position
         y: Arm delivery position
         right_stick_y: Manually set arm position
 

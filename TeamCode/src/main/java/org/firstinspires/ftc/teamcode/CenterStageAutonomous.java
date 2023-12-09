@@ -135,6 +135,8 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     boolean isFar = true;
 
+    boolean parkInCorner = true;
+
     String allianceColor = "blue";
 
     private FirstVisionProcessor visionProcessor;
@@ -296,8 +298,8 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.b) {
                 isRed = true;
             }
-            telemetry.addData("isRed:", isRed);
-            telemetry.addData("isFar:", isFar);
+            telemetry.addData("Color", isRed ? "Red" : "Blue");
+            telemetry.addData("Distance", isFar ? "Far" : "Close");
             telemetry.update();
         }
 
@@ -312,7 +314,7 @@ public class CenterStageAutonomous extends LinearOpMode {
         rightDriveB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetHeading();
 
-        runAutonomousProgram(allianceColor, isFar);
+        runAutonomousProgram(allianceColor, isFar, parkInCorner);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -321,55 +323,7 @@ public class CenterStageAutonomous extends LinearOpMode {
     }
 
 
-    public void runAutonomousProgram(String allianceColor, boolean isFar) {
-
-        /* driveStraight testing:
-
-        while (true && opModeIsActive()) {
-            while (!(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) && opModeIsActive()) {
-            }
-            if (gamepad1.a) {
-                driveStraight(0.3, 19, 0, false);
-            } else if (gamepad1.b) {
-                driveStraight(0.3, 40, 0, false);
-            } else if (gamepad1.x) {
-                driveStraight(0.3, 60, 0, false);
-            } else if (gamepad1.y) {
-                driveStraight(0.3, 80, 0, false);
-            //} else if (gamepad1.dpad_down) {
-            //  driveStraight(DRIVE_SPEED, -12, 0, false);
-            //} else if (gamepad1.dpad_right) {
-            //  driveStraight(DRIVE_SPEED, -24, 0, false);
-            //} else if (gamepad1.dpad_up) {
-            //  driveStraight(DRIVE_SPEED, -48, 0, false);
-           }
-
-        }
-        */
-
-//        if (allianceColor == "red") {
-//            isRed = true;
-//        } else {
-//            isRed = false;
-//        }
-
-        //move up to spike marks //not necessary
-//        driveStraight(DRIVE_SPEED, 2, 0.0, notMirrored);
-
-        /*
-        FirstVisionProcessor.Selected dummySelection = FirstVisionProcessor.Selected.NONE;
-        while (!(gamepad1.a || gamepad1.b || gamepad1.x || gamepad1.y) && opModeIsActive()) {
-            if (gamepad1.a) {
-                dummySelection = FirstVisionProcessor.Selected.NONE;
-            } else if (gamepad1.b) {
-                dummySelection = FirstVisionProcessor.Selected.RIGHT;
-            } else if (gamepad1.x) {
-                dummySelection = FirstVisionProcessor.Selected.LEFT;
-            } else if (gamepad1.y) {
-                dummySelection = FirstVisionProcessor.Selected.MIDDLE;
-            }
-        }
-        */
+    public void runAutonomousProgram(String allianceColor, boolean isFar, boolean parkInCorner) {
 
         FirstVisionProcessor.Selected selected = FirstVisionProcessor.selection;
 
@@ -377,7 +331,7 @@ public class CenterStageAutonomous extends LinearOpMode {
 
         //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO: fix
 
-        driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
+        driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
 
         switch (selected) {
             case LEFT:
@@ -396,33 +350,30 @@ public class CenterStageAutonomous extends LinearOpMode {
                 driveStraight(0.5, 9.5, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
                 break;
-            //case NONE:
-                //do nothing
-                //break;
         }
 
         driveStraight(DRIVE_SPEED, 14, 0, notMirrored);
 
         turnToHeading(TURN_SPEED, 90, isRed);
         if (isFar) {
-            driveStraight(DRIVE_SPEED, -93, 90, isRed);
+            driveStraight(DRIVE_SPEED, -74, 90, isRed); //distance was -93
         } else {
-            driveStraight(DRIVE_SPEED, -44, 90, isRed);
+            driveStraight(DRIVE_SPEED, -24, 90, isRed); //distance was -44
         }
 
-//        driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
-//        turnToHeading(TURN_SPEED, -90.0, isMirrored);
-//
-//        if (isFar) {
-//            driveStraight(DRIVE_SPEED, -84.0, -90.0, isMirrored);
-//        }
-//        driveStraight(DRIVE_SPEED, -42.0, -90.0, isMirrored);
-//
-//        //april tags or alt parking
-//
-//        driveStraight(DRIVE_SPEED, -12.0, -90.0, isMirrored);
-//        turnToHeading(TURN_SPEED, 0.0, notMirrored);
+        if (parkInCorner) {
+            driveStraight(DRIVE_SPEED, -20, 90, notMirrored);
+        } else {
+            turnToHeading(TURN_SPEED, 0, isRed);
+            driveStraight(DRIVE_SPEED, -50, 0, notMirrored);
+            turnToHeading(TURN_SPEED, -90, isRed);
+            driveStraight(DRIVE_SPEED, 20, -90, isRed);
+        }
     }
+
+    /* PSEUDOCODE: Autonomous Parameters
+
+     */
 
     /*
      * ====================================================================================================
