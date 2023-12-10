@@ -24,6 +24,8 @@ Controls:
         right_trigger: Intake IN
         left_trigger: Intake OUT
 
+        back: Reset IMU
+
     Gamepad 2:
         a: Arm load position
         b / x: Arm carry position

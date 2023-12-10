@@ -109,8 +109,10 @@ public class CenterStageAutonomous extends LinearOpMode {
     protected IMU imu = null;      // Control/Expansion Hub IMU
     //protected SignalSleeveRecognizer    recognizer = null;
     //protected LinearSlide         linearSlide = null;
-    protected Intake intake = null;
-    //protected SwingArm      swingArm = null;
+    protected Intake        intake = null;
+    protected SwingArm      swingArm = null;
+    protected BucketServo   bucketServo = null;
+    protected DoorServo     doorServo = null;
     protected ElapsedTime runtime = new ElapsedTime();
 
     private double robotHeading = 0;
@@ -199,12 +201,17 @@ public class CenterStageAutonomous extends LinearOpMode {
         rightDriveF = hardwareMap.get(DcMotor.class, "right_driveF");
         //recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
         //linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
-        intake = new Intake(hardwareMap, telemetry, gamepad2);
+        //intake = new Intake(hardwareMap, telemetry, gamepad2);
         //swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, isAutonomous);
 
         boolean isNear;
         boolean parkLeft;
 
+        swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, true);
+
+        doorServo = new DoorServo(hardwareMap, gamepad2);
+
+        bucketServo = new BucketServo(hardwareMap);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -263,10 +270,10 @@ public class CenterStageAutonomous extends LinearOpMode {
      */
 
 
-    protected void mechanismLoop() {
-        //linearSlide.loop();
-        //intake.loop();
-        //swingArm.loop();
+    public void mechanismLoop() {
+        swingArm.loop();
+        //bucketServo.loop();
+        //doorServo.loop();
     }
 
 
@@ -279,13 +286,14 @@ public class CenterStageAutonomous extends LinearOpMode {
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), visionProcessor);
         while (opModeInInit()) {
             //telemetry.addData("", "Robot Heading = %4.0f", getRawHeading());
-            telemetry.addData("bot heading:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            telemetry.addData("Bot heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             telemetry.addData("Identified", visionProcessor.getSelection());
-
+            telemetry.addLine(""); // new line
             telemetry.addData("left front starting:", leftDriveF.getCurrentPosition());
             telemetry.addData("left back starting:", leftDriveB.getCurrentPosition());
             telemetry.addData("right front starting:", rightDriveF.getCurrentPosition());
             telemetry.addData("right back starting:", rightDriveB.getCurrentPosition());
+            telemetry.addLine(""); // new line
 
             visionProcessor.getSelection();
             if (gamepad1.dpad_up) {
@@ -298,8 +306,14 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.b) {
                 isRed = true;
             }
+            if (gamepad1.dpad_right){
+                parkInCorner = true;
+            } else if (gamepad1.dpad_left){
+                parkInCorner = false;
+            }
             telemetry.addData("Color", isRed ? "Red" : "Blue");
             telemetry.addData("Distance", isFar ? "Far" : "Close");
+            telemetry.addData("Park", parkInCorner ? "Square" : "Triangle");
             telemetry.update();
         }
 
@@ -331,45 +345,47 @@ public class CenterStageAutonomous extends LinearOpMode {
 
         //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO: fix
 
-        driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
+
 
         switch (selected) {
             case LEFT:
+                driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
                 turnToHeading(TURN_SPEED, 45, notMirrored);
                 driveStraight(0.5, -9.5, 0, notMirrored);
                 driveStraight(0.5, 9.5, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
                 break;
             case MIDDLE:
-                driveStraight(DRIVE_SPEED, -12, 0.0, notMirrored);
-                driveStraight(DRIVE_SPEED, 12, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
+                driveStraight(DRIVE_SPEED, 23, 0.0, notMirrored);
                 break;
             case RIGHT:
+                driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
                 turnToHeading(TURN_SPEED, -45, notMirrored);
                 driveStraight(0.5, -9.5, 0, notMirrored);
                 driveStraight(0.5, 9.5, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
-                break;
+                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                break ;
         }
 
-        driveStraight(DRIVE_SPEED, 14, 0, notMirrored);
 
-        turnToHeading(TURN_SPEED, 90, isRed);
+        turnToHeading(TURN_SPEED, 90, isMirrored);
         if (isFar) {
-            driveStraight(DRIVE_SPEED, -74, 90, isRed); //distance was -93
+            driveStraight(DRIVE_SPEED, parkInCorner ? -74 : -94, 89, isMirrored);
         } else {
-            driveStraight(DRIVE_SPEED, -24, 90, isRed); //distance was -44
+            driveStraight(DRIVE_SPEED, parkInCorner ? -24 : -44, 90, isMirrored);
         }
 
-        if (parkInCorner) {
-            driveStraight(DRIVE_SPEED, -20, 90, notMirrored);
-        } else {
-            turnToHeading(TURN_SPEED, 0, isRed);
-            driveStraight(DRIVE_SPEED, -50, 0, notMirrored);
-            turnToHeading(TURN_SPEED, -90, isRed);
-            driveStraight(DRIVE_SPEED, 20, -90, isRed);
+        if (!parkInCorner) {
+            turnToHeading(TURN_SPEED, 0, isMirrored);
+            driveStraight(DRIVE_SPEED, -44, 0, notMirrored);
+            turnToHeading(TURN_SPEED, -90, isMirrored);
+            driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
         }
     }
+
 
     /* PSEUDOCODE: Autonomous Parameters
 
@@ -689,33 +705,80 @@ public class CenterStageAutonomous extends LinearOpMode {
         robotHeading = 0;
     }
 
-    // TODO: can we rename these moveTo* functions for setHeightTo*
-    public void moveToGroundPosition() {
-        //linearSlide.setPosition(0);
-        //swingArm.setPosition(1);
+    /**
+     * Pretty self-explanatory. Sets the arm position.
+     * @param position Sets the arm position to Load (0), Carry (1) or Deliver (2).
+     */
+    public void setArmPosition(int position) {
+        switch (position) {
+            case 0:
+                swingArm.setPosition(1);
+                break;
+            case 1:
+                swingArm.setPosition(2);
+                break;
+            case 2:
+                swingArm.setPosition(3);
+                break;
+        }
     }
 
-    public void moveToLowPosition() {
-        //linearSlide.setPosition(3);
-        //swingArm.setPosition(1);
+    /**
+     * Used to set the position of the bucket door.
+     * @param position Sets the door position to Closed (0), Half Open (1) and Fully Open (2).
+     */
+    public void setDoorPosition(int position) {
+        if (SwingArm.armMotor.getCurrentPosition() > 1500) {
+            switch (position) {
+                case 0:
+                    doorServo.SetState(0);
+                    break;
+                case 1:
+                    doorServo.SetState(1);
+                    break;
+                case 2:
+                    doorServo.SetState(2);
+                    break;
+            }
+        }
     }
 
-    public void moveToMediumPosition() {
-        //linearSlide.setPosition(1);
-        //swingArm.setPosition(2);
+    public void deliverPixel() {
+        setArmPosition(2);
+        while (SwingArm.armMotor.getCurrentPosition() < 1500 && opModeIsActive()) {
+            doNothing();
+        }
+        setDoorPosition(1);
     }
 
-    public void moveToHighPosition() {
-        //linearSlide.setPosition(3);
-        //swingArm.setPosition(2);
+    public void resetArm() {
+        setDoorPosition(0);
+        setArmPosition(0);
     }
 
-    public void moveToIntakePosition() {
-        //linearSlide.setPosition(2);
-        //swingArm.setPosition(1);
-    }
 
     /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -801,6 +864,8 @@ public class CenterStageAutonomous extends LinearOpMode {
 //    void parkInBackstage(boolean parkLeft) {
 //    }
 //
+    public void doNothing() {/* does literally nothing */}
+
 }
 
 
