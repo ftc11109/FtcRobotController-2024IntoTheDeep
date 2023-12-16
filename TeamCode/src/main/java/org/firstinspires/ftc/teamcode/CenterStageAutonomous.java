@@ -778,14 +778,18 @@ public class CenterStageAutonomous extends LinearOpMode {
         }
     }
 
+    /** Sets all servos & arm to delivery position, then delivers pixel. */
     public void deliverPixel() {
         setArmPosition(2);
         while (SwingArm.armMotor.getCurrentPosition() < 1500 && opModeIsActive()) {
             doNothing();
         }
         setDoorPosition(1);
+        sleep(1000);
+        resetArm();
     }
 
+    /** Resets arm and door. */
     public void resetArm() {
         setDoorPosition(0);
         setArmPosition(0);
@@ -901,6 +905,14 @@ public class CenterStageAutonomous extends LinearOpMode {
 //
     public void doNothing() {/* does literally nothing */}
 
+    /**
+     * Skibidi Sigma Fanum Tax Ohio Rizzler.
+     * @param wRizz Determines whether or not the function is executed with W Rizz.
+     * @return Result of Skibidi Rizz.
+     */
+    static String skibidiRizz(boolean wRizz) {
+        return wRizz ? "Skibidi bop yes yes" : "No rizz";
+    }
 }
 
 
