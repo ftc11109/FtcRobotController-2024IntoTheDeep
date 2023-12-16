@@ -29,22 +29,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 
@@ -138,6 +133,8 @@ public class CenterStageAutonomous extends LinearOpMode {
     boolean isFar = true;
 
     boolean parkInCorner = true;
+
+    boolean isStalled = false;
 
     String allianceColor = "blue";
 
@@ -306,16 +303,34 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.b) {
                 isRed = true;
             }
-            if (gamepad1.dpad_right){
+            if (gamepad1.dpad_right) {
                 parkInCorner = true;
-            } else if (gamepad1.dpad_left){
+            } else if (gamepad1.dpad_left) {
                 parkInCorner = false;
             }
+            if (gamepad1.left_bumper) {
+                isStalled = true;
+            } else if (gamepad1.right_bumper) {
+                isStalled = false;
+            }
+
             telemetry.addData("Color", isRed ? "Red" : "Blue");
             telemetry.addData("Distance", isFar ? "Far" : "Close");
             telemetry.addData("Park", parkInCorner ? "Square" : "Triangle");
+            telemetry.addData("Stall", isStalled ? "Stalled" : "Not stalled");
             telemetry.update();
         }
+        /*
+
+        (placing purple pixel code)
+        if (isStall) {
+            wait(20); 20 is placeholder value
+        }
+
+        (init code)
+        final STALL_TIME = 20 //seconds
+
+         */
 
         if (gamepad1.back || gamepad2.back) {
             imu.resetYaw();
@@ -354,10 +369,24 @@ public class CenterStageAutonomous extends LinearOpMode {
                 driveStraight(0.5, -9.5, 0, notMirrored);
                 driveStraight(0.5, 9.5, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
+                if (isStalled) {
+                    if(parkInCorner) {
+                        sleep(10000);
+                    } else {
+                        sleep(7500);
+                    }
+                }
                 driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
                 break;
             case MIDDLE:
                 driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
+                if (isStalled) {
+                    if(parkInCorner) {
+                        sleep(13000);
+                    } else {
+                        sleep(7500);
+                    }
+                }
                 driveStraight(DRIVE_SPEED, 23, 0.0, notMirrored);
                 break;
             case RIGHT:
@@ -366,16 +395,22 @@ public class CenterStageAutonomous extends LinearOpMode {
                 driveStraight(0.5, -9.5, 0, notMirrored);
                 driveStraight(0.5, 9.5, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 0, notMirrored);
+                if (isStalled) {
+                    if(parkInCorner) {
+                        sleep(10000);
+                    } else {
+                        sleep(7500);
+                    }
+                }
                 driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
                 break ;
         }
 
 
         turnToHeading(TURN_SPEED, 90, isMirrored);
-        if (isFar) {
-            driveStraight(DRIVE_SPEED, parkInCorner ? -74 : -94, 89, isMirrored);
+        if (isFar) {driveStraight(DRIVE_SPEED, parkInCorner ? -94 : -74, 89, isMirrored);
         } else {
-            driveStraight(DRIVE_SPEED, parkInCorner ? -24 : -44, 90, isMirrored);
+            driveStraight(DRIVE_SPEED, parkInCorner ? -44 : -24, 90, isMirrored);
         }
 
         if (!parkInCorner) {
