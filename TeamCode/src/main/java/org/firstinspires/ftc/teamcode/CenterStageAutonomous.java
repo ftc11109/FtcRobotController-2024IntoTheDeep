@@ -318,6 +318,8 @@ public class CenterStageAutonomous extends LinearOpMode {
             telemetry.addData("Distance", isFar ? "Far" : "Close");
             telemetry.addData("Park", parkInCorner ? "Square" : "Triangle");
             telemetry.addData("Stall", isStalled ? "Stalled" : "Not stalled");
+            telemetry.addLine();
+            telemetry.addLine(skibidiRizz(fanumTax));
             telemetry.update();
         }
         /*
@@ -904,6 +906,8 @@ public class CenterStageAutonomous extends LinearOpMode {
 //    }
 //
     public void doNothing() {/* does literally nothing */}
+
+    public boolean fanumTax = Math.random() > 0.5;
 
     /**
      * Skibidi Sigma Fanum Tax Ohio Rizzler.
