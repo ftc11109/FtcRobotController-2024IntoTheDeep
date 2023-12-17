@@ -129,12 +129,10 @@ public class CenterStageAutonomous extends LinearOpMode {
     boolean isMirrored = true;
     boolean notMirrored = false;
     boolean isRed;
-
     boolean isFar = true;
-
     boolean parkInCorner = true;
-
     boolean isStalled = false;
+    boolean scoreYellowPixel = true;
 
     String allianceColor = "blue";
 
@@ -313,13 +311,19 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.right_bumper) {
                 isStalled = false;
             }
+            if (gamepad1.left_trigger < 0) {
+                scoreYellowPixel = true;
+            } else if (gamepad1.right_trigger < 0) {
+                scoreYellowPixel = false;
+            }
 
             telemetry.addData("Color", isRed ? "Red" : "Blue");
             telemetry.addData("Distance", isFar ? "Far" : "Close");
             telemetry.addData("Park", parkInCorner ? "Square" : "Triangle");
             telemetry.addData("Stall", isStalled ? "Stalled" : "Not stalled");
-            telemetry.addLine();
-            telemetry.addLine(skibidiRizz(fanumTax));
+            telemetry.addData("Scoring", scoreYellowPixel ? "Purple & Yellow" : "Purple");
+            telemetry.addLine(); //new line
+            telemetry.addData("Rizz levels", skibidiRizz(fanumTax)); //easter egg
             telemetry.update();
         }
         /*
@@ -415,11 +419,17 @@ public class CenterStageAutonomous extends LinearOpMode {
             driveStraight(DRIVE_SPEED, parkInCorner ? -44 : -24, 90, isMirrored);
         }
 
-        if (!parkInCorner) {
+        if (!parkInCorner && !scoreYellowPixel) {
             turnToHeading(TURN_SPEED, 0, isMirrored);
             driveStraight(DRIVE_SPEED, -44, 0, notMirrored);
             turnToHeading(TURN_SPEED, -90, isMirrored);
             driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
+        } else if (scoreYellowPixel) {
+            turnToHeading(TURN_SPEED, 0, isMirrored);
+            driveStraight(DRIVE_SPEED, -22, 0, notMirrored);
+            turnToHeading(TURN_SPEED, -90, isMirrored);
+            driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
+            deliverPixel();
         }
     }
 
@@ -905,10 +915,13 @@ public class CenterStageAutonomous extends LinearOpMode {
 //    void parkInBackstage(boolean parkLeft) {
 //    }
 //
-    public void doNothing() {/* does literally nothing */}
 
-    public boolean fanumTax = Math.random() > 0.5;
+    /** Does literally nothing. */
+    public void doNothing() {/**/}
 
+    public boolean fanumTax = Math.random() > 0.5; //easter egg
+
+    //easter egg
     /**
      * Skibidi Sigma Fanum Tax Ohio Rizzler.
      * @param wRizz Determines whether or not the function is executed with W Rizz.
