@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -273,6 +275,7 @@ public class CenterStageAutonomous extends LinearOpMode {
 
 
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() {
         setupRobot();
@@ -280,8 +283,8 @@ public class CenterStageAutonomous extends LinearOpMode {
         visionProcessor = new FirstVisionProcessor();
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), visionProcessor);
         while (opModeInInit()) {
-            //telemetry.addData("", "Robot Heading = %4.0f", getRawHeading());
-            telemetry.addData("Bot heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            telemetry.addLine(String.format("Robot Heading: %4.0f", getRawHeading()));
+            //telemetry.addData("Bot heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             telemetry.addData("Identified", visionProcessor.getSelection());
             telemetry.addLine(""); // new line
             telemetry.addData("left front starting:", leftDriveF.getCurrentPosition());
