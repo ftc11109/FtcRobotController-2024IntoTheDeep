@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class SwingArm {
 
     //protected DcMotor swingArmMotor;
-    protected DcMotor armMotor;
+    protected static DcMotor armMotor;
     private final HardwareMap hardwareMap;
     private final Telemetry telemetry;
     private final Gamepad gamepad;
@@ -38,7 +38,7 @@ public class SwingArm {
 
     //    11109
     static final int PICKUP_POINT_COUNT = 10;  // 10
-    static final int CARRY_POINT_COUNT = 700;
+    static final int CARRY_POINT_COUNT = 600;
     static final int DELIVERY_POINT_COUNT = 2110;
 
     static final double UP_MAXIMUM_SPEED = 1.0;
@@ -50,6 +50,8 @@ public class SwingArm {
 
     static final int HIGH_HARDSTOP = DELIVERY_POINT_COUNT + 200;
     static final int LOW_HARDSTOP = PICKUP_POINT_COUNT;
+
+    static int currentSetPosition = 0;
 
     public SwingArm(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
         this.hardwareMap = hardwareMap;
@@ -88,10 +90,13 @@ public class SwingArm {
     public void setPosition(int position) {
         if (position == 1) {
             targetPositionCount = PICKUP_POINT_COUNT;
+            currentSetPosition = 1;
         } else if (position == 2) {
             targetPositionCount = CARRY_POINT_COUNT;
+            currentSetPosition = 2;
         } else if (position == 3) {
             targetPositionCount = DELIVERY_POINT_COUNT;
+            currentSetPosition = 3;
         } else {
             return;
         }

@@ -29,22 +29,17 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 
@@ -97,7 +92,7 @@ import java.util.List;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="CenterStage Autonomous 21764", group="Robot")
+@Autonomous(name="11109 CenterStage Auto", group="Robot")
 //@Disabled
 public class CenterStageAutonomous extends LinearOpMode {
 
@@ -109,8 +104,10 @@ public class CenterStageAutonomous extends LinearOpMode {
     protected IMU imu = null;      // Control/Expansion Hub IMU
     //protected SignalSleeveRecognizer    recognizer = null;
     //protected LinearSlide         linearSlide = null;
-    protected Intake intake = null;
-    //protected SwingArm      swingArm = null;
+    protected Intake        intake = null;
+    protected SwingArm      swingArm = null;
+    protected BucketServo   bucketServo = null;
+    protected DoorServo     doorServo = null;
     protected ElapsedTime runtime = new ElapsedTime();
 
     private double robotHeading = 0;
@@ -132,8 +129,10 @@ public class CenterStageAutonomous extends LinearOpMode {
     boolean isMirrored = true;
     boolean notMirrored = false;
     boolean isRed;
-
     boolean isFar = true;
+    boolean parkInCorner = true;
+    boolean isStalled = false;
+    boolean scoreYellowPixel = true;
 
     String allianceColor = "blue";
 
@@ -197,12 +196,17 @@ public class CenterStageAutonomous extends LinearOpMode {
         rightDriveF = hardwareMap.get(DcMotor.class, "right_driveF");
         //recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
         //linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
-        intake = new Intake(hardwareMap, telemetry, gamepad2);
+        //intake = new Intake(hardwareMap, telemetry, gamepad2);
         //swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, isAutonomous);
 
         boolean isNear;
         boolean parkLeft;
 
+        swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, true);
+
+        doorServo = new DoorServo(hardwareMap, gamepad2);
+
+        bucketServo = new BucketServo(hardwareMap);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -261,11 +265,13 @@ public class CenterStageAutonomous extends LinearOpMode {
      */
 
 
-    protected void mechanismLoop() {
-        //linearSlide.loop();
-        //intake.loop();
-        //swingArm.loop();
+    public void mechanismLoop() {
+        swingArm.loop();
+        //bucketServo.loop();
+        //doorServo.loop();
     }
+
+
 
     @Override
     public void runOpMode() {
@@ -275,18 +281,19 @@ public class CenterStageAutonomous extends LinearOpMode {
         visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam 1"), visionProcessor);
         while (opModeInInit()) {
             //telemetry.addData("", "Robot Heading = %4.0f", getRawHeading());
-            telemetry.addData("bot heading:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            telemetry.addData("Bot heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             telemetry.addData("Identified", visionProcessor.getSelection());
-
+            telemetry.addLine(""); // new line
             telemetry.addData("left front starting:", leftDriveF.getCurrentPosition());
             telemetry.addData("left back starting:", leftDriveB.getCurrentPosition());
             telemetry.addData("right front starting:", rightDriveF.getCurrentPosition());
             telemetry.addData("right back starting:", rightDriveB.getCurrentPosition());
+            telemetry.addLine(""); // new line
 
             visionProcessor.getSelection();
-            if (gamepad1.left_trigger > 0) {
+            if (gamepad1.dpad_up) {
                 isFar = false;
-            } else if (gamepad1.right_trigger > 0) {
+            } else if (gamepad1.dpad_down) {
                 isFar = true;
             }
             if (gamepad1.x) {
@@ -294,9 +301,45 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.b) {
                 isRed = true;
             }
-            telemetry.addData("isRed:", isRed);
-            telemetry.addData("isFar:", isFar);
+            if (gamepad1.dpad_right) {
+                parkInCorner = true;
+            } else if (gamepad1.dpad_left) {
+                parkInCorner = false;
+            }
+            if (gamepad1.left_bumper) {
+                isStalled = true;
+            } else if (gamepad1.right_bumper) {
+                isStalled = false;
+            }
+            if (gamepad1.left_trigger < 0) {
+                scoreYellowPixel = true;
+            } else if (gamepad1.right_trigger < 0) {
+                scoreYellowPixel = false;
+            }
+
+            telemetry.addData("Color", isRed ? "Red" : "Blue");
+            telemetry.addData("Distance", isFar ? "Far" : "Close");
+            telemetry.addData("Park", parkInCorner ? "Square" : "Triangle");
+            telemetry.addData("Stall", isStalled ? "Stalled" : "Not stalled");
+            telemetry.addData("Scoring", scoreYellowPixel ? "Purple & Yellow" : "Purple");
+            telemetry.addLine(); //new line
+            telemetry.addData("Rizz levels", skibidiRizz(fanumTax)); //easter egg
             telemetry.update();
+        }
+        /*
+
+        (placing purple pixel code)
+        if (isStall) {
+            wait(20); 20 is placeholder value
+        }
+
+        (init code)
+        final STALL_TIME = 20 //seconds
+
+         */
+
+        if (gamepad1.back || gamepad2.back) {
+            imu.resetYaw();
         }
 
         // Set the encoders for closed loop speed control, and reset the heading.
@@ -306,7 +349,7 @@ public class CenterStageAutonomous extends LinearOpMode {
         rightDriveB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetHeading();
 
-        runAutonomousProgram(allianceColor, isFar);
+        runAutonomousProgram(allianceColor, isFar, parkInCorner);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -315,71 +358,85 @@ public class CenterStageAutonomous extends LinearOpMode {
     }
 
 
-    public void runAutonomousProgram(String allianceColor, boolean isFar) {
+    public void runAutonomousProgram(String allianceColor, boolean isFar, boolean parkInCorner) {
 
-        while (true) {
-            while (!(gamepad1.a || gamepad1.b || gamepad1.y)) {
-            }
-            if (gamepad1.a) {
-                driveStraight(DRIVE_SPEED, -18, 0, false);
-            } else if (gamepad1.b) {
-                driveStraight(DRIVE_SPEED, -40, 0, false);
-            } else if (gamepad1.y) {
-                driveStraight(DRIVE_SPEED, -80, 0, false);
-            } else if (gamepad1.dpad_down) {
-                driveStraight(DRIVE_SPEED, 12, 0, false);
-            } else if (gamepad1.dpad_right) {
-                driveStraight(DRIVE_SPEED, 24, 0, false);
-            } else if (gamepad1.dpad_up) {
-                driveStraight(DRIVE_SPEED, 48, 0, false);
-            }
+        FirstVisionProcessor.Selected selected = FirstVisionProcessor.selection;
+
+        //push to corresponding spike mark
+
+        //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO: fix
+
+
+
+        switch (selected) {
+            case LEFT:
+                driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
+                turnToHeading(TURN_SPEED, 45, notMirrored);
+                driveStraight(0.5, -9.5, 0, notMirrored);
+                driveStraight(0.5, 9.5, 0, notMirrored);
+                turnToHeading(TURN_SPEED, 0, notMirrored);
+                if (isStalled) {
+                    if(parkInCorner) {
+                        sleep(10000);
+                    } else {
+                        sleep(7500);
+                    }
+                }
+                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                break;
+            case MIDDLE:
+                driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
+                if (isStalled) {
+                    if(parkInCorner) {
+                        sleep(13000);
+                    } else {
+                        sleep(7500);
+                    }
+                }
+                driveStraight(DRIVE_SPEED, 23, 0.0, notMirrored);
+                break;
+            case RIGHT:
+                driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
+                turnToHeading(TURN_SPEED, -45, notMirrored);
+                driveStraight(0.5, -9.5, 0, notMirrored);
+                driveStraight(0.5, 9.5, 0, notMirrored);
+                turnToHeading(TURN_SPEED, 0, notMirrored);
+                if (isStalled) {
+                    if(parkInCorner) {
+                        sleep(10000);
+                    } else {
+                        sleep(7500);
+                    }
+                }
+                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                break ;
         }
-        //        if (allianceColor == "red") {
-//            isRed = true;
-//        } else {
-//            isRed = false;
-//        }
-//
-//        //move up to spike marks
-//        driveStraight(DRIVE_SPEED, -20.0, 0.0, notMirrored);
-//
-//        //push to corresponding spike mark
-//        switch (visionProcessor.selection) {
-//            case LEFT:
-//                turnToHeading(TURN_SPEED, -50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, -25.0, -50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 31.0, -50.0, notMirrored);
-//                turnToHeading(TURN_SPEED, 0.0, notMirrored);
-//                break;
-//            case MIDDLE:
-//                driveStraight(DRIVE_SPEED, -29.0, 0.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 29.0, 0.0, notMirrored);
-//                break;
-//            case RIGHT:
-//                turnToHeading(TURN_SPEED, 50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, -25.0, 50.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 31.0, 50.0, notMirrored);
-//                turnToHeading(TURN_SPEED, 0.0, notMirrored);
-//                break;
-//            case NONE:
-//                driveStraight(DRIVE_SPEED, -29.0, 0.0, notMirrored);
-//                driveStraight(DRIVE_SPEED, 29.0, 0.0, notMirrored);
-//                break;
-//        }
-//
-//        driveStraight(DRIVE_SPEED, 20.0, 0.0, notMirrored);
-//        turnToHeading(TURN_SPEED, -90.0, isMirrored);
-//
-//        if (isFar) {
-//            driveStraight(DRIVE_SPEED, -84.0, -90.0, isMirrored);
-//        }
-//        driveStraight(DRIVE_SPEED, -42.0, -90.0, isMirrored);
-//
-//        //april tags or alt parking
-//
-//        driveStraight(DRIVE_SPEED, -12.0, -90.0, isMirrored);
-//        turnToHeading(TURN_SPEED, 0.0, notMirrored);
+
+
+        turnToHeading(TURN_SPEED, 90, isMirrored);
+        if (isFar) {driveStraight(DRIVE_SPEED, parkInCorner ? -94 : -74, 89, isMirrored);
+        } else {
+            driveStraight(DRIVE_SPEED, parkInCorner ? -44 : -24, 90, isMirrored);
+        }
+
+        if (!parkInCorner && !scoreYellowPixel) {
+            turnToHeading(TURN_SPEED, 0, isMirrored);
+            driveStraight(DRIVE_SPEED, -44, 0, notMirrored);
+            turnToHeading(TURN_SPEED, -90, isMirrored);
+            driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
+        } else if (scoreYellowPixel) {
+            turnToHeading(TURN_SPEED, 0, isMirrored);
+            driveStraight(DRIVE_SPEED, -22, 0, notMirrored);
+            turnToHeading(TURN_SPEED, -90, isMirrored);
+            driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
+            deliverPixel();
+        }
     }
+
+
+    /* PSEUDOCODE: Autonomous Parameters
+
+     */
 
     /*
      * ====================================================================================================
@@ -418,7 +475,8 @@ public class CenterStageAutonomous extends LinearOpMode {
             //heading = heading * reverseTurnsForAllianceColor;
 
             // Determine new target position, and pass to motor controller
-            int moveCounts = (int) (distance / inchesPerTick());
+            double moveCompensation = 1.7; //Dear future Tekerz: Our robot needed this, yours might not
+            int moveCounts = (int) (((distance * moveCompensation) - 0.56) / inchesPerTick());
 
             leftTargetF = leftDriveF.getCurrentPosition() + moveCounts;
             leftTargetB = leftDriveB.getCurrentPosition() + moveCounts;
@@ -694,32 +752,95 @@ public class CenterStageAutonomous extends LinearOpMode {
         robotHeading = 0;
     }
 
-    // TODO: can we rename these moveTo* functions for setHeightTo*
-    public void moveToGroundPosition() {
-        //linearSlide.setPosition(0);
-        //swingArm.setPosition(1);
+    /**
+     * Pretty self-explanatory. Sets the arm position.
+     * @param position Sets the arm position to Load (0), Carry (1) or Deliver (2).
+     */
+    public void setArmPosition(int position) {
+        switch (position) {
+            case 0:
+                swingArm.setPosition(1);
+                break;
+            case 1:
+                swingArm.setPosition(2);
+                break;
+            case 2:
+                swingArm.setPosition(3);
+                break;
+        }
     }
 
-    public void moveToLowPosition() {
-        //linearSlide.setPosition(3);
-        //swingArm.setPosition(1);
+    /**
+     * Used to set the position of the bucket door.
+     * @param position Sets the door position to Closed (0), Half Open (1) and Fully Open (2).
+     */
+    public void setDoorPosition(int position) {
+        if (SwingArm.armMotor.getCurrentPosition() > 1500) {
+            switch (position) {
+                case 0:
+                    doorServo.SetState(0);
+                    break;
+                case 1:
+                    doorServo.SetState(1);
+                    break;
+                case 2:
+                    doorServo.SetState(2);
+                    break;
+            }
+        }
     }
 
-    public void moveToMediumPosition() {
-        //linearSlide.setPosition(1);
-        //swingArm.setPosition(2);
+    /** Sets all servos & arm to delivery position, then delivers pixel. */
+    public void deliverPixel() {
+        setArmPosition(2);
+        while (SwingArm.armMotor.getCurrentPosition() < 1500 && opModeIsActive()) {
+            doNothing();
+        }
+        setDoorPosition(1);
+        sleep(1000);
+        resetArm();
     }
 
-    public void moveToHighPosition() {
-        //linearSlide.setPosition(3);
-        //swingArm.setPosition(2);
+    /** Resets arm and door. */
+    public void resetArm() {
+        setDoorPosition(0);
+        setArmPosition(0);
     }
 
-    public void moveToIntakePosition() {
-        //linearSlide.setPosition(2);
-        //swingArm.setPosition(1);
-    }
 
+    /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     */
     //Step 1: detect the team prop
 //    TestAutonomous.SpikeMark teamPropMark = detectTeamProp();
 //    //Step 2: drive to the team prop
@@ -795,7 +916,22 @@ public class CenterStageAutonomous extends LinearOpMode {
 //    }
 //
 
+    /** Does literally nothing. */
+    public void doNothing() {/**/}
+
+    public boolean fanumTax = Math.random() > 0.5; //easter egg
+
+    //easter egg
+    /**
+     * Skibidi Sigma Fanum Tax Ohio Rizzler.
+     * @param wRizz Determines whether or not the function is executed with W Rizz.
+     * @return Result of Skibidi Rizz.
+     */
+    static String skibidiRizz(boolean wRizz) {
+        return wRizz ? "Skibidi bop yes yes" : "No rizz";
+    }
 }
+
 
 
 

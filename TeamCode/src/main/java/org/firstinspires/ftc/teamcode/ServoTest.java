@@ -11,7 +11,7 @@ public class ServoTest extends OpMode {
 
     @Override
     public void init() {
-        board.init(hardwareMap);
+        board.init(hardwareMap, "doorServo");
     }
 
     @Override
@@ -21,7 +21,7 @@ public class ServoTest extends OpMode {
         } else if (gamepad1.b) {
             board.setServoPosition(0.0);
         } else {
-            board.setServoPosition(0.5);
+            //board.setServoPosition(0.5);
         }
     }
 }

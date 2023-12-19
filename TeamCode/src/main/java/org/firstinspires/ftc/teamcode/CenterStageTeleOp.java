@@ -29,18 +29,19 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import java.io.File;
 
 /*
  * This file is heavily derived from the following samples; refer back to them for original source:
@@ -96,17 +97,26 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
 
-        //BucketDoor bucketDoor = new BucketDoor(hardwareMap, telemetry, gamepad2);
+        DoorServo doorServo = new DoorServo(hardwareMap, gamepad2);
+
+        BucketServo bucketServo = new BucketServo(hardwareMap);
+
+        DroneLauncherServo droneLauncherServo = new DroneLauncherServo(hardwareMap, gamepad2);
+
+
+
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
         IMU imu = hardwareMap.get(IMU.class, "imu");
 
+
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
                 )));
+
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -120,10 +130,10 @@ public class CenterStageTeleOp extends LinearOpMode {
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
 
         // 11109:
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -144,13 +154,15 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             intake.loop();
             swingArm.loop();
-            //bucketDoor.loop();
+            doorServo.loop();
+            bucketServo.loop();
+            droneLauncherServo.loop();
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
             double y = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value ;
             double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
+            double rx = -gamepad1.right_stick_x;
 
             // Use the IMU to determine the orientation of the robot relative to its position when
             // initialized, and then calculate rotation
@@ -203,10 +215,20 @@ public class CenterStageTeleOp extends LinearOpMode {
             }
 
             double speedModifier;
-            if (!gamepad1.left_stick_button) {
-                speedModifier = 0.4;
+            if (!(gamepad1.left_stick_button || gamepad1.right_bumper)) {
+                speedModifier = 0.5;
             } else {
                 speedModifier = 1;
+            }
+
+            if (gamepad1.back) {
+                gamepad1.rumble(100);
+                SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, new File("C:\\Users\\TekersRobotics\\StudioProjects\\FtcRobotController-2023CenterStage\\TeamCode\\src\\main\\java\\org\\firstinspires\\ftc\\teamcode\\Alert.mp3"));
+                imu.resetYaw();
+            }
+
+            if(orientation.getYaw(AngleUnit.RADIANS) == 0.0) {
+                gamepad1.rumble(250);
             }
 
             // Send calculated power to wheels
@@ -222,7 +244,44 @@ public class CenterStageTeleOp extends LinearOpMode {
             telemetry.addLine("LB + A/B/X/Y to test single motors");
             telemetry.addLine("");
             telemetry.addData("IMU orientation", botHeading);
+            telemetry.addLine("");
+            telemetry.addData("Door servo position", doorServo.doorServo.getServoPosition());
             telemetry.update();
         }
     }
 }
+/* Pseudocode: IMU reset edition
+
+Option 1:
+while opModeIsActive {
+
+    heading = imu.heading + crashCorrection
+
+    if !(imu.heading == 0.0) {
+        crashBackup = imu.heading
+    }
+
+    if imu.heading == 0.0 {
+        crashCorrection = crashBackup
+        imu.reset
+    }
+
+Option 2:
+-Wait until IMU resets
+-Notify drivers with controller vibration
+-Allow drivers to manually reset position
+-Allow drivers to press a button to reset IMU
+
+Example:
+
+while opModeIsActive {
+
+    if String(imu.heading) == "0.0" {
+        gamepad.rumble(0.1);
+    }
+
+    if gamepad.start {
+        imu.reset
+    }
+
+ */

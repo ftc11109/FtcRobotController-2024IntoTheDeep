@@ -19,7 +19,9 @@ public class FirstVisionProcessor implements VisionProcessor {
     public static Rect rectLeft = new Rect(30, 165, 80, 80);
     public static Rect rectMiddle = new Rect(275, 100, 80, 80);
     public static Rect rectRight = new Rect(505, 165, 80, 80);
-    Selected selection = Selected.NONE;
+    static Selected selection = Selected.NONE;
+
+
 
     public static Mat submat = new Mat();
     public static Mat hsvMat = new Mat();
