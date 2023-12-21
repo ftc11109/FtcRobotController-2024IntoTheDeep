@@ -322,7 +322,7 @@ public class CenterStageAutonomous extends LinearOpMode {
 
             telemetry.addData("Color", isRed ? "Red" : "Blue");
             telemetry.addData("Distance", isFar ? "Far" : "Close");
-            telemetry.addData("Park", parkInCorner ? "Square" : "Triangle");
+            telemetry.addData("Parking", scoreYellowPixel ? "Backdrop" : parkInCorner ? "Square" : "Triangle");
             telemetry.addData("Stall", isStalled ? "Stalled" : "Not stalled");
             telemetry.addData("Scoring", scoreYellowPixel ? "Purple & Yellow" : "Purple");
             telemetry.addLine(); //new line
