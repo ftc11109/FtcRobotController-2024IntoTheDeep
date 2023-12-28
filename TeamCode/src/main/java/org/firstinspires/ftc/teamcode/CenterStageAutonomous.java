@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.annotation.SuppressLint;
+import android.security.keystore.StrongBoxUnavailableException;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -136,6 +137,7 @@ public class CenterStageAutonomous extends LinearOpMode {
     boolean isStalled = false;
     boolean scoreYellowPixel = true;
 
+    boolean testing = true;
     String allianceColor = "blue";
 
     private FirstVisionProcessor visionProcessor;
@@ -326,7 +328,6 @@ public class CenterStageAutonomous extends LinearOpMode {
             telemetry.addData("Stall", isStalled ? "Stalled" : "Not stalled");
             telemetry.addData("Scoring", scoreYellowPixel ? "Purple & Yellow" : "Purple");
             telemetry.addLine(); //new line
-            telemetry.addData("Rizz levels", skibidiRizz(fanumTax)); //easter egg
             telemetry.update();
         }
         /*
@@ -359,6 +360,8 @@ public class CenterStageAutonomous extends LinearOpMode {
         sleep(1000);
         // Pause to display last telemetry message.
     }
+// step 1. strafe step 2. find april tags as we strafe step 3. find which april tag is correct based on what spike mark we are on (ex. if right spikemark then strafe till find right april tag)
+    // TODO: 12/27/2023 figure out if processFrame is run only once or always after autonomous is run
 
 
     public void runAutonomousProgram(String allianceColor, boolean isFar, boolean parkInCorner) {
@@ -369,70 +372,76 @@ public class CenterStageAutonomous extends LinearOpMode {
 
         //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO: fix
 
+        if (testing) {
 
 
-        switch (selected) {
-            case LEFT:
-                driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
-                turnToHeading(TURN_SPEED, 45, notMirrored);
-                driveStraight(0.5, -9.5, 0, notMirrored);
-                driveStraight(0.5, 9.5, 0, notMirrored);
-                turnToHeading(TURN_SPEED, 0, notMirrored);
-                if (isStalled) {
-                    if(parkInCorner) {
-                        sleep(10000);
-                    } else {
-                        sleep(7500);
-                    }
-                }
-                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
-                break;
-            case MIDDLE:
-                driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
-                if (isStalled) {
-                    if(parkInCorner) {
-                        sleep(13000);
-                    } else {
-                        sleep(7500);
-                    }
-                }
-                driveStraight(DRIVE_SPEED, 23, 0.0, notMirrored);
-                break;
-            case RIGHT:
-                driveStraight(DRIVE_SPEED, -14,  0, notMirrored);
-                turnToHeading(TURN_SPEED, -45, notMirrored);
-                driveStraight(0.5, -9.5, 0, notMirrored);
-                driveStraight(0.5, 9.5, 0, notMirrored);
-                turnToHeading(TURN_SPEED, 0, notMirrored);
-                if (isStalled) {
-                    if(parkInCorner) {
-                        sleep(10000);
-                    } else {
-                        sleep(7500);
-                    }
-                }
-                driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
-                break ;
-        }
 
-
-        turnToHeading(TURN_SPEED, 90, isMirrored);
-        if (isFar) {driveStraight(DRIVE_SPEED, parkInCorner ? -94 : -74, 89, isMirrored);
         } else {
-            driveStraight(DRIVE_SPEED, parkInCorner ? -44 : -24, 90, isMirrored);
-        }
 
-        if (!parkInCorner && !scoreYellowPixel) {
-            turnToHeading(TURN_SPEED, 0, isMirrored);
-            driveStraight(DRIVE_SPEED, -44, 0, notMirrored);
-            turnToHeading(TURN_SPEED, -90, isMirrored);
-            driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
-        } else if (scoreYellowPixel) {
-            turnToHeading(TURN_SPEED, 0, isMirrored);
-            driveStraight(DRIVE_SPEED, -22, 0, notMirrored);
-            turnToHeading(TURN_SPEED, -90, isMirrored);
-            driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
-            deliverPixel();
+            switch (selected) {
+                case LEFT:
+                    driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
+                    turnToHeading(TURN_SPEED, 45, notMirrored);
+                    driveStraight(0.5, -9.5, 0, notMirrored);
+                    driveStraight(0.5, 9.5, 0, notMirrored);
+                    turnToHeading(TURN_SPEED, 0, notMirrored);
+                    if (isStalled) {
+                        if (parkInCorner) {
+                            sleep(10000);
+                        } else {
+                            sleep(7500);
+                        }
+                    }
+                    driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                    break;
+                case MIDDLE:
+                    driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
+                    if (isStalled) {
+                        if (parkInCorner) {
+                            sleep(13000);
+                        } else {
+                            sleep(7500);
+                        }
+                    }
+                    driveStraight(DRIVE_SPEED, 23, 0.0, notMirrored);
+                    break;
+                case RIGHT:
+                    driveStraight(DRIVE_SPEED, -14, 0, notMirrored);
+                    turnToHeading(TURN_SPEED, -45, notMirrored);
+                    driveStraight(0.5, -9.5, 0, notMirrored);
+                    driveStraight(0.5, 9.5, 0, notMirrored);
+                    turnToHeading(TURN_SPEED, 0, notMirrored);
+                    if (isStalled) {
+                        if (parkInCorner) {
+                            sleep(10000);
+                        } else {
+                            sleep(7500);
+                        }
+                    }
+                    driveStraight(DRIVE_SPEED, 13, 0, notMirrored);
+                    break;
+            }
+
+
+            turnToHeading(TURN_SPEED, 90, isMirrored);
+            if (isFar) {
+                driveStraight(DRIVE_SPEED, parkInCorner ? -94 : -74, 89, isMirrored);
+            } else {
+                driveStraight(DRIVE_SPEED, parkInCorner ? -44 : -24, 90, isMirrored);
+            }
+
+            if (!parkInCorner && !scoreYellowPixel) {
+                turnToHeading(TURN_SPEED, 0, isMirrored);
+                driveStraight(DRIVE_SPEED, -44, 0, notMirrored);
+                turnToHeading(TURN_SPEED, -90, isMirrored);
+                driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
+            } else if (scoreYellowPixel) {
+                turnToHeading(TURN_SPEED, 0, isMirrored);
+                driveStraight(DRIVE_SPEED, -22, 0, notMirrored);
+                turnToHeading(TURN_SPEED, -90, isMirrored);
+                driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
+                deliverPixel();
+            }
         }
     }
 
@@ -813,36 +822,6 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     /*
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
      */
     //Step 1: detect the team prop
 //    TestAutonomous.SpikeMark teamPropMark = detectTeamProp();
@@ -921,21 +900,4 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     /** Does literally nothing. */
     public void doNothing() {/**/}
-
-    public boolean fanumTax = Math.random() > 0.5; //easter egg
-
-    //easter egg
-    /**
-     * Skibidi Sigma Fanum Tax Ohio Rizzler.
-     * @param wRizz Determines whether or not the function is executed with W Rizz.
-     * @return Result of Skibidi Rizz.
-     */
-    static String skibidiRizz(boolean wRizz) {
-        return wRizz ? "Skibidi bop yes yes" : "No rizz";
-    }
 }
-
-
-
-
-
