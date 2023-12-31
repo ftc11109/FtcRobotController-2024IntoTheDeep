@@ -13,7 +13,7 @@ public class BucketServo {
 
     public void loop() {
         if (SwingArm.armMotor.getCurrentPosition() < 1500) {
-            bucketServo.setServoPosition(0);
+            bucketServo.setServoPosition(0.2);
         } else {
             bucketServo.setServoPosition(((double)(SwingArm.armMotor.getCurrentPosition() - 1500) / 1200));
         }

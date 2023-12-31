@@ -15,7 +15,7 @@ public class DoorServo {
     }
 
     public void loop() {
-        if (SwingArm.armMotor.getCurrentPosition() < 25) {
+        if (SwingArm.armMotor.getCurrentPosition() < 425) {
             SetState(2);
         } else if (SwingArm.armMotor.getCurrentPosition() < 800) {
             SetState(0);

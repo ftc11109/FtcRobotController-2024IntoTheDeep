@@ -25,7 +25,7 @@ import java.util.List;
         @Override
         public void init_loop() {
 
-            List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
+            List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections(); //getDetection.get(0) = highest confidence tag id?
             StringBuilder idsFound = new StringBuilder();
 
             for (AprilTagDetection detection : currentDetections) {

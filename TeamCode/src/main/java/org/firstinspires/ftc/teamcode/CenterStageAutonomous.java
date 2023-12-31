@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.annotation.SuppressLint;
 import android.security.keystore.StrongBoxUnavailableException;
+import android.util.Size;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -45,6 +46,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
@@ -107,10 +110,10 @@ public class CenterStageAutonomous extends LinearOpMode {
     protected IMU imu = null;      // Control/Expansion Hub IMU
     //protected SignalSleeveRecognizer    recognizer = null;
     //protected LinearSlide         linearSlide = null;
-    protected Intake        intake = null;
-    protected SwingArm      swingArm = null;
-    protected BucketServo   bucketServo = null;
-    protected DoorServo     doorServo = null;
+    protected Intake intake = null;
+    protected SwingArm swingArm = null;
+    protected BucketServo bucketServo = null;
+    protected DoorServo doorServo = null;
     protected ElapsedTime runtime = new ElapsedTime();
 
     private double robotHeading = 0;
@@ -137,8 +140,8 @@ public class CenterStageAutonomous extends LinearOpMode {
     boolean isStalled = false;
     boolean scoreYellowPixel = true;
 
-    boolean testing = true;
     String allianceColor = "blue";
+    boolean aprilTagTestOnly = false;
 
     private FirstVisionProcessor visionProcessor;
 
@@ -276,7 +279,6 @@ public class CenterStageAutonomous extends LinearOpMode {
     }
 
 
-
     @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() {
@@ -316,15 +318,15 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.right_bumper) {
                 isStalled = false;
             }
-            if (gamepad1.left_trigger < 0) {
+            if (gamepad1.left_trigger > 0) {
                 scoreYellowPixel = true;
-            } else if (gamepad1.right_trigger < 0) {
+            } else if (gamepad1.right_trigger > 0) {
                 scoreYellowPixel = false;
             }
 
             telemetry.addData("Color", isRed ? "Red" : "Blue");
             telemetry.addData("Distance", isFar ? "Far" : "Close");
-            telemetry.addData("Parking", scoreYellowPixel ? "Backdrop" : parkInCorner ? "Square" : "Triangle");
+            telemetry.addData("Parking", parkInCorner ? "Square" : "Triangle");
             telemetry.addData("Stall", isStalled ? "Stalled" : "Not stalled");
             telemetry.addData("Scoring", scoreYellowPixel ? "Purple & Yellow" : "Purple");
             telemetry.addLine(); //new line
@@ -362,19 +364,58 @@ public class CenterStageAutonomous extends LinearOpMode {
     }
 // step 1. strafe step 2. find april tags as we strafe step 3. find which april tag is correct based on what spike mark we are on (ex. if right spikemark then strafe till find right april tag)
     // TODO: 12/27/2023 figure out if processFrame is run only once or always after autonomous is run
+    //updat: it checks only once, so we can use the
 
 
+    @SuppressLint("DefaultLocale")
     public void runAutonomousProgram(String allianceColor, boolean isFar, boolean parkInCorner) {
 
         FirstVisionProcessor.Selected selected = FirstVisionProcessor.selection;
 
+        /*
+        stuff for april tag identification & camera stream
+
+               |
+               |
+               |
+              \ /
+               V
+
+        */
+
+        AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
+
+        VisionPortal visionPortal = new VisionPortal.Builder()
+                .addProcessor(tagProcessor)
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCameraResolution(new Size(640, 480))
+                .build();
+
         //push to corresponding spike mark
 
-        //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO: fix
+        //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO? fix
 
-        if (testing) {
+        if (aprilTagTestOnly) {
 
+            while (!isStopRequested() && opModeIsActive()) {
 
+                if (tagProcessor.getDetections().size() > 0) {
+                    AprilTagDetection tag = tagProcessor.getDetections().get(0);
+
+                    telemetry.addLine(String.format("XYZ %6.2f %6.2f %6.2f", tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.z));
+
+                    telemetry.addLine(String.format("RPY %6.2f %6.2f %6.2f", tag.ftcPose.roll, tag.ftcPose.pitch, tag.ftcPose.yaw));
+
+                    telemetry.addData("Highest Confidence Tag ID:", tag.id);
+
+                }
+                telemetry.update();
+            }
 
         } else {
 
@@ -430,6 +471,8 @@ public class CenterStageAutonomous extends LinearOpMode {
                 driveStraight(DRIVE_SPEED, parkInCorner ? -44 : -24, 90, isMirrored);
             }
 
+            /* todo... organize and correct this block of code
+
             if (!parkInCorner && !scoreYellowPixel) {
                 turnToHeading(TURN_SPEED, 0, isMirrored);
                 driveStraight(DRIVE_SPEED, -44, 0, notMirrored);
@@ -438,10 +481,58 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (scoreYellowPixel) {
                 turnToHeading(TURN_SPEED, 0, isMirrored);
                 driveStraight(DRIVE_SPEED, -22, 0, notMirrored);
-                turnToHeading(TURN_SPEED, -90, isMirrored);
+                turnToHeading(TURN_SPEED, 90, isMirrored);
                 driveStraight(DRIVE_SPEED, 20, -90, isMirrored);
                 deliverPixel();
             }
+            */
+
+            //todo... initialize variables at start of code
+            final double DIST_WALL_TO_TRIANGLE = -44;
+            final double DIST_TO_TRIANGLE_PARK = 20;
+            double distAprilTag = 0;
+            double tagNearDist = 21;
+            double tagMidDist = 27;
+            double tagFarDist = 33;
+            double distToBackdropTag = 12.33;
+
+            //todo... run this code before autonomous path
+            if (scoreYellowPixel) {
+                switch (selected) {
+                    case LEFT:
+                        if (isRed) {
+                            distAprilTag = tagFarDist;
+                        } else {
+                            distAprilTag = tagNearDist;
+                        }
+                        break;
+                    case MIDDLE:
+                        distAprilTag = tagMidDist;
+                        break;
+                    case RIGHT:
+                        if (isRed) {
+                            distAprilTag = tagNearDist;
+                        } else {
+                            distAprilTag = tagFarDist;
+                        }
+                        break;
+                }
+            }
+
+            turnToHeading(TURN_SPEED, 0, isMirrored);
+            if(scoreYellowPixel){
+                driveStraight(DRIVE_SPEED, distAprilTag, 0, notMirrored);
+                turnToHeading(TURN_SPEED, -90, isMirrored);
+                driveStraight(DRIVE_SPEED, distToBackdropTag, 0, notMirrored );
+                deliverPixel();
+                driveStraight(DRIVE_SPEED,-distToBackdropTag, 0, notMirrored);
+            }
+            turnToHeading(TURN_SPEED, 0, isMirrored);
+            driveStraight(DRIVE_SPEED, DIST_WALL_TO_TRIANGLE - distAprilTag, 0, notMirrored);
+            turnToHeading(TURN_SPEED, 90, isMirrored);
+            driveStraight(DRIVE_SPEED, DIST_TO_TRIANGLE_PARK,90, notMirrored);
+
+            //Code above does wierd stuff. Would not trust.
         }
     }
 
@@ -451,6 +542,7 @@ public class CenterStageAutonomous extends LinearOpMode {
      */
 
     /*
+
      * ====================================================================================================
      * Driving "Helper" functions are below this line.
      * These provide the high and low level methods that handle driving straight and turning.
@@ -766,6 +858,7 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     /**
      * Pretty self-explanatory. Sets the arm position.
+     *
      * @param position Sets the arm position to Load (0), Carry (1) or Deliver (2).
      */
     public void setArmPosition(int position) {
@@ -784,6 +877,7 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     /**
      * Used to set the position of the bucket door.
+     *
      * @param position Sets the door position to Closed (0), Half Open (1) and Fully Open (2).
      */
     public void setDoorPosition(int position) {
@@ -802,7 +896,9 @@ public class CenterStageAutonomous extends LinearOpMode {
         }
     }
 
-    /** Sets all servos & arm to delivery position, then delivers pixel. */
+    /**
+     * Sets all servos & arm to delivery position, then delivers pixel.
+     */
     public void deliverPixel() {
         setArmPosition(2);
         while (SwingArm.armMotor.getCurrentPosition() < 1500 && opModeIsActive()) {
@@ -813,7 +909,9 @@ public class CenterStageAutonomous extends LinearOpMode {
         resetArm();
     }
 
-    /** Resets arm and door. */
+    /**
+     * Resets arm and door.
+     */
     public void resetArm() {
         setDoorPosition(0);
         setArmPosition(0);
@@ -898,6 +996,15 @@ public class CenterStageAutonomous extends LinearOpMode {
 //    }
 //
 
-    /** Does literally nothing. */
+    /**
+     * Does literally nothing.
+     */
     public void doNothing() {/**/}
 }
+
+//TODO: Figure out why code will not deploy to robot.
+//TODO...? Nevermind I fixed it.
+//Unknown host 'No such host is known (repo.maven.apache.org)'. You may need to adjust the proxy settings in Gradle.
+//Enable Gradle 'offline mode' and sync project
+//Learn about configuring HTTP proxies in Gradle
+//Task :FtcRobotController:compileDebugLibraryResources FAILED
