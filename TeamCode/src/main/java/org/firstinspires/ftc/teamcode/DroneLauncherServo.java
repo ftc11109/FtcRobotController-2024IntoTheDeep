@@ -5,8 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class DroneLauncherServo {
     ServoController droneLauncherServo = new ServoController();
-    private HardwareMap hardwareMap;
-    private Gamepad gamepad;
+    private final Gamepad gamepad;
 
 
     public DroneLauncherServo(HardwareMap hardwareMap, Gamepad gamepad) {

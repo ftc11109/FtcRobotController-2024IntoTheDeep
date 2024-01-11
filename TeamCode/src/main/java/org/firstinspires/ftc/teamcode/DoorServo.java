@@ -5,8 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class DoorServo {
     ServoController doorServo = new ServoController();
-    private HardwareMap hardwareMap;
-    private Gamepad gamepad;
+    private final Gamepad gamepad;
 
 
     public DoorServo(HardwareMap hardwareMap, Gamepad gamepad) {

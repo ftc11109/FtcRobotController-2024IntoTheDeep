@@ -363,7 +363,7 @@ public class CenterStageAutonomous extends LinearOpMode {
         // Pause to display last telemetry message.
     }
 // step 1. strafe step 2. find april tags as we strafe step 3. find which april tag is correct based on what spike mark we are on (ex. if right spikemark then strafe till find right april tag)
-    // TODO: 12/27/2023 figure out if processFrame is run only once or always after autonomous is run
+    // TO-NOT-DO: 12/27/2023 figure out if processFrame is run only once or always after autonomous is run
     //updat: it checks only once, so we can use the
 
 
@@ -494,7 +494,7 @@ public class CenterStageAutonomous extends LinearOpMode {
             double tagNearDist = 21;
             double tagMidDist = 27;
             double tagFarDist = 33;
-            double distToBackdropTag = 12.33;
+            double distToBackdropTag = 10.33;
 
             //todo... run this code before autonomous path
             if (scoreYellowPixel) {
@@ -521,11 +521,11 @@ public class CenterStageAutonomous extends LinearOpMode {
 
             turnToHeading(TURN_SPEED, 0, isMirrored);
             if(scoreYellowPixel){
-                driveStraight(DRIVE_SPEED, distAprilTag, 0, notMirrored);
-                turnToHeading(TURN_SPEED, -90, isMirrored);
-                driveStraight(DRIVE_SPEED, distToBackdropTag, 0, notMirrored );
+                driveStraight(DRIVE_SPEED, -distAprilTag, 0, notMirrored);
+                turnToHeading(TURN_SPEED, 90, isMirrored);
+                driveStraight(DRIVE_SPEED, -distToBackdropTag, 0, notMirrored );
                 deliverPixel();
-                driveStraight(DRIVE_SPEED,-distToBackdropTag, 0, notMirrored);
+                driveStraight(DRIVE_SPEED,distToBackdropTag, 0, notMirrored);
             }
             turnToHeading(TURN_SPEED, 0, isMirrored);
             driveStraight(DRIVE_SPEED, DIST_WALL_TO_TRIANGLE - distAprilTag, 0, notMirrored);
