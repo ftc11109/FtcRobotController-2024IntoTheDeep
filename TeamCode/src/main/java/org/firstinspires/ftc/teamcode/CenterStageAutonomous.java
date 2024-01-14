@@ -543,7 +543,7 @@ public class CenterStageAutonomous extends LinearOpMode {
                 turnToHeading(TURN_SPEED, 0, isMirrored);
                 driveStraight(DRIVE_SPEED, distWallToTriangle, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 90, isMirrored);
-                driveStraight(DRIVE_SPEED, distToTrianglePark, 90, notMirrored);
+                driveStraight(0.8, distToTrianglePark, 90, notMirrored);
             }
             //Code above does wierd stuff. Would not trust.
         }
@@ -915,8 +915,9 @@ public class CenterStageAutonomous extends LinearOpMode {
         setDoorPosition(0);
         setArmPosition(2);
         while ((SwingArm.armMotor.getCurrentPosition() > 1500) && (opModeIsActive() && !isStopRequested())) {
-            doNothing();
+            mechanismLoop();
         }
+        mechanismLoop();
         sleep(2000);
         setDoorPosition(2);
         sleep(500);
