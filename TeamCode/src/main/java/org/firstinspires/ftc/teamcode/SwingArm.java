@@ -53,6 +53,8 @@ public class SwingArm {
 
     static int currentSetPosition = 0;
 
+    final boolean isTesting = true;
+
     public SwingArm(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
@@ -70,7 +72,8 @@ public class SwingArm {
         armMotor = hardwareMap.get(DcMotor.class, "arm");
         //use the below line if the motor runs the wrong way!!
         armMotor.setDirection(DcMotor.Direction.REVERSE);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (isTesting) armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        else armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //you need to set a position count BEFORE switching to runToPosition mode!!
         armMotor.setTargetPosition(PICKUP_POINT_COUNT);
@@ -92,7 +95,7 @@ public class SwingArm {
             targetPositionCount = PICKUP_POINT_COUNT;
             currentSetPosition = 1;
         } else if (position == 2) {
-            targetPositionCount = CARRY_POINT_COUNT;
+            targetPositionCount = CARRY_POINT_COUNT + 350;
             currentSetPosition = 2;
         } else if (position == 3) {
             targetPositionCount = DELIVERY_POINT_COUNT;

@@ -19,7 +19,7 @@ public class DoorServo {
         } else if (SwingArm.armMotor.getCurrentPosition() < 800) {
             SetState(0);
         } else {
-            if(gamepad.right_trigger > 0) {
+            if (gamepad.right_trigger > 0) {
                 SetState(2);
             } else if (gamepad.left_trigger > 0) {
                 SetState(1);

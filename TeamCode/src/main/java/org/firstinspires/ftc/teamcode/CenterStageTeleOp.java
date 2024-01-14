@@ -96,6 +96,8 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
 
+        Suspension suspension = new Suspension(hardwareMap, telemetry, gamepad2);
+
         DoorServo doorServo = new DoorServo(hardwareMap, gamepad2);
 
         BucketServo bucketServo = new BucketServo(hardwareMap);
@@ -142,6 +144,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         swingArm.initLoop();
+        suspension.initLoop();
         telemetry.update();
 
         waitForStart();
@@ -153,6 +156,7 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             intake.loop();
             swingArm.loop();
+            suspension.loop();
             doorServo.loop();
             bucketServo.loop();
             droneLauncherServo.loop();

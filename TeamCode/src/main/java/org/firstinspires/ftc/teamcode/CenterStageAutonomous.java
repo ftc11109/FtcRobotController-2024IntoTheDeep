@@ -176,6 +176,7 @@ public class CenterStageAutonomous extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suit the specific robot drive train.
     static final double DRIVE_SPEED = 0.2;     // Max driving speed for better distance accuracy.
+    static final double DRIVE_SPEED_LOW = 0.8;
     static final double TURN_SPEED = 0.4;     // Max Turn speed to limit turn rate
     static final double HEADING_THRESHOLD = 4.0;    // How close must the heading get to the target before moving to next step.
     // Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.
@@ -274,7 +275,7 @@ public class CenterStageAutonomous extends LinearOpMode {
 
     public void mechanismLoop() {
         swingArm.loop();
-        //bucketServo.loop();
+        bucketServo.loop();
         //doorServo.loop();
     }
 
@@ -323,6 +324,8 @@ public class CenterStageAutonomous extends LinearOpMode {
             } else if (gamepad1.right_trigger > 0) {
                 scoreYellowPixel = false;
             }
+
+            if (scoreYellowPixel) parkInCorner = false;
 
             telemetry.addData("Color", isRed ? "Red" : "Blue");
             telemetry.addData("Distance", isFar ? "Far" : "Close");
@@ -381,7 +384,7 @@ public class CenterStageAutonomous extends LinearOpMode {
               \ /
                V
 
-        */
+
 
         AprilTagProcessor tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -396,14 +399,16 @@ public class CenterStageAutonomous extends LinearOpMode {
                 .setCameraResolution(new Size(640, 480))
                 .build();
 
+        */
+
         //push to corresponding spike mark
 
         //actual drive speed is opposite of maxDriveSpeed (e.g. 0.3 is actually 0.7) TODO? fix
 
         if (aprilTagTestOnly) {
 
-            while (!isStopRequested() && opModeIsActive()) {
-
+            //while (!(isStopRequested()) && opModeIsActive()) {
+/*
                 if (tagProcessor.getDetections().size() > 0) {
                     AprilTagDetection tag = tagProcessor.getDetections().get(0);
 
@@ -416,7 +421,7 @@ public class CenterStageAutonomous extends LinearOpMode {
                 }
                 telemetry.update();
             }
-
+*/
         } else {
 
             switch (selected) {
@@ -428,7 +433,7 @@ public class CenterStageAutonomous extends LinearOpMode {
                     turnToHeading(TURN_SPEED, 0, notMirrored);
                     if (isStalled) {
                         if (parkInCorner) {
-                            sleep(10000);
+                            sleep(8000);
                         } else {
                             sleep(7500);
                         }
@@ -439,7 +444,7 @@ public class CenterStageAutonomous extends LinearOpMode {
                     driveStraight(DRIVE_SPEED, -26, 0.0, notMirrored);
                     if (isStalled) {
                         if (parkInCorner) {
-                            sleep(13000);
+                            sleep(10000);
                         } else {
                             sleep(7500);
                         }
@@ -454,7 +459,7 @@ public class CenterStageAutonomous extends LinearOpMode {
                     turnToHeading(TURN_SPEED, 0, notMirrored);
                     if (isStalled) {
                         if (parkInCorner) {
-                            sleep(10000);
+                            sleep(8000);
                         } else {
                             sleep(7500);
                         }
@@ -489,49 +494,57 @@ public class CenterStageAutonomous extends LinearOpMode {
 
             //todo... initialize variables at start of code
             final double DIST_WALL_TO_TRIANGLE = -44;
-            final double DIST_TO_TRIANGLE_PARK = 20;
+            final double DIST_TO_TRIANGLE_PARK = -20;
             double distAprilTag = 0;
-            double tagNearDist = 21;
-            double tagMidDist = 27;
-            double tagFarDist = 33;
-            double distToBackdropTag = 10.33;
+            double tagNearDist = 20;
+            double tagMidDist = 24;
+            double tagFarDist = 28;
+            double distToBackdropTag = -15;
+            double distToBackdropTagReverse = -distToBackdropTag;
+            double distToTrianglePark = DIST_TO_TRIANGLE_PARK;
+
+
 
             //todo... run this code before autonomous path
             if (scoreYellowPixel) {
                 switch (selected) {
                     case LEFT:
                         if (isRed) {
-                            distAprilTag = tagFarDist;
+                            distAprilTag = -tagFarDist;
                         } else {
-                            distAprilTag = tagNearDist;
+                            distAprilTag = -tagNearDist;
                         }
                         break;
                     case MIDDLE:
-                        distAprilTag = tagMidDist;
+                        distAprilTag = -tagMidDist;
                         break;
                     case RIGHT:
                         if (isRed) {
-                            distAprilTag = tagNearDist;
+                            distAprilTag = -tagNearDist;
                         } else {
-                            distAprilTag = tagFarDist;
+                            distAprilTag = -tagFarDist;
                         }
                         break;
                 }
             }
 
+            double distWallToTriangle = DIST_WALL_TO_TRIANGLE - distAprilTag - 5;
+
             turnToHeading(TURN_SPEED, 0, isMirrored);
             if(scoreYellowPixel){
-                driveStraight(DRIVE_SPEED, -distAprilTag, 0, notMirrored);
+                driveStraight(DRIVE_SPEED, distAprilTag, 0, notMirrored);
                 turnToHeading(TURN_SPEED, 90, isMirrored);
-                driveStraight(DRIVE_SPEED, -distToBackdropTag, 0, notMirrored );
+                driveStraight(DRIVE_SPEED, distToBackdropTag, 0, notMirrored );
                 deliverPixel();
-                driveStraight(DRIVE_SPEED,distToBackdropTag, 0, notMirrored);
+                sleep(1000);
+                driveStraight(DRIVE_SPEED, distToBackdropTagReverse, 0, notMirrored);
             }
-            turnToHeading(TURN_SPEED, 0, isMirrored);
-            driveStraight(DRIVE_SPEED, DIST_WALL_TO_TRIANGLE - distAprilTag, 0, notMirrored);
-            turnToHeading(TURN_SPEED, 90, isMirrored);
-            driveStraight(DRIVE_SPEED, DIST_TO_TRIANGLE_PARK,90, notMirrored);
-
+            if (!parkInCorner) {
+                turnToHeading(TURN_SPEED, 0, isMirrored);
+                driveStraight(DRIVE_SPEED, distWallToTriangle, 0, notMirrored);
+                turnToHeading(TURN_SPEED, 90, isMirrored);
+                driveStraight(DRIVE_SPEED, distToTrianglePark, 90, notMirrored);
+            }
             //Code above does wierd stuff. Would not trust.
         }
     }
@@ -622,7 +635,7 @@ public class CenterStageAutonomous extends LinearOpMode {
             moveRobot(maxDriveSpeed, 0);
 
             // keep looping while we are still active, and BOTH motors are running.
-            while (opModeIsActive()) {
+            while (opModeIsActive() && !isStopRequested()) {
 
                 telemetry.addData("driveStraight", "opModeIsActive and all motors are busy!");
 
@@ -680,7 +693,7 @@ public class CenterStageAutonomous extends LinearOpMode {
         getSteeringCorrection(heading, P_DRIVE_GAIN);
 
         // keep looping while we are still active, and not on heading.
-        while (opModeIsActive() && (Math.abs(headingError) > HEADING_THRESHOLD)) {
+        while ((opModeIsActive() && !isStopRequested()) && (Math.abs(headingError) > HEADING_THRESHOLD)) {
 
             // Determine required steering to keep on heading
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
@@ -724,7 +737,7 @@ public class CenterStageAutonomous extends LinearOpMode {
         }
 
         // keep looping while we have time remaining.
-        while (opModeIsActive() && (holdTimer.time() < holdTime)) {
+        while ((opModeIsActive() && !isStopRequested()) && (holdTimer.time() < holdTime)) {
             // Determine required steering to keep on heading
             turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
 
@@ -881,31 +894,32 @@ public class CenterStageAutonomous extends LinearOpMode {
      * @param position Sets the door position to Closed (0), Half Open (1) and Fully Open (2).
      */
     public void setDoorPosition(int position) {
-        if (SwingArm.armMotor.getCurrentPosition() > 1500) {
-            switch (position) {
-                case 0:
-                    doorServo.SetState(0);
-                    break;
-                case 1:
-                    doorServo.SetState(1);
-                    break;
-                case 2:
-                    doorServo.SetState(2);
-                    break;
-            }
+        switch (position) {
+            case 0:
+                doorServo.SetState(0);
+                break;
+            case 1:
+                doorServo.SetState(1);
+                break;
+            case 2:
+                doorServo.SetState(2);
+                break;
         }
+
     }
 
     /**
      * Sets all servos & arm to delivery position, then delivers pixel.
      */
     public void deliverPixel() {
+        setDoorPosition(0);
         setArmPosition(2);
-        while (SwingArm.armMotor.getCurrentPosition() < 1500 && opModeIsActive()) {
+        while ((SwingArm.armMotor.getCurrentPosition() > 1500) && (opModeIsActive() && !isStopRequested())) {
             doNothing();
         }
-        setDoorPosition(1);
-        sleep(1000);
+        sleep(2000);
+        setDoorPosition(2);
+        sleep(500);
         resetArm();
     }
 
