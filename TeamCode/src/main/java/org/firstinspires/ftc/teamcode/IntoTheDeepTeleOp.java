@@ -85,6 +85,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        //todo:
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
         // Note: The names here do not match the hardware names -- this should be fixed in the configuration.
@@ -132,11 +133,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
 
-        // 11109:
-        //todo: test our motors and make sure they spin in the right directions
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        // due to physical motor orientation, the front two motors must be set to reverse.
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -175,10 +176,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //imu.getRobotOrientation()
             //double botHeading = -imu.getAngularOrientation().firstAngle;
 
+            //todo: make sure the below code is the right match
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             double botHeading = orientation.getYaw(AngleUnit.RADIANS);
-            double rotX = x * Math.cos(botHeading) + y * Math.sin(botHeading);
-            double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
+            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+            double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
             /*
             Fixed(?) drivetrain weirdness.
@@ -226,28 +228,32 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 rightBackPower = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             }
 
+            /*
             double speedModifier;
             if (!(gamepad1.left_stick_button || gamepad1.right_bumper)) {
                 speedModifier = 0.5;
             } else {
                 speedModifier = 1;
             }
+             */
 
+            /*
             if (gamepad1.back) {
                 gamepad1.rumble(100);
                 SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, new File("C:\\Users\\TekersRobotics\\StudioProjects\\FtcRobotController-2023CenterStage\\TeamCode\\src\\main\\java\\org\\firstinspires\\ftc\\teamcode\\Alert.mp3"));
                 imu.resetYaw();
             }
+             */
 
             if(orientation.getYaw(AngleUnit.RADIANS) == 0.0) {
                 gamepad1.rumble(250);
             }
 
             // Send calculated power to wheels
-            frontLeftDrive.setPower(leftFrontPower * speedModifier);
-            frontRightDrive.setPower(rightFrontPower * speedModifier);
-            backLeftDrive.setPower(leftBackPower * speedModifier);
-            backRightDrive.setPower(rightBackPower * speedModifier);
+            frontLeftDrive.setPower(leftFrontPower);
+            frontRightDrive.setPower(rightFrontPower);
+            backLeftDrive.setPower(leftBackPower);
+            backRightDrive.setPower(rightBackPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime);
@@ -262,38 +268,3 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         }
     }
 }
-/* Pseudocode: IMU reset edition
-
-Option 1:
-while opModeIsActive {
-
-    heading = imu.heading + crashCorrection
-
-    if !(imu.heading == 0.0) {
-        crashBackup = imu.heading
-    }
-
-    if imu.heading == 0.0 {
-        crashCorrection = crashBackup
-        imu.reset
-    }
-
-Option 2:
--Wait until IMU resets
--Notify drivers with controller vibration
--Allow drivers to manually reset position
--Allow drivers to press a button to reset IMU
-
-Example:
-
-while opModeIsActive {
-
-    if String(imu.heading) == "0.0" {
-        gamepad.rumble(0.1);
-    }
-
-    if gamepad.start {
-        imu.reset
-    }
-
- */
