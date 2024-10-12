@@ -1,6 +1,6 @@
 ## TeamCode Module
 
-Team code for the 2023 FTC season!
+Team code for the 2024 FTC season!
 
 Welcome!
 

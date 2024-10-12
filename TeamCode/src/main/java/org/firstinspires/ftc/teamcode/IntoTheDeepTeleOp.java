@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2023 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -76,8 +77,8 @@ import java.io.File;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="CenterStage Tele-Op", group="Linear OpMode")
-public class CenterStageTeleOp extends LinearOpMode {
+@TeleOp(name="Into The Deep Tele-Op", group="Linear OpMode")
+public class IntoTheDeepTeleOp extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
@@ -92,6 +93,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "left_driveF");
         DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "left_driveB");
 
+        /*
         Intake intake = new Intake(hardwareMap, telemetry, gamepad1);
 
         SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
@@ -103,7 +105,7 @@ public class CenterStageTeleOp extends LinearOpMode {
         BucketServo bucketServo = new BucketServo(hardwareMap);
 
         DroneLauncherServo droneLauncherServo = new DroneLauncherServo(hardwareMap, gamepad2);
-
+         */
 
 
 
@@ -111,11 +113,11 @@ public class CenterStageTeleOp extends LinearOpMode {
         // for Field-Oriented driving
         IMU imu = hardwareMap.get(IMU.class, "imu");
 
-
+        //todo: remount the control hub. this orientation is temporary
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 )));
 
 
@@ -131,10 +133,11 @@ public class CenterStageTeleOp extends LinearOpMode {
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
 
         // 11109:
+        //todo: test our motors and make sure they spin in the right directions
         frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -143,8 +146,8 @@ public class CenterStageTeleOp extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
-        swingArm.initLoop();
-        suspension.initLoop();
+        //swingArm.initLoop();
+        //suspension.initLoop();
         telemetry.update();
 
         waitForStart();
@@ -154,12 +157,12 @@ public class CenterStageTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             double max;
 
-            intake.loop();
-            swingArm.loop();
-            suspension.loop();
-            doorServo.loop();
-            bucketServo.loop();
-            droneLauncherServo.loop();
+            //intake.loop();
+            //swingArm.loop();
+            //suspension.loop();
+            //doorServo.loop();
+            //bucketServo.loop();
+            //droneLauncherServo.loop();
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
 
@@ -179,9 +182,15 @@ public class CenterStageTeleOp extends LinearOpMode {
 
             /*
             Fixed(?) drivetrain weirdness.
-            Old code:
+
+            Serious (old) code:
             double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
+            Silly (current) code:
+            double rotX = x * Math.cos(botHeading) + y * Math.sin(botHeading);
+            double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
              */
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
@@ -248,7 +257,7 @@ public class CenterStageTeleOp extends LinearOpMode {
             telemetry.addLine("");
             telemetry.addData("IMU orientation", botHeading);
             telemetry.addLine("");
-            telemetry.addData("Door servo position", doorServo.doorServo.getServoPosition());
+            //telemetry.addData("Door servo position", doorServo.doorServo.getServoPosition());
             telemetry.update();
         }
     }
