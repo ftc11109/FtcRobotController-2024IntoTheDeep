@@ -30,7 +30,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -40,8 +39,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-
-import java.io.File;
 
 /*
  * This file is heavily derived from the following samples; refer back to them for original source:
@@ -85,14 +82,13 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        //todo:
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
         // Note: The names here do not match the hardware names -- this should be fixed in the configuration.
-        DcMotor backRightDrive = hardwareMap.get(DcMotor.class, "right_driveB");
-        DcMotor frontRightDrive = hardwareMap.get(DcMotor.class, "right_driveF");
-        DcMotor frontLeftDrive = hardwareMap.get(DcMotor.class, "left_driveF");
-        DcMotor backLeftDrive = hardwareMap.get(DcMotor.class, "left_driveB");
+        DcMotor backRightDrive  =  hardwareMap.get(DcMotor.class, "right_driveB");
+        DcMotor frontRightDrive =  hardwareMap.get(DcMotor.class, "right_driveF");
+        DcMotor frontLeftDrive  =  hardwareMap.get(DcMotor.class, "left_driveF" );
+        DcMotor backLeftDrive   =  hardwareMap.get(DcMotor.class, "left_driveB" );
 
         /*
         Intake intake = new Intake(hardwareMap, telemetry, gamepad1);
@@ -108,19 +104,15 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         DroneLauncherServo droneLauncherServo = new DroneLauncherServo(hardwareMap, gamepad2);
          */
 
-
-
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
-        IMU imu = hardwareMap.get(IMU.class, "imu");
+        IMU imu = hardwareMap.get(IMU.class,"imu");
 
-        //todo: remount the control hub. this orientation is temporary
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
-                )));
-
+                        RevHubOrientationOnRobot.LogoFacingDirection. UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.  FORWARD
+                )));    // todo: orientation is temporary
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -133,22 +125,19 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
 
-
+        frontLeftDrive.setDirection           (DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection            (DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection          (DcMotor.Direction.REVERSE);
+        backRightDrive.setDirection           (DcMotor.Direction.FORWARD);
         // due to physical motor orientation, the front two motors must be set to reverse.
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeftDrive.setZeroPowerBehavior   (DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftDrive.setZeroPowerBehavior    (DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior  (DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightDrive.setZeroPowerBehavior   (DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Wait for the game to start (driver presses PLAY)
+        // wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
-        //swingArm.initLoop();
-        //suspension.initLoop();
         telemetry.update();
 
         waitForStart();
@@ -158,52 +147,43 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             double max;
 
-            //intake.loop();
-            //swingArm.loop();
-            //suspension.loop();
-            //doorServo.loop();
-            //bucketServo.loop();
-            //droneLauncherServo.loop();
+            // insert loops here
+            // example: intake.loop()
 
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            // controls:
+            double y  = -gamepad1.left_stick_y  ;  // note: pushing stick forward gives negative value
+            double x  =  gamepad1.left_stick_x  ;
+            double rx = -gamepad1.right_stick_x ;
 
-            double y = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value ;
-            double x = gamepad1.left_stick_x;
-            double rx = -gamepad1.right_stick_x;
-
-            // Use the IMU to determine the orientation of the robot relative to its position when
+            // use the IMU to determine the orientation of the robot relative to its position when
             // initialized, and then calculate rotation
             //imu.getRobotOrientation()
             //double botHeading = -imu.getAngularOrientation().firstAngle;
-
-            //todo: make sure the below code is the right match
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             double botHeading = orientation.getYaw(AngleUnit.RADIANS);
             double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+            // todo: why?
 
             /*
-            Fixed(?) drivetrain weirdness.
-
-            Serious (old) code:
-            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-            double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
-
-            Silly (current) code:
-            double rotX = x * Math.cos(botHeading) + y * Math.sin(botHeading);
+            comp edited code:
+            double rotX =  x * Math.cos(botHeading) + y * Math.sin(botHeading);
             double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
+            default code:
+            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+            double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
              */
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
+            // combine the joystick requests for each axis-motion to determine each wheel's power
+            // set up a variable for each drive wheel to save the power level for telemetry
             double leftFrontPower = rotY + rotX + rx;
             double rightFrontPower = rotY - rotX - rx;
             double leftBackPower = rotY - rotX + rx;
             double rightBackPower = rotY + rotX - rx;
 
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
+            // normalize the values so no wheel power exceeds 100%
+            // this ensures the robot maintains the desired motion
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
@@ -228,42 +208,24 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 rightBackPower = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             }
 
-            /*
-            double speedModifier;
-            if (!(gamepad1.left_stick_button || gamepad1.right_bumper)) {
-                speedModifier = 0.5;
-            } else {
-                speedModifier = 1;
-            }
-             */
-
-            /*
-            if (gamepad1.back) {
-                gamepad1.rumble(100);
-                SoundPlayer.getInstance().startPlaying(hardwareMap.appContext, new File("C:\\Users\\TekersRobotics\\StudioProjects\\FtcRobotController-2023CenterStage\\TeamCode\\src\\main\\java\\org\\firstinspires\\ftc\\teamcode\\Alert.mp3"));
-                imu.resetYaw();
-            }
-             */
-
-            if(orientation.getYaw(AngleUnit.RADIANS) == 0.0) {
-                gamepad1.rumble(250);
-            }
-
-            // Send calculated power to wheels
+            // send calculated power to wheels
             frontLeftDrive.setPower(leftFrontPower);
             frontRightDrive.setPower(rightFrontPower);
             backLeftDrive.setPower(leftBackPower);
             backRightDrive.setPower(rightBackPower);
 
-            // Show the elapsed game time and wheel power.
+            // display elapsed game time, wheel power, misc. debug utils
             telemetry.addData("Status", "Run Time: " + runtime);
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addLine("LB + A/B/X/Y to test single motors");
             telemetry.addLine("");
+
             telemetry.addData("IMU orientation", botHeading);
             telemetry.addLine("");
-            //telemetry.addData("Door servo position", doorServo.doorServo.getServoPosition());
+
+            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower  );
+            telemetry.addLine("");
+
+            telemetry.addLine("LB + A/B/X/Y to test single motors");
             telemetry.update();
         }
     }
