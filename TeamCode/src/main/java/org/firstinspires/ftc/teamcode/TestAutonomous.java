@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.util.logging.Logger.global;
+
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -63,21 +65,16 @@ import java.util.List;
  *  Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="IntoTheDeepAutonomous", group="Robot")
+@Autonomous(name="TestAutonomous", group="Robot")
 //@Disabled
-public class IntoTheDeepAutonomous extends LinearOpMode {
-
-    protected boolean Overrideselection = false;
-//    protected FirstVisionProcessor.Selected selectionOverride = FirstVisionProcessor.Selected.MIDDLE;
+public class TestAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
     protected DcMotor frontLeftDrive = null;
     protected DcMotor backLeftDrive = null;
     protected DcMotor frontRightDrive = null;
     protected DcMotor backRightDrive = null;
-    protected IMU imu = null;      // Control/Expansion Hub IMU
-    //protected SignalSleeveRecognizer    recognizer = null;
-    //protected LinearSlide         linearSlide = null;
+    protected IMU imu = null;
     protected ElapsedTime runtime = new ElapsedTime();
 
     private double robotHeading = 0;
@@ -85,7 +82,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     private double headingError = 0;
 
 
-    // These variable are declared here (as class members) so they can be updated in various methods,
+    // These variables are declared here (as class members) so they can be updated in various methods,
     // but still be displayed by sendTelemetry()
     private double targetHeading = 0;
     private double driveSpeed = 0;
@@ -103,42 +100,11 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     boolean notMirrored = false;
     boolean isRed;
 
-    boolean isFar = true;
-    boolean parkOnly = true;
-    boolean trianglePark = false;
-    boolean stalling = false; //cap
-
-    int armHardStopID = 0;
-    int armPickUpID = 1;
-    int armCarryID = 2;
-    int armDeliveryID = 3;
-    int armDrivePosID = 4;
-    int armHighestScoringID = 5;
     int driveStraightLoops = 0;
 
     double tbegin;
 
-    int aprilTagDriveDistance = 0;
-    int aprilTagIdNumber = 0;
-    int aprilTagInitialDistance = 24;
-    int aprilNearDistance = 5;
-    int aprilMidDistance = 19;
-    int aprilFarDistance = 27;
-    int driveBackToSeeAprilTag = 0;
-    double distanceToScoreFromTags = 0;
-    double driveDistanceToScore = -16.0;
-    double aprilTag_CenterGoal = 0; // zero or how far to the left or right we want to be
-    double aprilTag_Threshold = 0.5; //was 0.25
-    double aprilTag_AdjustedX = 0; // this will be our adjusted value off center goal of ftcPose.X
-    double LFRBSpeed = 0;
-    double RFLBSpeed = 0;
-
-    double wallToTriangleDriveDistance = 80;
-    double scoringDistanceToTrianglePark;
-
     boolean strafeCorrectionDone = false;
-
-    //String allianceColor = "blue";
 
     private VisionPortal propVisionPortal;
 
@@ -168,8 +134,8 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     double wheelDiaIN = wheelDiaMM / MMperIN; //or input just inches as constant
     double wheelCircum = wheelDiaIN * Math.PI; //get circum (aka inches per wheel rev)
     int ultPlanHexEncoderTicks = 28; //ticks per motor rotation
-    double threeToOne = 84 / 29; // real 3:1
-    double fourToOne = 76 / 21; // real 4:1
+    double threeToOne = 84.0 / 29.0; // real 3:1
+    double fourToOne = 76.0 / 21.0; // real 4:1
     double drivetrainMotorGearRatio = threeToOne * fourToOne; //get gear ratio
 
     public double inchesPerTick() {
@@ -222,12 +188,6 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         backLeftDrive.setDirection            (DcMotor.Direction.FORWARD);
         frontRightDrive.setDirection          (DcMotor.Direction.REVERSE);
         backRightDrive.setDirection           (DcMotor.Direction.FORWARD);
-
-//        11109:
-//        leftDriveB.setDirection(DcMotor.Direction.REVERSE);
-//        leftDriveF.setDirection(DcMotor.Direction.REVERSE);
-//        rightDriveB.setDirection(DcMotor.Direction.FORWARD);
-//        rightDriveF.setDirection(DcMotor.Direction.REVERSE);
 
         // TODO: Figure out if it's better to use a static variable for imu
         // and then avoid re-initializing it if you're in teleop mode and it already exists.
@@ -303,9 +263,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetHeading();
 
-        propVisionPortal.stopStreaming();
-
-        //runAutonomousProgram(isFar, parkOnly, trianglePark, stalling);
+        runAutonomousProgram();
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -315,6 +273,37 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
 
     public void runAutonomousProgram(/*boolean isFar, boolean parkOnly, boolean trianglePark, boolean stalling*/) {
+
+        int testDriveDistance = 0; //
+
+        while (opModeIsActive()) {
+
+            if (gamepad1.dpad_up) {
+                testDriveDistance += 6;
+                while(gamepad1.dpad_up) {}
+            }
+            if (gamepad1.dpad_down) {
+                testDriveDistance -= 6;
+                while(gamepad1.dpad_down) {}
+            }
+
+            if (gamepad1.a) { driveStraight(DRIVE_SPEED, testDriveDistance, 0, false); }
+
+            telemetry.addData("Drive distance", testDriveDistance);
+
+            telemetry.addData("inches per tick", inchesPerTick());
+            telemetry.addData("wheel circum", wheelCircum);
+            telemetry.addData("drivetrain gear ratio", drivetrainMotorGearRatio);
+            telemetry.addData("motor encoder ticks", ultPlanHexEncoderTicks);
+            telemetry.addData("move counts", (int) (testDriveDistance / inchesPerTick()));
+
+            int moveCountsGlobal;
+
+            telemetry.update();
+
+
+        }
+
 
 
 
@@ -374,19 +363,20 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             //heading = heading * reverseTurnsForAllianceColor;
 
             // Determine new target position, and pass to motor controller
-            int moveCounts = (int) (distance / inchesPerTick());
+            int moveCounts = (int) (distance / inchesPerTick()); //total amount of encoder ticks between the current position and the destination
 
             leftTargetF = frontLeftDrive.getCurrentPosition() + moveCounts;
             leftTargetB = backLeftDrive.getCurrentPosition() + moveCounts;
             rightTargetF = frontRightDrive.getCurrentPosition() + moveCounts;
             rightTargetB = backRightDrive.getCurrentPosition() + moveCounts;
 
-//            telemetry.addData("left front moved:", leftDriveF.getCurrentPosition());
-//            telemetry.addData("left back moved:", leftDriveB.getCurrentPosition());
-//            telemetry.addData("right front moved:", rightDriveF.getCurrentPosition());
-//            telemetry.addData("right back moved:", rightDriveB.getCurrentPosition());
 
-            // Set Target FIRST, then turn on RUN_TO_POSITION
+            telemetry.addData("left front moved:", frontLeftDrive.getCurrentPosition());
+            telemetry.addData("left back moved:", backLeftDrive.getCurrentPosition());
+            telemetry.addData("right front moved:", frontRightDrive.getCurrentPosition());
+            telemetry.addData("right back moved:", backRightDrive.getCurrentPosition());
+
+
             frontLeftDrive.setTargetPosition(leftTargetF);
             backLeftDrive.setTargetPosition(leftTargetB);
             frontRightDrive.setTargetPosition(rightTargetF);
@@ -741,106 +731,4 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         headingOffset = getRawHeading();
         robotHeading = 0;
     }
-
-    // TODO: can we rename these moveTo* functions for setHeightTo*
-    public void moveToGroundPosition() {
-        //linearSlide.setPosition(0);
-        //swingArm.setPosition(1);
-    }
-
-    public void moveToLowPosition() {
-        //linearSlide.setPosition(3);
-        //swingArm.setPosition(1);
-    }
-
-    public void moveToMediumPosition() {
-        //linearSlide.setPosition(1);
-        //swingArm.setPosition(2);
-    }
-
-    public void moveToHighPosition() {
-        //linearSlide.setPosition(3);
-        //swingArm.setPosition(2);
-    }
-
-    public void moveToIntakePosition() {
-        //linearSlide.setPosition(2);
-        //swingArm.setPosition(1);
-    }
-
-    //Step 1: detect the team prop
-//    TestAutonomous.SpikeMark teamPropMark = detectTeamProp();
-//    //Step 2: drive to the team prop
-//    //driveToCorrectSpikeMark(teamPropMark);
-//    //Step 3: place purple pixel on same line as team prop
-//    //ejectPurplePixel();
-//    //Step 4: return to original position
-//    //driveFromSpikeMark(teamPropMark);
-//    //Step 5: drive under truss closest to wall to get to backdrop
-//    //driveToBackdrop(isNear);
-//    //Step 6: place yellow pixel on correct Apriltag
-//    //depositYellowPixel(teamPropMark);
-//    //Step 7: drive off to side
-//    //parkInBackstage(parkLeft);
-//
-//    void driveForwardInches(double amount) {
-//    }
-//    void turnDegrees(double amount) {
-//    }
-//    enum SpikeMark {RIGHT, LEFT, CENTER}
-//
-//    TestAutonomous.SpikeMark detectTeamProp() {
-//        return TestAutonomous.SpikeMark.CENTER;
-//        //
-//    }
-//
-//    final double SPIKE_MARK_DECISION_DISTANCE = -1;
-//    final double CENTER_SPIKE_MARK_INCHES = -1;
-//    final double OFFCENTER_SPIKE_MARK_INCHES = -1;
-//    final double OFFCENTER_DECISION_TURN_DEGREES = -1;
-//
-//    void driveToCorrectSpikeMark(TestAutonomous.SpikeMark teamPropMark) {
-//        driveForwardInches(SPIKE_MARK_DECISION_DISTANCE);
-//
-//        if (teamPropMark == TestAutonomous.SpikeMark.CENTER) {
-//            driveForwardInches(CENTER_SPIKE_MARK_INCHES);
-//        } else if (teamPropMark == TestAutonomous.SpikeMark.LEFT) {
-//            turnDegrees(OFFCENTER_DECISION_TURN_DEGREES);
-//            driveForwardInches(OFFCENTER_SPIKE_MARK_INCHES);
-//        }
-//        else if (teamPropMark == TestAutonomous.SpikeMark.RIGHT) {
-//            turnDegrees(-OFFCENTER_DECISION_TURN_DEGREES);
-//            driveForwardInches(OFFCENTER_SPIKE_MARK_INCHES);
-//        }
-//    }
-//
-//    void ejectPurplePixel() {
-//        intake.ejectPixel();
-//    }
-//
-//    void driveFromSpikeMark(TestAutonomous.SpikeMark teamPropMark) {
-//        driveForwardInches(-SPIKE_MARK_DECISION_DISTANCE);
-//
-//        if (teamPropMark == TestAutonomous.SpikeMark.CENTER) {
-//            driveForwardInches(-CENTER_SPIKE_MARK_INCHES);
-//        } else if (teamPropMark == TestAutonomous.SpikeMark.LEFT) {
-//            turnDegrees(-OFFCENTER_DECISION_TURN_DEGREES);
-//            driveForwardInches(-OFFCENTER_SPIKE_MARK_INCHES);
-//        }
-//        else if (teamPropMark == TestAutonomous.SpikeMark.RIGHT) {
-//            turnDegrees(OFFCENTER_DECISION_TURN_DEGREES);
-//            driveForwardInches(-OFFCENTER_SPIKE_MARK_INCHES);
-//        }
-//    }
-//
-//    void driveToBackdrop(boolean isNear) {
-//    }
-//
-//    void depositYellowPixel(TestAutonomous.SpikeMark teamPropMark) {
-//    }
-//
-//    void parkInBackstage(boolean parkLeft) {
-//    }
-//
-
 }
