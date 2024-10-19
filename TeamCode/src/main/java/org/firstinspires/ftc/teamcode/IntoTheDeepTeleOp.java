@@ -15,7 +15,7 @@
  * Neither the name of FIRST nor the names of its contributors may be used to endorse or
  * promote products derived from this software without specific prior written permission.
  *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+  * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
  * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -114,7 +114,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                         RevHubOrientationOnRobot.UsbFacingDirection.  FORWARD
                 )));    // todo: orientation is temporary
 
-        // ########################################################################################
+       // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
         // ########################################################################################
         // Most robots need the motors on one side to be reversed to drive forward.
@@ -161,8 +161,8 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //double botHeading = -imu.getAngularOrientation().firstAngle;
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             double botHeading = orientation.getYaw(AngleUnit.RADIANS);
-            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-            double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+            double rotX =  x * Math.cos(botHeading) + y * Math.sin(botHeading);
+            double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
             // todo: why?
 
             /*
@@ -219,10 +219,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             telemetry.addLine("");
 
             telemetry.addData("IMU orientation", botHeading);
+            telemetry.addData("rotX, rotY", "%4.2f, %4.2f", rotX, rotY);
             telemetry.addLine("");
 
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower  );
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower,  rightBackPower );
             telemetry.addLine("");
 
             telemetry.addLine("LB + A/B/X/Y to test single motors");

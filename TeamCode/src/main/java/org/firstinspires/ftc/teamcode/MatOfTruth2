@@ -5,3 +5,4 @@ Motor Port | Motor Name
 1          | "right_driveB"
 2          | "left_driveF"
 3          | "left_driveB"
+They all move forward
