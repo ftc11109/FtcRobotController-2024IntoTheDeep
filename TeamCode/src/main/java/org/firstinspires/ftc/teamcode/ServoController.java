@@ -15,5 +15,4 @@ public class ServoController {
     public double getServoPosition() {
         return servo.getPosition();
     }
-
 }
