@@ -147,10 +147,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
             // combine the joystick requests for each axis-motion to determine each wheel's power
             // set up a variable for each drive wheel to save the power level for telemetry
-            double leftFrontPower = rotY + rotX + rx;
+            double leftFrontPower  = rotY + rotX + rx;
             double rightFrontPower = rotY - rotX - rx;
-            double leftBackPower = rotY - rotX + rx;
-            double rightBackPower = rotY + rotX - rx;
+            double leftBackPower   = rotY - rotX + rx;
+            double rightBackPower  = rotY + rotX - rx;
 
             // normalize the values so no wheel power exceeds 100%
             // this ensures the robot maintains the desired motion
@@ -159,10 +159,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower /= max;
+                leftFrontPower  /= max;
                 rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
+                leftBackPower   /= max;
+                rightBackPower  /= max;
             }
 
             // Hold the left bumper and the corresponding button to run test code.
@@ -172,10 +172,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //   2) Then make sure they run in the correct direction by modifying the
             //      the setDirection() calls above.
             if (gamepad1.left_bumper) {
-                leftFrontPower = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-                leftBackPower = gamepad1.a ? 1.0 : 0.0;   // A gamepad
+                leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
+                leftBackPower   = gamepad1.a ? 1.0 : 0.0;   // A gamepad
                 rightFrontPower = gamepad1.y ? 1.0 : 0.0; // Y gamepad
-                rightBackPower = gamepad1.b ? 1.0 : 0.0;  // B gamepad
+                rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             }
 
             // send calculated power to wheels

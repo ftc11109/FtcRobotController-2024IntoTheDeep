@@ -23,6 +23,8 @@ public class ServoTestOpMode extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             intake.loop();
+            telemetry.addData("Left Servo Position", intake.leftIntakeServo.getServoPosition());
+            telemetry.addData("Right Servo Position", intake.rightIntakeServo.getServoPosition());
         }
     }
 }
