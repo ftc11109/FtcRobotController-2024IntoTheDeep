@@ -290,12 +290,12 @@ public class TestAutonomous extends LinearOpMode {
             if (gamepad1.a) { driveStraight(DRIVE_SPEED, testDriveDistance, 0, false); }
 
             telemetry.addData("Drive distance", testDriveDistance);
-
-            telemetry.addData("inches per tick", inchesPerTick());
-            telemetry.addData("wheel circum", wheelCircum);
-            telemetry.addData("drivetrain gear ratio", drivetrainMotorGearRatio);
-            telemetry.addData("motor encoder ticks", ultPlanHexEncoderTicks);
-            telemetry.addData("move counts", (int) (testDriveDistance / inchesPerTick()));
+//
+//            telemetry.addData("inches per tick", inchesPerTick());
+//            telemetry.addData("wheel circum", wheelCircum);
+//            telemetry.addData("drivetrain gear ratio", drivetrainMotorGearRatio);
+//            telemetry.addData("motor encoder ticks", ultPlanHexEncoderTicks);
+//            telemetry.addData("move counts", (int) (testDriveDistance / inchesPerTick()));
 
             int moveCountsGlobal;
 
@@ -371,10 +371,10 @@ public class TestAutonomous extends LinearOpMode {
             rightTargetB = backRightDrive.getCurrentPosition() + moveCounts;
 
 
-            telemetry.addData("left front moved:", frontLeftDrive.getCurrentPosition());
+            /*telemetry.addData("left front moved:", frontLeftDrive.getCurrentPosition());
             telemetry.addData("left back moved:", backLeftDrive.getCurrentPosition());
             telemetry.addData("right front moved:", frontRightDrive.getCurrentPosition());
-            telemetry.addData("right back moved:", backRightDrive.getCurrentPosition());
+            telemetry.addData("right back moved:", backRightDrive.getCurrentPosition());*/
 
 
             frontLeftDrive.setTargetPosition(leftTargetF);
@@ -382,22 +382,22 @@ public class TestAutonomous extends LinearOpMode {
             frontRightDrive.setTargetPosition(rightTargetF);
             backRightDrive.setTargetPosition(rightTargetB);
 
-            telemetry.addData("driveStraight", "opModeIsActive");
+            /*telemetry.addData("driveStraight", "opModeIsActive");
             telemetry.addData("targetPositions", "%d : %d : %d : %d", leftTargetF, leftTargetB, rightTargetF, rightTargetB);
             telemetry.addData("move counts:", moveCounts);
-            telemetry.update();
+            telemetry.update();*/
 
             frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            telemetry.addData("maxDriveSpeed", maxDriveSpeed);
+            /*telemetry.addData("maxDriveSpeed", maxDriveSpeed);
             telemetry.addData("active", opModeIsActive());
             telemetry.addData("ldf", frontLeftDrive.isBusy());
             telemetry.addData("rdf", frontRightDrive.isBusy());
             telemetry.addData("ldb", backLeftDrive.isBusy());
-            telemetry.addData("rdb", backRightDrive.isBusy());
+            telemetry.addData("rdb", backRightDrive.isBusy());*/
             // Unfortunately we need this because sometimes the motor hasn't recognized yet that it's busy!!
             //sleep(1000);
 
@@ -410,8 +410,8 @@ public class TestAutonomous extends LinearOpMode {
             // keep looping while we are still active, and BOTH motors are running.
             while (opModeIsActive()) {
 
-                telemetry.addData("driveStraight", "opModeIsActive and all motors are busy!");
-                telemetry.addData("drive straight loops: ", driveStraightLoops);
+                /*telemetry.addData("driveStraight", "opModeIsActive and all motors are busy!");
+                telemetry.addData("drive straight loops: ", driveStraightLoops);*/
 
                 // Determine required steering to keep on heading
                 turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
@@ -421,12 +421,16 @@ public class TestAutonomous extends LinearOpMode {
                     turnSpeed *= -1.0;
 
                 // Apply the turning correction to the current driving speed.
-                moveRobot(driveSpeed, turnSpeed);
+                moveRobot(maxDriveSpeed, driveSpeed);
 
                 mechanismLoop();
 
                 // Display drive status for the driver.
-                sendTelemetry(true);
+                //sendTelemetry(true);
+
+                telemetry.addData("LeftSpeed", leftSpeed);
+                telemetry.addData("RightSpeed", rightSpeed);
+                telemetry.update();
 
                 clearBulkCache();
 
@@ -443,57 +447,6 @@ public class TestAutonomous extends LinearOpMode {
             frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-    }
-
-    /**
-     * Method to start strafe for april tag detection
-     * @param strafeSpeed speed to strafe at
-     * @param heading heading to maintain while strafing
-     * @param direction direction to strafe string ("left" or "right")
-     * @param isMirrored mirroring for red/blue side?
-     */
-    public void startStrafe(double strafeSpeed, double heading, String direction, boolean isMirrored) {
-        if (opModeIsActive()) {
-//            ElapsedTime holdTimer = new ElapsedTime();
-//            holdTimer.reset();
-
-            if (isMirrored && isRed) {
-                heading *= -1;
-            }
-
-            // Determine required steering to keep on heading
-            turnSpeed = getSteeringCorrection(heading, P_TURN_GAIN);
-            // Clip the speed to the maximum permitted value.
-            turnSpeed = Range.clip(turnSpeed, -0.5, 0.5);
-            // Pivot in place by applying the turning correction
-            strafeMoveRobot(direction, strafeSpeed, turnSpeed);
-
-            Range.clip(strafeSpeed, 0, 1.0);
-            if (direction == "left") {
-                frontLeftDrive.setPower(-strafeSpeed);
-                backLeftDrive.setPower(strafeSpeed);
-                frontRightDrive.setPower(strafeSpeed);
-                backRightDrive.setPower(-strafeSpeed);
-            } else { //direction must be right
-                frontLeftDrive.setPower(strafeSpeed);
-                backLeftDrive.setPower(-strafeSpeed);
-                frontRightDrive.setPower(-strafeSpeed);
-                backRightDrive.setPower(strafeSpeed);
-            }
-            clearBulkCache();
-            //mechanismLoop();
-        }
-    }
-
-    /**
-     * Method to stop strafe (and all motor movement)
-     */
-    public void stopStrafe() {
-        frontLeftDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backRightDrive.setPower(0);
-        clearBulkCache();
     }
 
     /**
@@ -532,7 +485,7 @@ public class TestAutonomous extends LinearOpMode {
             mechanismLoop();
 
             // Display drive status for the driver.
-            sendTelemetry(false);
+            //sendTelemetry(false);
 
             clearBulkCache();
         }
@@ -575,7 +528,12 @@ public class TestAutonomous extends LinearOpMode {
             mechanismLoop();
 
             // Display drive status for the driver.
-            sendTelemetry(false);
+            //sendTelemetry(false);
+
+            telemetry.addData("LeftSpeed", leftSpeed);
+            telemetry.addData("RightSpeed", rightSpeed);
+
+            telemetry.update();
 
             clearBulkCache();
 
@@ -596,6 +554,7 @@ public class TestAutonomous extends LinearOpMode {
 
     // **********  LOW Level driving functions.  ********************
 
+    // todo: something here isn't working right/left (haaahhahahahahahahahaahhhhhhhahahahaha!!!1!11!!11!!!1111!!1)
     /**
      * This method uses a Proportional Controller to determine how much steering correction is required.
      *
@@ -615,6 +574,8 @@ public class TestAutonomous extends LinearOpMode {
         // Normalize the error to be within +/- 180 degrees
         while (headingError > 180) headingError -= 360;
         while (headingError <= -180) headingError += 360;
+        //todo: degrees or radians? what is this?
+        //experiment with less aggressive correction values
 
         // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
         return Range.clip(headingError * proportionalGain, -1, 1);
@@ -687,7 +648,7 @@ public class TestAutonomous extends LinearOpMode {
      *
      * @param straight Set to true if we are driving straight, and the encoder positions should be included in the telemetry.
      */
-    private void sendTelemetry(boolean straight) { //SHOULD BE LABELED SOMETHING LIKE "driveSendTelemetry"
+    /*private void sendTelemetry(boolean straight) { //SHOULD BE LABELED SOMETHING LIKE "driveSendTelemetry"
         if (straight) {
             telemetry.addData("Motion", "Drive Straight");
             telemetry.addData("Target Pos LF:RF:LB:RB", "%7d:%7d:%7d:%7d",
@@ -712,7 +673,7 @@ public class TestAutonomous extends LinearOpMode {
         runtime.reset();
 
         telemetry.update();
-    }
+    }*/
 
     /**
      * read the raw (un-offset Gyro heading) directly from the IMU
