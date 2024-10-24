@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class IntakeServos {
 
     private final Gamepad gamepad;
-    ContinuousServoController leftIntakeServo  = new ContinuousServoController();
-    ContinuousServoController rightIntakeServo = new ContinuousServoController();
+    CRServoController leftIntakeServo  = new CRServoController();
+    CRServoController rightIntakeServo = new CRServoController();
 
     public IntakeServos(HardwareMap hardwareMap, Gamepad gamepad) {
         this.gamepad = gamepad;

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.CRServo;
 
-public class ContinuousServoController {
+public class CRServoController {
     private CRServo servo;
 
     public void init(HardwareMap hwMap, String deviceName) {
