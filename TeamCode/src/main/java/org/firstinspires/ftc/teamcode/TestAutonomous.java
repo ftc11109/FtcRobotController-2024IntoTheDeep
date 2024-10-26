@@ -84,37 +84,16 @@ public class TestAutonomous extends LinearOpMode {
     // These variables are declared here (as class members) so they can be updated in various methods,
     // but still be displayed by sendTelemetry()
     private double targetHeading = 0;
-    private double driveSpeed = 0;
     private double turnSpeed = 0;
     private double leftSpeed = 0;
     private double rightSpeed = 0;
-    private double frontSpeed = 0;
-    private double backSpeed = 0;
-    private int leftTargetF = 0;
-    private int leftTargetB = 0;
-    private int rightTargetF = 0;
-    private int rightTargetB = 0;
-
-    boolean isMirrored = true;
-    boolean notMirrored = false;
-    boolean isRed;
 
     int driveStraightLoops = 0;
 
     double tbegin;
 
-    boolean strafeCorrectionDone = false;
-
-    private VisionPortal propVisionPortal;
-
     private AprilTagProcessor tagProcessor;
-
     private VisionPortal tagsVisionPortal;
-
-    boolean findTag = false;
-
-    double strafeSpeed = 0.05;
-    double directionToStrafe = 0;
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
     // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
@@ -122,11 +101,6 @@ public class TestAutonomous extends LinearOpMode {
     // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-    static final double COUNTS_PER_MOTOR_REV = 28.0;   // eg: GoBILDA 312 RPM Yellow Jacket
-    static final double DRIVE_GEAR_REDUCTION = 18.0;    // No External Gearing.
-    static final double WHEEL_DIAMETER_INCHES = 3.0;     // For figuring circumference
-    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
 
     double MMperIN = 25.4;
     int wheelDiaMM = 75;
@@ -136,6 +110,9 @@ public class TestAutonomous extends LinearOpMode {
     double threeToOne = 84.0 / 29.0; // real 3:1
     double fourToOne = 76.0 / 21.0; // real 4:1
     double drivetrainMotorGearRatio = threeToOne * fourToOne; //get gear ratio
+
+    public TestAutonomous() {
+    }
 
     public double inchesPerTick() {
         return (wheelCircum / (drivetrainMotorGearRatio * ultPlanHexEncoderTicks)); //Inches per tick
@@ -160,7 +137,6 @@ public class TestAutonomous extends LinearOpMode {
     static final double P_TURN_GAIN = 0.02;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_GAIN = 0.03;     // Larger is more responsive, but also less stable
 
-    protected boolean isAutonomous = true;
 
     //this sets up for bulk reads!
     protected List<LynxModule> allHubs;
@@ -174,10 +150,6 @@ public class TestAutonomous extends LinearOpMode {
         //recognizer = new SignalSleeveRecognizer(hardwareMap, telemetry);
         //linearSlide = new LinearSlide(hardwareMap, telemetry, gamepad2);
         //swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, isAutonomous);
-
-        boolean isNear;
-        boolean parkLeft;
-
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -274,31 +246,52 @@ public class TestAutonomous extends LinearOpMode {
 
     public void runAutonomousProgram() {
 
-        int testDriveDistance = 0; //
+        int testDriveDistance = 0;
+        int testRotationAngle = 0;
+        int currentSetAngle   = 0;
 
         while (opModeIsActive()) {
 
             if (gamepad1.dpad_up) {
                 testDriveDistance += 6;
-                while(gamepad1.dpad_up) {}
+                while(gamepad1.dpad_up);
             }
             if (gamepad1.dpad_down) {
                 testDriveDistance -= 6;
-                while(gamepad1.dpad_down) {}
+                while(gamepad1.dpad_down);
             }
 
-            if (gamepad1.a) { driveStraight(DRIVE_SPEED, testDriveDistance, 0, false); }
+            if (gamepad1.dpad_left) {
+                testRotationAngle += 45;
+                while(gamepad1.dpad_left);
+            }
+            if (gamepad1.dpad_right) {
+                testRotationAngle -= 45;
+                while(gamepad1.dpad_right);
+            }
+
+            if (gamepad1.a) {
+                driveStraight(DRIVE_SPEED, testDriveDistance, currentSetAngle);
+                testDriveDistance = 0;
+            }
+
+            if (gamepad1.b) {
+                turnToHeading(TURN_SPEED, testRotationAngle);
+                currentSetAngle   = testRotationAngle;
+                testRotationAngle = 0;
+            }
+
+            if (gamepad1.y) break;
 
             telemetry.addData("Drive distance", testDriveDistance);
-            telemetry.addData("IMU", "%4.2f", getRawHeading());
+            telemetry.addData("Rotation Angle", testRotationAngle);
+            telemetry.addLine("");
+            telemetry.addData("IMU Orientation", "%4.2f", getRawHeading());
+            telemetry.addData("Current Set Angle", currentSetAngle);
             telemetry.update();
 
 
         }
-
-
-
-
 
         /* todo: helpful april tag code
         propVisionPortal.close();
@@ -341,15 +334,12 @@ public class TestAutonomous extends LinearOpMode {
      */
     public void driveStraight(double  maxDriveSpeed,
                               double  distance,
-                              double  heading,
-                              boolean isMirrored) {
+                              double  heading) {
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            if (isMirrored && isRed) {
-                heading *= -1;
-            }
+
 
             //reverse the heading if you start on the left side. this turns a right heading into a left heading and vice versa.
             //heading = heading * reverseTurnsForAllianceColor;
@@ -357,10 +347,10 @@ public class TestAutonomous extends LinearOpMode {
             // Determine new target position, and pass to motor controller
             int moveCounts = (int) (distance / inchesPerTick()); //total amount of encoder ticks between the current position and the destination
 
-            leftTargetF = frontLeftDrive.getCurrentPosition() + moveCounts;
-            leftTargetB = backLeftDrive.getCurrentPosition() + moveCounts;
-            rightTargetF = frontRightDrive.getCurrentPosition() + moveCounts;
-            rightTargetB = backRightDrive.getCurrentPosition() + moveCounts;
+            int leftTargetF = frontLeftDrive.getCurrentPosition() + moveCounts;
+            int leftTargetB = backLeftDrive.getCurrentPosition() + moveCounts;
+            int rightTargetF = frontRightDrive.getCurrentPosition() + moveCounts;
+            int rightTargetB = backRightDrive.getCurrentPosition() + moveCounts;
 
 
             /*telemetry.addData("left front moved:", frontLeftDrive.getCurrentPosition());
@@ -440,6 +430,8 @@ public class TestAutonomous extends LinearOpMode {
                 if (!(frontLeftDrive.isBusy() || frontRightDrive.isBusy() || backLeftDrive.isBusy() || backRightDrive.isBusy())) {
                     break;
                 }
+
+
             }
 
             // Stop all motion & Turn off RUN_TO_POSITION
@@ -462,12 +454,9 @@ public class TestAutonomous extends LinearOpMode {
      *                     0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                     If a relative angle is required, add/subtract from current heading.
      */
-    public void turnToHeading(double maxTurnSpeed, double heading, boolean isMirrored) {
+    public void turnToHeading(double maxTurnSpeed, double heading) {
 
         //reverse the heading if you start on the left side. this turns a right turn into a left turn and vice versa.
-        if (isMirrored && isRed) {
-            heading *= -1;
-        }
 
         // Run getSteeringCorrection() once to pre-calculate the current error
         getSteeringCorrection(heading, P_DRIVE_GAIN);
@@ -507,14 +496,10 @@ public class TestAutonomous extends LinearOpMode {
      *                     If a relative angle is required, add/subtract from current heading.
      * @param holdTime     Length of time (in seconds) to hold the specified heading.
      */
-    public void holdHeading(double maxTurnSpeed, double heading, double holdTime, boolean reverseSides) {
+    public void holdHeading(double maxTurnSpeed, double heading, double holdTime) {
 
         ElapsedTime holdTimer = new ElapsedTime();
         holdTimer.reset();
-
-        if (reverseSides && isRed) {
-            heading *= -1;
-        }
 
         // keep looping while we have time remaining.
         while (opModeIsActive() && (holdTimer.time() < holdTime)) {
@@ -532,7 +517,7 @@ public class TestAutonomous extends LinearOpMode {
             // Display drive status for the driver.
             //sendTelemetry(false);
 
-            telemetry.addData("LeftSpeed", leftSpeed);
+            telemetry.addData("LeftSpeed" , leftSpeed );
             telemetry.addData("RightSpeed", rightSpeed);
 
             telemetry.update();
@@ -580,7 +565,6 @@ public class TestAutonomous extends LinearOpMode {
      * @param turn  clockwise turning motor speed.
      */
     public void moveRobot(double drive, double turn) {
-        driveSpeed = drive;     // save this value as a class member so it can be used by telemetry.
         turnSpeed  = turn;      // save this value as a class member so it can be used by telemetry.
 
         leftSpeed  = drive - turn;
@@ -603,8 +587,8 @@ public class TestAutonomous extends LinearOpMode {
         //driveSpeed = drive;     // save this value as a class member so it can be used by telemetry.
         //turnSpeed = turn;      // save this value as a class member so it can be used by telemetry.
 
-        frontSpeed = drive + turn;
-        backSpeed = drive - turn;
+        double frontSpeed = drive + turn;
+        double backSpeed = drive - turn;
 
         // Scale speeds down if either one exceeds +/- 1.0;
         double max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
