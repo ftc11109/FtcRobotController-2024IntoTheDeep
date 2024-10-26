@@ -180,8 +180,8 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 )));
 
         // Ensure the robot is stationary.  Reset the encoders and set the motors to BRAKE mode
@@ -347,6 +347,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             // Determine new target position, and pass to motor controller
             double moveCompensation = 1.7; //Dear future Tekerz: Our robot needed this, yours might not
             int moveCounts = (int) (((distance * moveCompensation) - 0.56) / inchesPerTick());
+
 
             leftTargetF = frontLeftDrive.getCurrentPosition() + moveCounts;
             leftTargetB = backLeftDrive.getCurrentPosition() + moveCounts;
