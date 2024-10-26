@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static java.util.logging.Logger.global;
-
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -17,6 +15,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
+import java.util.Objects;
 
 /*
  *  This file illustrates the concept of driving an autonomous path based on Gyro heading and encoder counts.
@@ -198,8 +197,8 @@ public class TestAutonomous extends LinearOpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 )));
 
         // Ensure the robot is stationary.  Reset the encoders and set the motors to BRAKE mode
@@ -207,10 +206,11 @@ public class TestAutonomous extends LinearOpMode {
         backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        leftDriveF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftDriveB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightDriveF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightDriveB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         allHubs = hardwareMap.getAll(LynxModule.class);
 
@@ -272,7 +272,7 @@ public class TestAutonomous extends LinearOpMode {
     }
 
 
-    public void runAutonomousProgram(/*boolean isFar, boolean parkOnly, boolean trianglePark, boolean stalling*/) {
+    public void runAutonomousProgram() {
 
         int testDriveDistance = 0; //
 
@@ -290,15 +290,7 @@ public class TestAutonomous extends LinearOpMode {
             if (gamepad1.a) { driveStraight(DRIVE_SPEED, testDriveDistance, 0, false); }
 
             telemetry.addData("Drive distance", testDriveDistance);
-//
-//            telemetry.addData("inches per tick", inchesPerTick());
-//            telemetry.addData("wheel circum", wheelCircum);
-//            telemetry.addData("drivetrain gear ratio", drivetrainMotorGearRatio);
-//            telemetry.addData("motor encoder ticks", ultPlanHexEncoderTicks);
-//            telemetry.addData("move counts", (int) (testDriveDistance / inchesPerTick()));
-
-            int moveCountsGlobal;
-
+            telemetry.addData("IMU", "%4.2f", getRawHeading());
             telemetry.update();
 
 
@@ -347,9 +339,9 @@ public class TestAutonomous extends LinearOpMode {
      *                      0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                      If a relative angle is required, add/subtract from the current robotHeading.
      */
-    public void driveStraight(double maxDriveSpeed,
-                              double distance,
-                              double heading,
+    public void driveStraight(double  maxDriveSpeed,
+                              double  distance,
+                              double  heading,
                               boolean isMirrored) {
 
         // Ensure that the opmode is still active
@@ -421,7 +413,7 @@ public class TestAutonomous extends LinearOpMode {
                     turnSpeed *= -1.0;
 
                 // Apply the turning correction to the current driving speed.
-                moveRobot(maxDriveSpeed, driveSpeed);
+                moveRobot(maxDriveSpeed, turnSpeed);
 
                 mechanismLoop();
 
@@ -430,7 +422,17 @@ public class TestAutonomous extends LinearOpMode {
 
                 telemetry.addData("LeftSpeed", leftSpeed);
                 telemetry.addData("RightSpeed", rightSpeed);
+
+                telemetry.addData("Steering Correction", getSteeringCorrection(heading, P_DRIVE_GAIN));
+                telemetry.addData("IMU", "%4.2f", getRawHeading());
+                telemetry.addData("robotHeading", "%4.2f", robotHeading);
+                telemetry.addData("headingError", headingError);
+
+                telemetry.addData("target heading", targetHeading);
+
+
                 telemetry.update();
+
 
                 clearBulkCache();
 
@@ -543,18 +545,9 @@ public class TestAutonomous extends LinearOpMode {
         moveRobot(0, 0);
     }
 
-    public void stall(double tbegin, int time) {
-        while ((double) (30 - (getRuntime() - tbegin)) > time) {
-            //runtime.reset();
-            telemetry.addData("RUN TIME REMAINING:", (double) (30 - (getRuntime() - tbegin)));
-            telemetry.addData("STALL TIME REMAINING:", (double) ((30 - (getRuntime() - tbegin)) - time));
-            telemetry.update();
-        }
-    }
-
     // **********  LOW Level driving functions.  ********************
 
-    // todo: something here isn't working right/left (haaahhahahahahahahahaahhhhhhhahahahaha!!!1!11!!11!!!1111!!1)
+    // todo: something here isn't working right/left (haha)
     /**
      * This method uses a Proportional Controller to determine how much steering correction is required.
      *
@@ -572,10 +565,8 @@ public class TestAutonomous extends LinearOpMode {
         headingError = targetHeading - robotHeading;
 
         // Normalize the error to be within +/- 180 degrees
-        while (headingError > 180) headingError -= 360;
+        while (headingError >   180) headingError -= 360;
         while (headingError <= -180) headingError += 360;
-        //todo: degrees or radians? what is this?
-        //experiment with less aggressive correction values
 
         // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
         return Range.clip(headingError * proportionalGain, -1, 1);
@@ -590,15 +581,15 @@ public class TestAutonomous extends LinearOpMode {
      */
     public void moveRobot(double drive, double turn) {
         driveSpeed = drive;     // save this value as a class member so it can be used by telemetry.
-        turnSpeed = turn;      // save this value as a class member so it can be used by telemetry.
+        turnSpeed  = turn;      // save this value as a class member so it can be used by telemetry.
 
-        leftSpeed = drive - turn;
+        leftSpeed  = drive - turn;
         rightSpeed = drive + turn;
 
         // Scale speeds down if either one exceeds +/- 1.0;
         double max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
         if (max > 1.0) {
-            leftSpeed /= max;
+            leftSpeed  /= max;
             rightSpeed /= max;
         }
 
@@ -622,7 +613,7 @@ public class TestAutonomous extends LinearOpMode {
             rightSpeed /= max;
         }
 
-        if (direction == "left") {
+        if (Objects.equals(direction, "left")) {
             frontLeftDrive.setPower(-frontSpeed);
             backLeftDrive.setPower(backSpeed);
             frontRightDrive.setPower(frontSpeed);
@@ -680,8 +671,7 @@ public class TestAutonomous extends LinearOpMode {
      */
     public double getRawHeading() {
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-        double botHeading = orientation.getYaw(AngleUnit.DEGREES);  // + 180.0; // +/- 180 to flip heading
-        return botHeading;
+        return orientation.getYaw(AngleUnit.DEGREES);
     }
 
     /**
