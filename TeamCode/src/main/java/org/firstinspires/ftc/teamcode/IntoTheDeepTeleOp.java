@@ -60,20 +60,6 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         DcMotor frontLeftDrive  =  hardwareMap.get(DcMotor.class, "left_driveF" );
         DcMotor backLeftDrive   =  hardwareMap.get(DcMotor.class, "left_driveB" );
 
-        /*
-        Intake intake = new Intake(hardwareMap, telemetry, gamepad1);
-
-        SwingArm swingArm = new SwingArm(hardwareMap, telemetry, gamepad2, false);
-
-        Suspension suspension = new Suspension(hardwareMap, telemetry, gamepad2);
-
-        DoorServo doorServo = new DoorServo(hardwareMap, gamepad2);
-
-        BucketServo bucketServo = new BucketServo(hardwareMap);
-
-        DroneLauncherServo droneLauncherServo = new DroneLauncherServo(hardwareMap, gamepad2);
-         */
-
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
         IMU imu = hardwareMap.get(IMU.class,"imu");
@@ -172,10 +158,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //   2) Then make sure they run in the correct direction by modifying the
             //      the setDirection() calls above.
             if (gamepad1.left_bumper) {
-                leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-                leftBackPower   = gamepad1.a ? 1.0 : 0.0;   // A gamepad
+                leftFrontPower  = gamepad1.x ? 1.0 : 0.0; // X gamepad
+                leftBackPower   = gamepad1.a ? 1.0 : 0.0; // A gamepad
                 rightFrontPower = gamepad1.y ? 1.0 : 0.0; // Y gamepad
-                rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
+                rightBackPower  = gamepad1.b ? 1.0 : 0.0; // B gamepad
             }
 
             // send calculated power to wheels
