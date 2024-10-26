@@ -26,7 +26,7 @@ public class LinearSlideTemplate {
 
     // todo: determine what speed to set the motors to & whether up speed is different than down speed
 
-    private int motorTickTarget = 0;
+    private int motorTickTarget = 0; //this variable is for telemetry
 
     public LinearSlideTemplate(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
         // if linear slide doesn't run in auto, isAutonomous will be unnecessary
