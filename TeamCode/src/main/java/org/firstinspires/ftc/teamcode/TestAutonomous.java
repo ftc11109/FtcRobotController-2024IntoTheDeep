@@ -111,9 +111,6 @@ public class TestAutonomous extends LinearOpMode {
     double fourToOne = 76.0 / 21.0; // real 4:1
     double drivetrainMotorGearRatio = threeToOne * fourToOne; //get gear ratio
 
-    public TestAutonomous() {
-    }
-
     public double inchesPerTick() {
         return (wheelCircum / (drivetrainMotorGearRatio * ultPlanHexEncoderTicks)); //Inches per tick
         //return ((drivetrainMotorGearRatio * ultPlanHexEncoderTicks)/wheelCircum) * inches; //Ticks per inch

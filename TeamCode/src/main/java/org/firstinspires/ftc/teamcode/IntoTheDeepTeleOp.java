@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Into The Deep Tele-Op", group="Linear OpMode")
+@TeleOp(name="Into The Tele-Op", group="Linear OpMode")
 public class IntoTheDeepTeleOp extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
