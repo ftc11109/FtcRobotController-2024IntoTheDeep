@@ -10,12 +10,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class LinearSlideTemplate {
 
     protected static DcMotor slideMotor;
-
+    private final Telemetry telemetry;
     private final Gamepad gamepad;
 
-    private final ElapsedTime runtime = new ElapsedTime();
 
-    boolean is = true;
+    private final ElapsedTime runtime = new ElapsedTime();
 
     static final int LOW_HARDSTOP = 0;
     static final int HIGH_HARDSTOP = 1000; // placeholder
@@ -35,6 +34,7 @@ public class LinearSlideTemplate {
 
         this.isAutonomous = isAutonomous;
         this.gamepad = gamepad;
+        this.telemetry = telemetry;
 
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
