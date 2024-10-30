@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-public class IntakeWristTemplate {
+public class IntakeWrist {
 
     protected static DcMotor wristMotor;
     private final Gamepad gamepad; //if the wrist is automated, gamepad input might be unnecessary
@@ -22,9 +22,9 @@ public class IntakeWristTemplate {
 
     final boolean isAutonomous; // will not be necessary if wrist is automated
 
-    public IntakeWristTemplate(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
+    public IntakeWrist(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
 
-        wristMotor = hardwareMap.get(DcMotor.class, "wrist"); // placeholder value
+        wristMotor = hardwareMap.get(DcMotor.class, "wristMotor"); // port 1
 
         this.gamepad = gamepad;
         this.isAutonomous = isAutonomous;
