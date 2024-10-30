@@ -1,8 +1,17 @@
 todo: make this more detailed later
 
+
+Control Hub:
 Motor Port | Motor Name
 0          | "right_driveF"
 1          | "right_driveB"
 2          | "left_driveF"
 3          | "left_driveB"
 They all move forward
+
+Expansion Hub:
+Motor Port | Motor Name
+0          | "intakeSlideMotor"
+1          | "wristMotor"
+2          | "liftMotor"
+3          |
