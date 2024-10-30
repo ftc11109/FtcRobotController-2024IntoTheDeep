@@ -20,6 +20,8 @@ public class IntakeSlide {
     static final double MAX_SPEED = 0.5;
     static final double ADJUSTMENT_MODIFIER = 30;
 
+    // todo: make future statics public so they can be used externally, in setPosition()
+
     final boolean isAutonomous;
 
     public int targetPositionCount;
@@ -27,7 +29,7 @@ public class IntakeSlide {
 
     public IntakeSlide(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
 
-        intakeSlideMotor = hardwareMap.get(DcMotor.class,"intakeSlideMotor"); // placeholder value
+        intakeSlideMotor = hardwareMap.get(DcMotor.class,"intakeSlideMotor"); // port 0
 
         this.isAutonomous = isAutonomous;
         this.gamepad = gamepad;
@@ -64,7 +66,7 @@ public class IntakeSlide {
 
             //This is so that if you let go of the joystick, it immediately stops the arm from moving. Not a bug!!!
 
-            targetPositionCount = Range.clip((int) intakeSlideMotor.getCurrentPosition(), LOW_HARDSTOP, HIGH_HARDSTOP);
+            targetPositionCount = Range.clip(intakeSlideMotor.getCurrentPosition(), LOW_HARDSTOP, HIGH_HARDSTOP);
             intakeSlideMotor.setTargetPosition(targetPositionCount);
 
             telemetry.addData("Manual Branch", "Stop moving");
