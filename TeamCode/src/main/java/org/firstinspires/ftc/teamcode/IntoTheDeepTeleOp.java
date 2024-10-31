@@ -193,6 +193,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             telemetry.addLine("");
 
             telemetry.addLine("LB + A/B/X/Y to test single motors");
+            telemetry.addLine("");
+
+            telemetry.addData("Left Front Encoder", frontLeftDrive.getCurrentPosition());
+
             telemetry.update();
         }
     }
