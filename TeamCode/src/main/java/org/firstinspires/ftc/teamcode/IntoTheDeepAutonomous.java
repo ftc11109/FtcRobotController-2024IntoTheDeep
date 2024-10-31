@@ -250,70 +250,16 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
 
     public void runAutonomousProgram() {
+        //intakeWrist.setPosition(IntakeWrist.INTAKE_POSITION);
 
-        int testDriveDistance = 0;
-        int testRotationAngle = 0;
-        int currentSetAngle   = 0;
-
-        while (opModeIsActive()) {
-
-            if (gamepad1.dpad_up) {
-                testDriveDistance += 6;
-                while(gamepad1.dpad_up);
-            }
-            if (gamepad1.dpad_down) {
-                testDriveDistance -= 6;
-                while(gamepad1.dpad_down);
-            }
-
-            if (gamepad1.dpad_left) {
-                testRotationAngle += 45;
-                while(gamepad1.dpad_left);
-            }
-            if (gamepad1.dpad_right) {
-                testRotationAngle -= 45;
-                while(gamepad1.dpad_right);
-            }
-
-            if (gamepad1.a) {
-                driveStraight(DRIVE_SPEED, testDriveDistance, currentSetAngle);
-                testDriveDistance = 0;
-            }
-
-            if (gamepad1.b) {
-                turnToHeading(TURN_SPEED, testRotationAngle);
-                currentSetAngle   = testRotationAngle;
-                testRotationAngle = 0;
-            }
-
-            if (gamepad1.y) break;
-
-            telemetry.addData("Drive distance", testDriveDistance);
-            telemetry.addData("Rotation Angle", testRotationAngle);
-            telemetry.addLine("");
-            telemetry.addData("IMU Orientation", "%4.2f", getRawHeading());
-            telemetry.addData("Current Set Angle", currentSetAngle);
-            telemetry.update();
-
-
-        }
-
-        /* todo: helpful april tag code
-        propVisionPortal.close();
-
-        tagProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .build();
-
-        tagsVisionPortal = new VisionPortal.Builder()
-                .addProcessor(tagProcessor)
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .setCameraResolution(new Size(640, 480))
-                .build();
+        /* AUTO 1
+         * Preload a specimen
+         * Fields: Starting square, Ascent square,
+         *
+         *
+         *
          */
+
     }
 
     /*

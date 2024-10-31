@@ -13,9 +13,13 @@ public class IntakeWrist {
     private final Gamepad gamepad; //if the wrist is automated, gamepad input might be unnecessary
     private final ElapsedTime runtime = new ElapsedTime();
 
+    // todo: figure out values for all placeholders
     static final int LOW_HARDSTOP = 0;
-    static final int HIGH_HARDSTOP = 1000; // placeholder
+    static final int HIGH_HARDSTOP = 1000; // placeholde
 
+    static final int INTAKE_POSITION = 0; // placeholder
+    static final int LIFTED_POSITION = 0;
+    static final int TRANSFER_POSITION = 100; // placeholder
     // add statics as necessary
 
     private int motorTickTarget = 0; // this variable is for telemetry
@@ -47,13 +51,13 @@ public class IntakeWrist {
     }
 
     private void readGamepad(Gamepad gamepad) { // will be unnecessary if wrist is automated
-        /* this is where your controls go. an example of this might look like:
+        if (gamepad.dpad_up)
+            setPosition(TRANSFER_POSITION);
+        if (gamepad.dpad_left || gamepad.dpad_right)
+            setPosition(LIFTED_POSITION);
+        if (gamepad.dpad_down)
+            setPosition(INTAKE_POSITION);
 
-        if (gamepad.a) setPosition(LOW_HARDSTOP)
-        if (gamepad.b) setPosition(HIGH_HARDSTOP)
-
-         */
-        if (gamepad.a) setPosition(LOW_HARDSTOP);
     }
 
     public void loop() {
