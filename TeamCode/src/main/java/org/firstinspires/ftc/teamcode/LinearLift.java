@@ -20,10 +20,12 @@ public class LinearLift {
     static final int LOW_HARDSTOP = 0;
     static final int HIGH_HARDSTOP = 1000; // placeholder
 
-    static final int HIGH_BUCKET = 500; // placeholder
+    static final int HIGH_BUCKET = 1000; // placeholder
     static final int LOW_BUCKET = 500; //placeholder
 
-    static final int ADJUSTMENT_MODIFIER = 30;
+    static final double MAX_SPEED = 1;
+
+    static final int ADJUSTMENT_MODIFIER = 2;
 
     final boolean isAutonomous;
 
@@ -44,9 +46,11 @@ public class LinearLift {
 
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
-        liftMotor.setDirection(DcMotor.Direction.FORWARD); //placeholder
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setDirection(DcMotor.Direction.REVERSE); //placeholder
         liftMotor.setTargetPosition(LOW_HARDSTOP);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setPower(MAX_SPEED);
+
 
         telemetry.addData("Slide motor position", "%7d", liftMotor.getCurrentPosition());
 
@@ -62,7 +66,6 @@ public class LinearLift {
 
     private void readGamepad(Gamepad gamepad) {
 
-        /*
         if (gamepad.left_stick_y > 0.1 || gamepad.left_stick_y < -0.1 ) {
 
             targetPositionCount = Range.clip((int)(targetPositionCount + ADJUSTMENT_MODIFIER*-gamepad.left_stick_y), LOW_HARDSTOP, HIGH_HARDSTOP);
@@ -81,11 +84,13 @@ public class LinearLift {
             telemetry.addData("Manual Branch", "Running to Junction");
 
         }
-         */
 
-        if (gamepad.a) setPosition(LOW_HARDSTOP);
+        telemetry.addData("target position count", targetPositionCount);
+        telemetry.addData("additive math", ADJUSTMENT_MODIFIER*-gamepad.left_stick_y);
+
+        /*if (gamepad.a) setPosition(LOW_HARDSTOP);
         if (gamepad.b) setPosition(LOW_BUCKET  );
-        if (gamepad.y) setPosition(HIGH_BUCKET );
+        if (gamepad.y) setPosition(HIGH_BUCKET );*/
 
     }
 

@@ -38,8 +38,10 @@ public class IntakeWrist {
         wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         wristMotor.setDirection(DcMotor.Direction.FORWARD); //placeholder
-        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setTargetPosition(LOW_HARDSTOP);
+        wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        wristMotor.setPower(1);
+
 
         telemetry.addData("Slide motor position", "%7d", wristMotor.getCurrentPosition());
     }
