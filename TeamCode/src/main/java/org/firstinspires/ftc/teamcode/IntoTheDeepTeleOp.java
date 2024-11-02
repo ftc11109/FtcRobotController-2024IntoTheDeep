@@ -114,10 +114,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             // insert loops here
             // example: intake.loop()
 
-            intake.loop(     );
-            intakeSlide.loop();
-            intakeWrist.loop();
-            linearLift.loop( );
+            intake.loop(); intakeSlide.loop(); intakeWrist.loop(); linearLift.loop();
 
             // controls:
             double y  = -gamepad1.left_stick_y  ;  // note: pushing stick forward gives negative value
