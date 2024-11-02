@@ -15,7 +15,8 @@ public class RampServo {
     }
 
     public void loop() {
-
+        if (gamepad.x) rampServo.setServoPosition(1);
+        else rampServo.setServoPosition(0);
     }
 
 }

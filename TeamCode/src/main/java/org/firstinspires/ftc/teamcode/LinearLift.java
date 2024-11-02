@@ -20,6 +20,9 @@ public class LinearLift {
     static final int LOW_HARDSTOP = 0;
     static final int HIGH_HARDSTOP = 1000; // placeholder
 
+    static final int HIGH_BUCKET = 500; // placeholder
+    static final int LOW_BUCKET = 500; //placeholder
+
     static final int ADJUSTMENT_MODIFIER = 30;
 
     final boolean isAutonomous;
@@ -59,6 +62,7 @@ public class LinearLift {
 
     private void readGamepad(Gamepad gamepad) {
 
+        /*
         if (gamepad.left_stick_y > 0.1 || gamepad.left_stick_y < -0.1 ) {
 
             targetPositionCount = Range.clip((int)(targetPositionCount + ADJUSTMENT_MODIFIER*-gamepad.left_stick_y), LOW_HARDSTOP, HIGH_HARDSTOP);
@@ -77,6 +81,12 @@ public class LinearLift {
             telemetry.addData("Manual Branch", "Running to Junction");
 
         }
+         */
+
+        if (gamepad.a) setPosition(LOW_HARDSTOP);
+        if (gamepad.b) setPosition(LOW_BUCKET  );
+        if (gamepad.y) setPosition(HIGH_BUCKET );
+
     }
 
     public void loop() {

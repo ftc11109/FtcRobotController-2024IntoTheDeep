@@ -80,7 +80,7 @@ public class IntakeSlide {
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
         intakeSlideMotor.setTargetPosition(targetPositionCount);
-        telemetry.addData("slide encoder position", intakeSlideMotor.getCurrentPosition());
+        telemetry.addData("Slide encoder position", intakeSlideMotor.getCurrentPosition());
         telemetry.update();
     }
 

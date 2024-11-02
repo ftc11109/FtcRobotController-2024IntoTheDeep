@@ -65,7 +65,7 @@ public class IntakeWrist {
 
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
-        telemetry.addData("wrist encoder position", wristMotor.getCurrentPosition());
+        telemetry.addData("Wrist encoder position", wristMotor.getCurrentPosition());
         telemetry.update();
     }
 

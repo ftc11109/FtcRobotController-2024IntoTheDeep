@@ -22,10 +22,10 @@ public class IntakeServos {
     }
 
     public void loop() {
-        if (gamepad.right_trigger > 0) { //intake
+        if (gamepad.right_trigger > 0 || gamepad.right_bumper) { //intake
             leftIntakeServo.setPower(1);
             rightIntakeServo.setPower(1);
-        } else if (gamepad.left_trigger > 0) { //ejection
+        } else if (gamepad.left_trigger > 0 || gamepad.left_bumper) { //ejection
             leftIntakeServo.setPower(-1);
             rightIntakeServo.setPower(-1);
         } else {

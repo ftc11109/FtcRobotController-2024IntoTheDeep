@@ -82,7 +82,7 @@ public class Suspension {
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
         susMotor.setTargetPosition(targetPositionCount);
-        telemetry.addData("Encoder position", susMotor.getCurrentPosition());
+        telemetry.addData("Sus encoder position", susMotor.getCurrentPosition());
         telemetry.update();
     }
 }
