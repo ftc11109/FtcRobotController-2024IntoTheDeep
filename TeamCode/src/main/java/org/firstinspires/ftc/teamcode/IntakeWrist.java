@@ -37,7 +37,7 @@ public class IntakeWrist {
 
         wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        wristMotor.setDirection(DcMotor.Direction.FORWARD);
+        wristMotor.setDirection(DcMotor.Direction.FORWARD); //placeholder
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setTargetPosition(LOW_HARDSTOP);
 

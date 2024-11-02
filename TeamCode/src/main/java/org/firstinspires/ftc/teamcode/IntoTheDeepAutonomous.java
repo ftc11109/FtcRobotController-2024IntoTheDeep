@@ -255,10 +255,10 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
          * AUTO 1
          * Preload a specimen
-         * Fields: Starting square, Ascent square,
-         *
-         *
-         *
+         * Parameters: Starting square, Ascent square,
+         * Scores preloaded specimen in low chamber. (we cant reach the high one)
+         * Moves to the middle of spike marks and turns 2 (3 if we have time) samples into specimens.
+         * Scores them on low chamber and epicly preforms level 1 ascent
          */
 
     }

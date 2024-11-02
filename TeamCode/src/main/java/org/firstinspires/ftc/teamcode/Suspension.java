@@ -41,7 +41,7 @@ public class Suspension {
 
         susMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         susMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
-        susMotor.setDirection(DcMotor.Direction.FORWARD);
+        susMotor.setDirection(DcMotor.Direction.FORWARD); //placeholder
         susMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         susMotor.setTargetPosition(LOW_HARDSTOP);
 

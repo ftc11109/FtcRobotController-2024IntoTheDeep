@@ -15,8 +15,8 @@ public class IntakeServos {
     public IntakeServos(HardwareMap hardwareMap, Gamepad gamepad, boolean isAutonomous) {
         this.gamepad = gamepad;
         this.isAutonomous = isAutonomous;
-        leftIntakeServo.init(hardwareMap, "intakeServoL");
-        rightIntakeServo.init(hardwareMap, "intakeServoR");
+        leftIntakeServo.init(hardwareMap, "intakeServoL"); // port 0
+        rightIntakeServo.init(hardwareMap, "intakeServoR"); // port 1
         leftIntakeServo.setDirection(DcMotorSimple.Direction.FORWARD);
         rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }

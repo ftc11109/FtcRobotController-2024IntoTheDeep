@@ -1,5 +1,3 @@
-todo: make this more detailed later
-
 
 Control Hub:
 Motor Port | Motor Name
@@ -7,7 +5,14 @@ Motor Port | Motor Name
 1          | "right_driveB"
 2          | "left_driveF"
 3          | "left_driveB"
-They all move forward
+
+Servo Port | Servo Name
+0          | "intakeServoL"
+1          | "intakeServoR"
+2          | "rampServo"
+3          |
+4          |
+5          |
 
 Expansion Hub:
 Motor Port | Motor Name
