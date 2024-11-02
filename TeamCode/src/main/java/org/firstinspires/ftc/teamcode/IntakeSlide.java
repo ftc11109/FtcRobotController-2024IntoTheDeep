@@ -37,6 +37,7 @@ public class IntakeSlide {
 
         intakeSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
+        intakeSlideMotor.setDirection(DcMotor.Direction.FORWARD);
         intakeSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeSlideMotor.setTargetPosition(LOW_HARDSTOP);
         intakeSlideMotor.setPower(MAX_SPEED);
@@ -79,6 +80,7 @@ public class IntakeSlide {
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
         intakeSlideMotor.setTargetPosition(targetPositionCount);
+        telemetry.addData("slide encoder position", intakeSlideMotor.getCurrentPosition());
     }
 
     /*

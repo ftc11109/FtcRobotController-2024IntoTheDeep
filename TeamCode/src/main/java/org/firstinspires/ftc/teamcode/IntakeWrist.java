@@ -12,6 +12,7 @@ public class IntakeWrist {
     protected static DcMotor wristMotor;
     private final Gamepad gamepad; //if the wrist is automated, gamepad input might be unnecessary
     private final ElapsedTime runtime = new ElapsedTime();
+    private final Telemetry telemetry;
 
     // todo: figure out values for all placeholders
     static final int LOW_HARDSTOP = 0;
@@ -32,9 +33,11 @@ public class IntakeWrist {
 
         this.gamepad = gamepad;
         this.isAutonomous = isAutonomous;
+        this.telemetry = telemetry;
 
         wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        wristMotor.setDirection(DcMotor.Direction.FORWARD);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setTargetPosition(LOW_HARDSTOP);
 
@@ -62,6 +65,7 @@ public class IntakeWrist {
 
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
+        telemetry.addData("wrist encoder position", wristMotor.getCurrentPosition());
     }
 
 
