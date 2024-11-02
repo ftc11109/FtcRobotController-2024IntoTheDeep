@@ -10,8 +10,11 @@ public class IntakeServos {
     CRServoController leftIntakeServo  = new CRServoController();
     CRServoController rightIntakeServo = new CRServoController();
 
-    public IntakeServos(HardwareMap hardwareMap, Gamepad gamepad) {
+    final boolean isAutonomous;
+
+    public IntakeServos(HardwareMap hardwareMap, Gamepad gamepad, boolean isAutonomous) {
         this.gamepad = gamepad;
+        this.isAutonomous = isAutonomous;
         leftIntakeServo.init(hardwareMap, "intakeServoL");
         rightIntakeServo.init(hardwareMap, "intakeServoR");
         leftIntakeServo.setDirection(DcMotorSimple.Direction.FORWARD);

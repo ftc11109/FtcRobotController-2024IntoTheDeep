@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Servo Test OpMode", group="Linear OpMode")
+@TeleOp(name="Silly Test OpMode", group="Linear OpMode")
 public class TestOpMode extends LinearOpMode {
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -12,7 +12,7 @@ public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        IntakeServos intake      = new IntakeServos (hardwareMap,            gamepad1);
+        IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad1, false);
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
         LinearLift   lift        = new LinearLift   (hardwareMap, telemetry, gamepad2, false);

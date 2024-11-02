@@ -62,9 +62,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         DcMotor frontLeftDrive  =  hardwareMap.get(DcMotor.class, "left_driveF" );
         DcMotor backLeftDrive   =  hardwareMap.get(DcMotor.class, "left_driveB" );
 
-        IntakeSlide intakeSlide =  new IntakeSlide(hardwareMap, telemetry, gamepad2, false); //todo: add
-        IntakeWrist intakeWrist =  new IntakeWrist(hardwareMap, telemetry, gamepad2, false);
-        LinearLift linearLift   =  new LinearLift (hardwareMap, telemetry, gamepad2, false);
+        IntakeServos intake       = new IntakeServos(hardwareMap, /*      */ gamepad1, false);
+        IntakeSlide intakeSlide   = new IntakeSlide (hardwareMap, telemetry, gamepad2, false);
+        IntakeWrist intakeWrist   = new IntakeWrist (hardwareMap, telemetry, gamepad2, false);
+        LinearLift linearLift     = new LinearLift  (hardwareMap, telemetry, gamepad2, false);
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
@@ -73,7 +74,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection. UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.  FORWARD
+                        RevHubOrientationOnRobot.UsbFacingDirection.  BACKWARD
                 )));    // todo: orientation is temporary
 
        // ########################################################################################
@@ -113,6 +114,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             // insert loops here
             // example: intake.loop()
 
+            intake.loop(     );
             intakeSlide.loop();
             intakeWrist.loop();
             linearLift.loop( );

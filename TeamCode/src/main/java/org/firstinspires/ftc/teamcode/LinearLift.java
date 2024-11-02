@@ -83,5 +83,6 @@ public class LinearLift {
         if (!isAutonomous) readGamepad(gamepad);
         liftMotor.setTargetPosition(targetPositionCount);
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
+        telemetry.update();
     }
 }

@@ -100,13 +100,6 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     private AprilTagProcessor tagProcessor;
     private VisionPortal tagsVisionPortal;
 
-    // Calculate the COUNTS_PER_INCH for your specific drive train.
-    // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
-    // For external drive gearing, set DRIVE_GEAR_REDUCTION as needed.
-    // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
-    // This is gearing DOWN for less speed and more torque.
-    // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-
     double MMperIN = 25.4;
     int wheelDiaMM = 75;
     double wheelDiaIN = wheelDiaMM / MMperIN; //or input just inches as constant
@@ -204,8 +197,6 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     /**
      * Checks on linear slide, four bar, and intake inside driving loops so that they can update themselves
      */
-
-
     protected void mechanismLoop() {
         intakeSlide.loop();
         intakeWrist.loop();
@@ -252,7 +243,17 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     public void runAutonomousProgram() {
         //intakeWrist.setPosition(IntakeWrist.INTAKE_POSITION);
 
-        /* AUTO 1
+        /*
+
+        BASIC AUTO:
+
+        Preload a sample
+        Drive to Bucket Zone
+        Score sample in high basket
+        Commit level 1 ascension
+
+
+         * AUTO 1
          * Preload a specimen
          * Fields: Starting square, Ascent square,
          *
