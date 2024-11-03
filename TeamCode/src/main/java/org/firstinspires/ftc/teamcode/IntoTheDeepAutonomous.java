@@ -258,7 +258,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
     public void runAutonomousProgram() {
 
-        double distanceIN_observationZone_netZone = 94.5;
+        /*double distanceIN_observationZone_netZone = 94.5;
 
         driveStraight(DRIVE_SPEED, 8, 0);
         turnToHeading(TURN_SPEED, 90);
@@ -272,7 +272,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
         //return to
         turnToHeading(TURN_SPEED, -90);
-        driveStraight(DRIVE_SPEED, distanceIN_observationZone_netZone, -90);
+        driveStraight(DRIVE_SPEED, distanceIN_observationZone_netZone, -90);*/
 
         /*driveStraight(DRIVE_SPEED, 6, -45);
         turnToHeading(TURN_SPEED, 0);*/

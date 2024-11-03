@@ -17,10 +17,10 @@ public class LinearLift {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
-    static final int LOW_HARDSTOP = 5;
-    static final int HIGH_HARDSTOP = 2750;
+    static final int LOW_HARDSTOP = 3;
+    static final int HIGH_HARDSTOP = 2600;
 
-    static final int HIGH_BUCKET = 2750;
+    static final int HIGH_BUCKET = 2525;
     static final int LOW_BUCKET = 1710;
 
     static final double MAX_SPEED = 0.5;
@@ -97,8 +97,9 @@ public class LinearLift {
         if (!isAutonomous) readGamepad(gamepad);
         liftMotor.setTargetPosition(targetPositionCount);
 
-        if (targetPositionCount == LOW_HARDSTOP && liftMotor.getCurrentPosition() < 30) {
+        if (targetPositionCount == LOW_HARDSTOP && liftMotor.getCurrentPosition() < 10) {
             liftMotor.setPower(0);
+            //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } else {
             if (Math.abs(targetPositionCount - liftMotor.getCurrentPosition()) < 5) {
                 liftMotor.setPower(0.01);

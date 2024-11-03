@@ -38,7 +38,7 @@ public class IntakeWrist {
         wristMotor.setDirection(DcMotor.Direction.FORWARD);
         wristMotor.setTargetPosition(ZERO_HARDSTOP);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        wristMotor.setPower(1);
+        wristMotor.setPower(0);
 
 
         telemetry.addData("Slide motor position", "%7d", wristMotor.getCurrentPosition());
@@ -54,11 +54,12 @@ public class IntakeWrist {
     }
 
     private void readGamepad(Gamepad gamepad) { // will be unnecessary if wrist is automated
-        if (gamepad.dpad_up  ) setPosition(TRANSFER_POSITION);
-        if (gamepad.dpad_down) setPosition(DEPLOYED_POSITION);
+        if (gamepad.dpad_down) setPosition(TRANSFER_POSITION);
+        if (gamepad.dpad_up  ) setPosition(DEPLOYED_POSITION);
     }
 
     public void loop() {
+        wristMotor.setPower(1);
         if (!isAutonomous) readGamepad(gamepad);
         telemetry.addData("Wrist encoder position", wristMotor.getCurrentPosition());
     }

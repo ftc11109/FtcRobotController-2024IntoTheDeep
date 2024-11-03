@@ -18,7 +18,7 @@ public class IntakeSlide {
     static final int LOW_HARDSTOP = 2;
     static final int HIGH_HARDSTOP = 1440; //2880
     static final double MAX_SPEED = 1;
-    static final double ADJUSTMENT_MODIFIER = 15;
+    static final double ADJUSTMENT_MODIFIER = 30;
 
     // todo: make future statics public so they can be used externally, in setPosition()
 
