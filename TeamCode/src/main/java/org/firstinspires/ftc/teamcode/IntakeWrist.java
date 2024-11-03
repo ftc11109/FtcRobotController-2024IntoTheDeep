@@ -15,12 +15,10 @@ public class IntakeWrist {
     private final Telemetry telemetry;
 
     // todo: figure out values for all placeholders
-    static final int LOW_HARDSTOP = 0;
-    static final int HIGH_HARDSTOP = 1000; // placeholde
-
-    static final int INTAKE_POSITION = 0; // placeholder
-    static final int LIFTED_POSITION = 0;
-    static final int TRANSFER_POSITION = 100; // placeholder
+    static final int ZERO_HARDSTOP = 5;
+    static final int DEPLOYED_POSITION = -1070; // placeholder
+    //static final int LIFTED_POSITION = 0;
+    static final int TRANSFER_POSITION = 5; // placeholder
     // add statics as necessary
 
     private int motorTickTarget = 0; // this variable is for telemetry
@@ -37,8 +35,8 @@ public class IntakeWrist {
 
         wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        wristMotor.setDirection(DcMotor.Direction.FORWARD); //placeholder
-        wristMotor.setTargetPosition(LOW_HARDSTOP);
+        wristMotor.setDirection(DcMotor.Direction.FORWARD);
+        wristMotor.setTargetPosition(ZERO_HARDSTOP);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setPower(1);
 
@@ -56,19 +54,13 @@ public class IntakeWrist {
     }
 
     private void readGamepad(Gamepad gamepad) { // will be unnecessary if wrist is automated
-        if (gamepad.dpad_up)
-            setPosition(TRANSFER_POSITION);
-        if (gamepad.dpad_left || gamepad.dpad_right)
-            setPosition(LIFTED_POSITION);
-        if (gamepad.dpad_down)
-            setPosition(INTAKE_POSITION);
-
+        if (gamepad.dpad_up  ) setPosition(TRANSFER_POSITION);
+        if (gamepad.dpad_down) setPosition(DEPLOYED_POSITION);
     }
 
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
         telemetry.addData("Wrist encoder position", wristMotor.getCurrentPosition());
-        telemetry.update();
     }
 
 

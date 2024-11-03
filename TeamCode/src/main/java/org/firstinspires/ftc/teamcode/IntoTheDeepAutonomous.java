@@ -75,9 +75,11 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     protected DcMotor backRightDrive = null;
     protected IMU imu = null;
 
+    protected IntakeServos intake;
+    protected RampServo ramp;
     protected IntakeSlide intakeSlide;
     protected IntakeWrist intakeWrist;
-    protected LinearLift  linearLift;
+    protected LinearLift lift;
 
     protected ElapsedTime runtime = new ElapsedTime();
 
@@ -132,6 +134,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     static final double P_TURN_GAIN = 0.02;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_GAIN = 0.03;     // Larger is more responsive, but also less stable
 
+    int startingTile = 0; // which tile our robot starts on. 0 is cornered in the observation zone's triangle.
 
     //this sets up for bulk reads!
     protected List<LynxModule> allHubs;
@@ -143,9 +146,12 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         backRightDrive  = hardwareMap.get(DcMotor.class, "right_driveB");
         frontRightDrive = hardwareMap.get(DcMotor.class, "right_driveF");
 
-        intakeSlide     = new IntakeSlide(hardwareMap, telemetry, gamepad2, true);
-        intakeWrist     = new IntakeWrist(hardwareMap, telemetry, gamepad2, true);
-        linearLift      = new LinearLift (hardwareMap, telemetry, gamepad2, true);
+        intake          = new IntakeServos(hardwareMap, gamepad2, true);
+        ramp            = new RampServo   (hardwareMap, gamepad2, true);
+
+        intakeSlide     = new IntakeSlide (hardwareMap, telemetry, gamepad2, true);
+        intakeWrist     = new IntakeWrist (hardwareMap, telemetry, gamepad2, true);
+        lift            = new LinearLift  (hardwareMap, telemetry, gamepad2, true);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -166,7 +172,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                        RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
                 )));
 
         // Ensure the robot is stationary.  Reset the encoders and set the motors to BRAKE mode
@@ -200,7 +206,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     protected void mechanismLoop() {
         intakeSlide.loop();
         intakeWrist.loop();
-        linearLift.loop( );
+        lift.loop( );
     }
 
     @Override
@@ -208,6 +214,16 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         setupRobot();
         // Wait for the game to start (Display Gyro value while waiting)
         while (opModeInInit()) {
+
+            if (gamepad1.dpad_right && startingTile > 0) {
+                startingTile -= 1;
+                while (gamepad1.dpad_right);
+            }
+            if (gamepad1.dpad_left && startingTile < 3) {
+                startingTile += 1;
+                while (gamepad1.dpad_left);
+            }
+            telemetry.addData("starting tile", startingTile);
             //telemetry.addData("", "Robot Heading = %4.0f", getRawHeading());
             telemetry.addData("bot heading:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
@@ -241,7 +257,34 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
 
     public void runAutonomousProgram() {
-        //intakeWrist.setPosition(IntakeWrist.INTAKE_POSITION);
+
+        double distanceIN_observationZone_netZone = 94.5;
+
+        driveStraight(DRIVE_SPEED, 8, 0);
+        turnToHeading(TURN_SPEED, 90);
+        driveStraight(DRIVE_SPEED, distanceIN_observationZone_netZone - (startingTile * 23.6), 90);
+        turnToHeading(TURN_SPEED, -45);
+
+        //score
+        lift.setPosition(LinearLift.HIGH_BUCKET);
+        rampScore();
+        lift.setPosition(LinearLift.LOW_HARDSTOP);
+
+        //return to
+        turnToHeading(TURN_SPEED, -90);
+        driveStraight(DRIVE_SPEED, distanceIN_observationZone_netZone, -90);
+
+        /*driveStraight(DRIVE_SPEED, 6, -45);
+        turnToHeading(TURN_SPEED, 0);*/
+
+
+        //eat sample
+        /*intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
+        runIntake(1, 1250);
+        intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
+        runIntake(-1, 1250);*/
+
+
 
         /*
 
@@ -258,7 +301,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
          * Parameters: Starting square, Ascent square,
          * Scores preloaded specimen in low chamber. (we cant reach the high one)
          * Moves to the middle of spike marks and turns 2 (3 if we have time) samples into specimens.
-         * Scores them on low chamber and epicly preforms level 1 ascent
+         * Scores them on low chamber and preforms level 1 ascent
          */
 
     }
@@ -617,5 +660,20 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         // Save a new heading offset equal to the current raw heading.
         headingOffset = getRawHeading();
         robotHeading = 0;
+    }
+
+    public void runIntake(int power, long time) {
+        intake.leftIntakeServo.setPower(power);
+        intake.rightIntakeServo.setPower(power);
+        sleep(time);
+        intake.leftIntakeServo.setPower(0);
+        intake.rightIntakeServo.setPower(0);
+
+    }
+
+    public void rampScore() {
+        ramp.rampServo.setServoPosition(RampServo.SCORE_POSITION);
+        sleep(750);
+        ramp.rampServo.setServoPosition(RampServo.LOAD_POSITION);
     }
 }

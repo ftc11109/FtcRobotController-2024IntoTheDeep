@@ -17,8 +17,8 @@ public class IntakeServos {
         this.isAutonomous = isAutonomous;
         leftIntakeServo.init(hardwareMap, "intakeServoL"); // port 0
         rightIntakeServo.init(hardwareMap, "intakeServoR"); // port 1
-        leftIntakeServo.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightIntakeServo.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void loop() {

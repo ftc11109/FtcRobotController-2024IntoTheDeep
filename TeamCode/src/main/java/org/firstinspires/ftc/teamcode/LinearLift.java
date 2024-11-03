@@ -17,15 +17,15 @@ public class LinearLift {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
-    static final int LOW_HARDSTOP = 0;
-    static final int HIGH_HARDSTOP = 1000; // placeholder
+    static final int LOW_HARDSTOP = 5;
+    static final int HIGH_HARDSTOP = 2750;
 
-    static final int HIGH_BUCKET = 1000; // placeholder
-    static final int LOW_BUCKET = 500; //placeholder
+    static final int HIGH_BUCKET = 2750;
+    static final int LOW_BUCKET = 1710;
 
-    static final double MAX_SPEED = 1;
+    static final double MAX_SPEED = 0.2;
 
-    static final int ADJUSTMENT_MODIFIER = 2;
+    static final int ADJUSTMENT_MODIFIER = 10;
 
     final boolean isAutonomous;
 
@@ -45,14 +45,14 @@ public class LinearLift {
         this.telemetry = telemetry;
 
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
-        liftMotor.setDirection(DcMotor.Direction.REVERSE); //placeholder
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); // todo: figure out which value is best
+        liftMotor.setDirection(DcMotor.Direction.REVERSE);
         liftMotor.setTargetPosition(LOW_HARDSTOP);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor.setPower(MAX_SPEED);
+        liftMotor.setPower(0);
 
 
-        telemetry.addData("Slide motor position", "%7d", liftMotor.getCurrentPosition());
+        telemetry.addData("Lift motor position", liftMotor.getCurrentPosition());
 
     }
 
@@ -66,7 +66,7 @@ public class LinearLift {
 
     private void readGamepad(Gamepad gamepad) {
 
-        if (gamepad.left_stick_y > 0.1 || gamepad.left_stick_y < -0.1 ) {
+        /*if (gamepad.left_stick_y > 0.1 || gamepad.left_stick_y < -0.1 ) {
 
             targetPositionCount = Range.clip((int)(targetPositionCount + ADJUSTMENT_MODIFIER*-gamepad.left_stick_y), LOW_HARDSTOP, HIGH_HARDSTOP);
 
@@ -86,18 +86,27 @@ public class LinearLift {
         }
 
         telemetry.addData("target position count", targetPositionCount);
-        telemetry.addData("additive math", ADJUSTMENT_MODIFIER*-gamepad.left_stick_y);
+        telemetry.addData("additive math", ADJUSTMENT_MODIFIER*-gamepad.left_stick_y);*/
 
-        /*if (gamepad.a) setPosition(LOW_HARDSTOP);
-        if (gamepad.b) setPosition(LOW_BUCKET  );
-        if (gamepad.y) setPosition(HIGH_BUCKET );*/
+        if (gamepad.a) targetPositionCount = LOW_HARDSTOP;
+        if (gamepad.b) targetPositionCount = LOW_BUCKET;
+        if (gamepad.y) targetPositionCount = HIGH_BUCKET;
 
     }
 
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
         liftMotor.setTargetPosition(targetPositionCount);
+
+        if (targetPositionCount == LOW_HARDSTOP && liftMotor.getCurrentPosition() < 10) {
+            liftMotor.setPower(0);
+        } else {
+            if (Math.abs(targetPositionCount - liftMotor.getCurrentPosition()) < 5) {
+                liftMotor.setPower(0.01);
+            } else {
+                liftMotor.setPower(MAX_SPEED); // this should hopefully stop our lift from falling
+            }
+        }
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
-        telemetry.update();
     }
 }

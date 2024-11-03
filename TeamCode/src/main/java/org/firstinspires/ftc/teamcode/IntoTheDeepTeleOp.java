@@ -57,15 +57,17 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
         // Note: The names here do not match the hardware names -- this should be fixed in the configuration.
-        DcMotor backRightDrive  =  hardwareMap.get(DcMotor.class, "right_driveB");
-        DcMotor frontRightDrive =  hardwareMap.get(DcMotor.class, "right_driveF");
-        DcMotor frontLeftDrive  =  hardwareMap.get(DcMotor.class, "left_driveF" );
-        DcMotor backLeftDrive   =  hardwareMap.get(DcMotor.class, "left_driveB" );
+        DcMotor backRightDrive   = hardwareMap.get(DcMotor.class, "right_driveB");
+        DcMotor frontRightDrive  = hardwareMap.get(DcMotor.class, "right_driveF");
+        DcMotor frontLeftDrive   = hardwareMap.get(DcMotor.class, "left_driveF" );
+        DcMotor backLeftDrive    = hardwareMap.get(DcMotor.class, "left_driveB" );
 
-        IntakeServos intake       = new IntakeServos(hardwareMap, /*      */ gamepad1, false);
-        IntakeSlide intakeSlide   = new IntakeSlide (hardwareMap, telemetry, gamepad2, false);
-        IntakeWrist intakeWrist   = new IntakeWrist (hardwareMap, telemetry, gamepad2, false);
-        LinearLift linearLift     = new LinearLift  (hardwareMap, telemetry, gamepad2, false);
+        IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
+        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad2, false);
+
+        IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
+        IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
+        LinearLift   rampLift    = new LinearLift   (hardwareMap, telemetry, gamepad1, false);
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
@@ -114,12 +116,17 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             // insert loops here
             // example: intake.loop()
 
-            intake.loop(); intakeSlide.loop(); intakeWrist.loop(); linearLift.loop();
+            intake.loop();
+            ramp.loop();
+
+            intakeSlide.loop();
+            intakeWrist.loop();
+            rampLift.loop();
 
             // controls:
             double y  = -gamepad1.left_stick_y  ;  // note: pushing stick forward gives negative value
             double x  =  gamepad1.left_stick_x  ;
-            double rx = -gamepad1.right_stick_x ;
+            double rx =  gamepad1.right_stick_x ;
 
             // use the IMU to determine the orientation of the robot relative to its position when
             // initialized, and then calculate rotation
@@ -174,10 +181,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             }
 
             // send calculated power to wheels
-            frontLeftDrive.setPower(leftFrontPower);
-            frontRightDrive.setPower(rightFrontPower);
-            backLeftDrive.setPower(leftBackPower);
-            backRightDrive.setPower(rightBackPower);
+            frontLeftDrive.setPower(leftFrontPower * 0.5);
+            frontRightDrive.setPower(rightFrontPower * 0.5);
+            backLeftDrive.setPower(leftBackPower * 0.5);
+            backRightDrive.setPower(rightBackPower * 0.5);
 
             // display elapsed game time, wheel power, misc. debug utils
             telemetry.addData("Status", "Run Time: " + runtime);

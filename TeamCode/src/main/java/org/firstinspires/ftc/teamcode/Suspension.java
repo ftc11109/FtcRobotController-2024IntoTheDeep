@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Suspension {
 
-    protected static DcMotor susMotor;
+    protected static DcMotor suspensionMotor;
     private final Telemetry telemetry;
     private final Gamepad gamepad;
 
@@ -33,20 +33,20 @@ public class Suspension {
     public Suspension(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
         // if linear slide doesn't run in auto, isAutonomous will be unnecessary
 
-        susMotor = hardwareMap.get(DcMotor.class,"liftMotor"); // port 2
+        suspensionMotor = hardwareMap.get(DcMotor.class,"suspensionMotor"); // port 3
 
         this.isAutonomous = isAutonomous;
         this.gamepad = gamepad;
         this.telemetry = telemetry;
 
-        susMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        susMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
-        susMotor.setDirection(DcMotor.Direction.FORWARD); //placeholder
-        susMotor.setTargetPosition(LOW_HARDSTOP);
-        susMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        suspensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        suspensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
+        suspensionMotor.setDirection(DcMotor.Direction.FORWARD);
+        suspensionMotor.setTargetPosition(LOW_HARDSTOP);
+        suspensionMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        telemetry.addData("Slide motor position", "%7d", susMotor.getCurrentPosition());
+        telemetry.addData("Slide motor position", "%7d", suspensionMotor.getCurrentPosition());
 
     }
 
@@ -66,12 +66,12 @@ public class Suspension {
 
             telemetry.addData("Manual Branch", "Adjustment made");
 
-        } else if (!susMotor.isBusy()) {
+        } else if (!suspensionMotor.isBusy()) {
 
             //This is so that if you let go of the joystick, it immediately stops the arm from moving. Not a bug!!!
 
-            targetPositionCount = Range.clip(susMotor.getCurrentPosition(), LOW_HARDSTOP, HIGH_HARDSTOP);
-            susMotor.setTargetPosition(targetPositionCount);
+            targetPositionCount = Range.clip(suspensionMotor.getCurrentPosition(), LOW_HARDSTOP, HIGH_HARDSTOP);
+            suspensionMotor.setTargetPosition(targetPositionCount);
 
             telemetry.addData("Manual Branch", "Stop moving");
         } else {
@@ -82,8 +82,8 @@ public class Suspension {
 
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
-        susMotor.setTargetPosition(targetPositionCount);
-        telemetry.addData("Sus encoder position", susMotor.getCurrentPosition());
+        suspensionMotor.setTargetPosition(targetPositionCount);
+        telemetry.addData("Sus encoder position", suspensionMotor.getCurrentPosition());
         telemetry.update();
     }
 }

@@ -15,10 +15,10 @@ public class IntakeSlide {
     private final Telemetry telemetry;
     private final ElapsedTime runtime = new ElapsedTime();
 
-    static final int LOW_HARDSTOP = 0;
-    static final int HIGH_HARDSTOP = 1000; // placeholder
+    static final int LOW_HARDSTOP = 2;
+    static final int HIGH_HARDSTOP = 1440; //2880
     static final double MAX_SPEED = 0.5;
-    static final double ADJUSTMENT_MODIFIER = 30;
+    static final double ADJUSTMENT_MODIFIER = 15;
 
     // todo: make future statics public so they can be used externally, in setPosition()
 
@@ -37,7 +37,7 @@ public class IntakeSlide {
 
         intakeSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
-        intakeSlideMotor.setDirection(DcMotor.Direction.FORWARD); //placeholder
+        intakeSlideMotor.setDirection(DcMotor.Direction.FORWARD);
         intakeSlideMotor.setTargetPosition(LOW_HARDSTOP);
         intakeSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeSlideMotor.setPower(MAX_SPEED);
@@ -81,7 +81,6 @@ public class IntakeSlide {
         if (!isAutonomous) readGamepad(gamepad);
         intakeSlideMotor.setTargetPosition(targetPositionCount);
         telemetry.addData("Slide encoder position", intakeSlideMotor.getCurrentPosition());
-        telemetry.update();
     }
 
     /*

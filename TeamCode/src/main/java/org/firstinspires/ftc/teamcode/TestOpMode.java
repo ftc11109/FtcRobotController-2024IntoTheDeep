@@ -12,15 +12,15 @@ public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        //IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
-        //RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad2, false);
-        //IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
+        IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
+        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad2, false);
+
+        IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
-        //LinearLift   rampLift    = new LinearLift   (hardwareMap, telemetry, gamepad1, false);
-        //Suspension   suspension  = new Suspension   (hardwareMap, telemetry, gamepad2, false);
+        LinearLift   rampLift    = new LinearLift   (hardwareMap, telemetry, gamepad1, false);
+        Suspension   suspension  = new Suspension   (hardwareMap, telemetry, gamepad2, false);
 
-
-        telemetry.addLine("Servo Test OpMode Initiated");
+        telemetry.addLine("Test OpMode Initiated");
         telemetry.update();
 
         waitForStart();
@@ -28,14 +28,16 @@ public class TestOpMode extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            //intake.loop();
-            //ramp.loop();
-            //intakeSlide.loop();
+            intake.loop();
+            ramp.loop();
+
+            intakeSlide.loop();
             intakeWrist.loop();
-            //rampLift.loop();
-            //suspension.loop();
+            rampLift.loop();
+            suspension.loop();
 //            telemetry.addData("Left Servo Position", intake.leftIntakeServo.getServoPosition());
 //            telemetry.addData("Right Servo Position", intake.rightIntakeServo.getServoPosition());
+            telemetry.update();
         }
     }
 }
