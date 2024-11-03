@@ -23,13 +23,13 @@ public class LinearLift {
     static final int HIGH_BUCKET = 2750;
     static final int LOW_BUCKET = 1710;
 
-    static final double MAX_SPEED = 0.2;
+    static final double MAX_SPEED = 0.5;
 
     static final int ADJUSTMENT_MODIFIER = 10;
 
     final boolean isAutonomous;
 
-    public int targetPositionCount;
+    public int targetPositionCount = 0;
 
     // todo: add more static encoder count variables as needed, like high, middle and low positions
 
@@ -50,7 +50,6 @@ public class LinearLift {
         liftMotor.setTargetPosition(LOW_HARDSTOP);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(0);
-
 
         telemetry.addData("Lift motor position", liftMotor.getCurrentPosition());
 
@@ -98,7 +97,7 @@ public class LinearLift {
         if (!isAutonomous) readGamepad(gamepad);
         liftMotor.setTargetPosition(targetPositionCount);
 
-        if (targetPositionCount == LOW_HARDSTOP && liftMotor.getCurrentPosition() < 10) {
+        if (targetPositionCount == LOW_HARDSTOP && liftMotor.getCurrentPosition() < 30) {
             liftMotor.setPower(0);
         } else {
             if (Math.abs(targetPositionCount - liftMotor.getCurrentPosition()) < 5) {

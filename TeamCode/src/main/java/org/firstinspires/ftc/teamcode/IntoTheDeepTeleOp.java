@@ -63,11 +63,12 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         DcMotor backLeftDrive    = hardwareMap.get(DcMotor.class, "left_driveB" );
 
         IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
-        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad2, false);
+        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
         LinearLift   rampLift    = new LinearLift   (hardwareMap, telemetry, gamepad1, false);
+        Suspension   suspension  = new Suspension   (hardwareMap, telemetry, gamepad1, false);
 
         // Initialize the IMU (Inertia Measurement Unit), used to detect the orientation of the robot
         // for Field-Oriented driving
@@ -122,6 +123,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             intakeSlide.loop();
             intakeWrist.loop();
             rampLift.loop();
+            suspension.loop();
 
             // controls:
             double y  = -gamepad1.left_stick_y  ;  // note: pushing stick forward gives negative value
@@ -181,10 +183,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             }
 
             // send calculated power to wheels
-            frontLeftDrive.setPower(leftFrontPower * 0.5);
-            frontRightDrive.setPower(rightFrontPower * 0.5);
-            backLeftDrive.setPower(leftBackPower * 0.5);
-            backRightDrive.setPower(rightBackPower * 0.5);
+            frontLeftDrive.setPower(leftFrontPower * 0.75);
+            frontRightDrive.setPower(rightFrontPower * 0.75);
+            backLeftDrive.setPower(leftBackPower * 0.75);
+            backRightDrive.setPower(rightBackPower * 0.75);
 
             // display elapsed game time, wheel power, misc. debug utils
             telemetry.addData("Status", "Run Time: " + runtime);

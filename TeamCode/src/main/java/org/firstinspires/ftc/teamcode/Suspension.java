@@ -18,9 +18,10 @@ public class Suspension {
     private final ElapsedTime runtime = new ElapsedTime();
 
     static final int LOW_HARDSTOP = 0;
-    static final int HIGH_HARDSTOP = 1000; // placeholder
+    static final int HIGH_HARDSTOP = -5115;
+    static final int HANG_POSITION = -2978;
 
-    static final int ADJUSTMENT_MODIFIER = 30;
+    static final double MAX_SPEED = 1;
 
     final boolean isAutonomous;
 
@@ -36,17 +37,17 @@ public class Suspension {
         suspensionMotor = hardwareMap.get(DcMotor.class,"suspensionMotor"); // port 3
 
         this.isAutonomous = isAutonomous;
-        this.gamepad = gamepad;
-        this.telemetry = telemetry;
+        this.gamepad      = gamepad;
+        this.telemetry    = telemetry;
 
         suspensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         suspensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
         suspensionMotor.setDirection(DcMotor.Direction.FORWARD);
         suspensionMotor.setTargetPosition(LOW_HARDSTOP);
-        suspensionMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        suspensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        suspensionMotor.setPower(MAX_SPEED);
 
-
-        telemetry.addData("Slide motor position", "%7d", suspensionMotor.getCurrentPosition());
+        telemetry.addData("Suspension motor position", "%7d", suspensionMotor.getCurrentPosition());
 
     }
 
@@ -59,31 +60,15 @@ public class Suspension {
     }
 
     private void readGamepad(Gamepad gamepad) {
-
-        if (gamepad.left_stick_y > 0.1 || gamepad.left_stick_y < -0.1 ) {
-
-            targetPositionCount = Range.clip((int)(targetPositionCount + ADJUSTMENT_MODIFIER*-gamepad.left_stick_y), LOW_HARDSTOP, HIGH_HARDSTOP);
-
-            telemetry.addData("Manual Branch", "Adjustment made");
-
-        } else if (!suspensionMotor.isBusy()) {
-
-            //This is so that if you let go of the joystick, it immediately stops the arm from moving. Not a bug!!!
-
-            targetPositionCount = Range.clip(suspensionMotor.getCurrentPosition(), LOW_HARDSTOP, HIGH_HARDSTOP);
-            suspensionMotor.setTargetPosition(targetPositionCount);
-
-            telemetry.addData("Manual Branch", "Stop moving");
-        } else {
-            telemetry.addData("Manual Branch", "Running to Junction");
-
-        }
+        if(gamepad.dpad_up) targetPositionCount = HIGH_HARDSTOP;
+        if(gamepad.dpad_down) targetPositionCount = HANG_POSITION;
+        if(gamepad.dpad_left) targetPositionCount = LOW_HARDSTOP;
     }
 
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
         suspensionMotor.setTargetPosition(targetPositionCount);
         telemetry.addData("Sus encoder position", suspensionMotor.getCurrentPosition());
-        telemetry.update();
+        telemetry.addData("set position", targetPositionCount);
     }
 }

@@ -13,12 +13,12 @@ public class TestOpMode extends LinearOpMode {
     public void runOpMode() {
 
         IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
-        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad2, false);
+        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
         LinearLift   rampLift    = new LinearLift   (hardwareMap, telemetry, gamepad1, false);
-        Suspension   suspension  = new Suspension   (hardwareMap, telemetry, gamepad2, false);
+        Suspension   suspension  = new Suspension   (hardwareMap, telemetry, gamepad1, false);
 
         telemetry.addLine("Test OpMode Initiated");
         telemetry.update();
