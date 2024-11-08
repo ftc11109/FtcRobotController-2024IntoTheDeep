@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -19,7 +20,7 @@ public class LinearLift {
 
     static final int LOW_HARDSTOP = 3;
     static final int HIGH_HARDSTOP = 2600;
-
+    //limit: 3017 - 3011
     static final int HIGH_BUCKET = 2525;
     static final int LOW_BUCKET = 1710;
 
@@ -102,11 +103,28 @@ public class LinearLift {
             //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } else {
             if (Math.abs(targetPositionCount - liftMotor.getCurrentPosition()) < 5) {
-                liftMotor.setPower(0.01);
+                liftMotor.setPower(0);
             } else {
-                liftMotor.setPower(MAX_SPEED); // this should hopefully stop our lift from falling
+                liftMotor.setPower(0); // this should hopefully stop our lift from falling
             }
         }
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
+    }
+    public int getPosition() {
+        return liftMotor.getCurrentPosition();
+    }
+    public void runToAndWait(int ticks) {
+        this.setPosition(ticks);
+        //does nothing until done.
+        while (!isAtTarget()) {
+            boolean placeholder = false;
+        }
+    }
+    public boolean isAtTarget() {
+        if (Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 2) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

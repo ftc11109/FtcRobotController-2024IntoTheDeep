@@ -63,7 +63,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         DcMotor backLeftDrive    = hardwareMap.get(DcMotor.class, "left_driveB" );
 
         IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
-        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
+        RampServo    rampServo        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
@@ -118,7 +118,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             // example: intake.loop()
 
             intake.loop();
-            ramp.loop();
+            rampServo.loop();
 
             intakeSlide.loop();
             intakeWrist.loop();

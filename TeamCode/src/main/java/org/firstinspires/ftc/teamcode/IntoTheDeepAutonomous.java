@@ -76,10 +76,10 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     protected IMU imu = null;
 
     protected IntakeServos intake;
-    protected RampServo ramp;
+    protected RampServo rampServo;
     protected IntakeSlide intakeSlide;
     protected IntakeWrist intakeWrist;
-    protected LinearLift lift;
+    protected LinearLift rampLift;
 
     protected ElapsedTime runtime = new ElapsedTime();
 
@@ -147,11 +147,11 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         frontRightDrive = hardwareMap.get(DcMotor.class, "right_driveF");
 
         intake          = new IntakeServos(hardwareMap, gamepad2, true);
-        ramp            = new RampServo   (hardwareMap, gamepad2, true);
+        rampServo       = new RampServo   (hardwareMap, gamepad2, true);
 
         intakeSlide     = new IntakeSlide (hardwareMap, telemetry, gamepad2, true);
         intakeWrist     = new IntakeWrist (hardwareMap, telemetry, gamepad2, true);
-        lift            = new LinearLift  (hardwareMap, telemetry, gamepad2, true);
+        rampLift        = new LinearLift  (hardwareMap, telemetry, gamepad2, true);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -206,7 +206,8 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     protected void mechanismLoop() {
         intakeSlide.loop();
         intakeWrist.loop();
-        lift.loop( );
+        rampLift.loop( );
+        rampServo.loop();
     }
 
     @Override
@@ -283,7 +284,22 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         runIntake(1, 1250);
         intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
         runIntake(-1, 1250);*/
+        //Move away from the starting point and turn towards the net zone.
+        driveStraight(DRIVE_SPEED, 6, 0);
+        turnToHeading(TURN_SPEED, -90);
+        //Lift the slide, (and the ramp (and the sample in the ramp))
+        rampLift.setPosition(LinearLift.HIGH_BUCKET + 40);
+        //Move towards the net zone and turn.
+        driveStraight(DRIVE_SPEED, -46, -90);
+        turnToHeading(TURN_SPEED, -45);
 
+        //rampLift.runToAndWait(LinearLift.HIGH_BUCKET);
+
+        //while(!rampLift.isAtTarget()) {}
+        //Slight delay to avoid shaking messing up our really nice auto
+        sleep(300);
+        //Then tilt the servo (and the bucket (and the sample)) making the sample fall into the bucket.
+        rampScore();
 
 
         /*
@@ -526,8 +542,6 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     }
 
     // **********  LOW Level driving functions.  ********************
-
-    // todo: something here isn't working right/left (haha)
     /**
      * This method uses a Proportional Controller to determine how much steering correction is required.
      *
@@ -663,17 +677,23 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     }
 
     public void runIntake(int power, long time) {
+
         intake.leftIntakeServo.setPower(power);
         intake.rightIntakeServo.setPower(power);
         sleep(time);
-        intake.leftIntakeServo.setPower(0);
+        intake.leftIntakeServo.setPower(0); //Todo: should these be 0 or no
         intake.rightIntakeServo.setPower(0);
 
     }
 
     public void rampScore() {
-        ramp.rampServo.setServoPosition(RampServo.SCORE_POSITION);
-        sleep(750);
-        ramp.rampServo.setServoPosition(RampServo.LOAD_POSITION);
+        rampServo.rampServo.setServoPosition(RampServo.SCORE_POSITION);
+        sleep(3000);
+        rampServo.rampServo.setServoPosition(RampServo.LOAD_POSITION);
     }
 }
+/*todo: Im gonna try to write code
+   intake.intakeSlideMotor.setPosition(LOW_HARDSTOP)
+   intake.intakeSlideMotor.(RUN_TO POSITION)
+
+ */
