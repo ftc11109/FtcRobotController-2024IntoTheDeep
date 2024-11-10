@@ -15,8 +15,8 @@ public class IntakeWrist {
     private final Telemetry telemetry;
 
     // todo: figure out values for all placeholders
-    static final int ZERO_HARDSTOP = 5;
-    static final int DEPLOYED_POSITION = -1070; // placeholder
+    static final int ZERO_HARDSTOP = 0;
+    static final int DEPLOYED_POSITION = -830; // was -1070
     //static final int LIFTED_POSITION = 0;
     static final int TRANSFER_POSITION = 5; // placeholder
     // add statics as necessary
@@ -34,7 +34,7 @@ public class IntakeWrist {
         this.telemetry = telemetry;
 
         wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        wristMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         wristMotor.setDirection(DcMotor.Direction.FORWARD);
         wristMotor.setTargetPosition(ZERO_HARDSTOP);
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);

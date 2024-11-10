@@ -300,8 +300,11 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         sleep(300);
         //Then tilt the servo (and the bucket (and the sample)) making the sample fall into the bucket.
         rampScore();
-
-
+        // Then lower arm, intake sample, move arm (and sample) up and outake sample. Then move the liniar
+        // lift (and ramp (and the sample)) to score position and score. While that's gong, arm goes down and intakes
+        // sample and moves back up with sample and waits for ramp to go back down and outakes it and repeats two times
+        // (three if we can) and go to acsent zone a level one acsends.
+        rampLift.setPosition(LinearLift.LOW_HARDSTOP);
         /*
 
         BASIC AUTO:

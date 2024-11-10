@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -24,15 +22,11 @@ public class LinearLift {
     static final int HIGH_BUCKET = 2525;
     static final int LOW_BUCKET = 1710;
 
-    static final double MAX_SPEED = 0.5;
-
-    static final int ADJUSTMENT_MODIFIER = 10;
+    static final double MAX_SPEED = 0.85;
 
     final boolean isAutonomous;
 
     public int targetPositionCount = 0;
-
-    // todo: add more static encoder count variables as needed, like high, middle and low positions
 
     // todo: determine what speed to set the motors to & whether up speed is different than down speed
 
@@ -103,9 +97,9 @@ public class LinearLift {
             //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } else {
             if (Math.abs(targetPositionCount - liftMotor.getCurrentPosition()) < 5) {
-                liftMotor.setPower(0);
+                liftMotor.setPower(0.01);
             } else {
-                liftMotor.setPower(0); // this should hopefully stop our lift from falling
+                liftMotor.setPower(MAX_SPEED); // this should hopefully stop our lift from falling
             }
         }
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
@@ -121,10 +115,6 @@ public class LinearLift {
         }
     }
     public boolean isAtTarget() {
-        if (Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 2) {
-            return true;
-        } else {
-            return false;
-        }
+        return Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 2;
     }
 }
