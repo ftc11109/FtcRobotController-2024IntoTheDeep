@@ -20,6 +20,8 @@ public class IntakeSlide {
     static final double MAX_SPEED = 1;
     static final double ADJUSTMENT_MODIFIER = 30;
 
+    // 120mm per rotation
+
     // todo: make future statics public so they can be used externally, in setPosition()
 
     final boolean isAutonomous;
@@ -81,6 +83,7 @@ public class IntakeSlide {
         if (!isAutonomous) readGamepad(gamepad);
         intakeSlideMotor.setTargetPosition(targetPositionCount);
         telemetry.addData("Slide encoder position", intakeSlideMotor.getCurrentPosition());
+        telemetry.addData("The math", GoBildaInchesToTicks.InchesToTicks(1, GoBildaInchesToTicks.GoBilda_223rpm));
     }
 
     /*
