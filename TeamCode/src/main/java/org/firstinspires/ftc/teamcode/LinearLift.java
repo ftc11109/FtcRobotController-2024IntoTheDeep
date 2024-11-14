@@ -26,7 +26,7 @@ public class LinearLift {
 
     final boolean isAutonomous;
 
-    public int targetPositionCount = 0;
+    public int targetPositionCount;
 
     // todo: determine what speed to set the motors to & whether up speed is different than down speed
 
@@ -45,6 +45,8 @@ public class LinearLift {
         liftMotor.setTargetPosition(LOW_HARDSTOP);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setPower(0);
+
+        targetPositionCount = LOW_HARDSTOP;
 
         telemetry.addData("Lift motor position", liftMotor.getCurrentPosition());
 

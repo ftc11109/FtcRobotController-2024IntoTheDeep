@@ -18,7 +18,7 @@ public class IntakeWrist {
     static final int ZERO_HARDSTOP = 0;
     static final int DEPLOYED_POSITION = -830; // was -1070
     //static final int LIFTED_POSITION = 0;
-    static final int TRANSFER_POSITION = 5; // placeholder
+    static final int TRANSFER_POSITION = 0;
     // add statics as necessary
 
     private int motorTickTarget = 0; // this variable is for telemetry
@@ -40,6 +40,8 @@ public class IntakeWrist {
         wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         wristMotor.setPower(0);
 
+        motorTickTarget = TRANSFER_POSITION;
+
 
         telemetry.addData("Slide motor position", "%7d", wristMotor.getCurrentPosition());
     }
@@ -59,10 +61,15 @@ public class IntakeWrist {
     }
 
     public void loop() {
-        wristMotor.setPower(1);
+        if (wristMotor.getCurrentPosition() < -800 && motorTickTarget == DEPLOYED_POSITION) {
+            wristMotor.setPower(0);
+        }
+        else if(wristMotor.getCurrentPosition() > -10 && motorTickTarget == TRANSFER_POSITION) {
+            wristMotor.setPower(0);
+        }
+        else wristMotor.setPower(1);
         if (!isAutonomous) readGamepad(gamepad);
         telemetry.addData("Wrist encoder position", wristMotor.getCurrentPosition());
+        telemetry.addData("Wrist motor power", wristMotor.getPower());
     }
-
-
 }
