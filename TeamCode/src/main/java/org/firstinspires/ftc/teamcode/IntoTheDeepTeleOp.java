@@ -56,14 +56,13 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        // Note: The names here do not match the hardware names -- this should be fixed in the configuration.
         DcMotor backRightDrive   = hardwareMap.get(DcMotor.class, "right_driveB");
         DcMotor frontRightDrive  = hardwareMap.get(DcMotor.class, "right_driveF");
         DcMotor frontLeftDrive   = hardwareMap.get(DcMotor.class, "left_driveF" );
         DcMotor backLeftDrive    = hardwareMap.get(DcMotor.class, "left_driveB" );
 
         IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
-        RampServo    rampServo        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
+        RampServo    rampServo   = new RampServo    (hardwareMap, /*      */ gamepad1, false);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
@@ -80,7 +79,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                         RevHubOrientationOnRobot.UsbFacingDirection.  BACKWARD
                 )));    // todo: orientation is temporary
 
-       // ########################################################################################
+        // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
         // ########################################################################################
         // Most robots need the motors on one side to be reversed to drive forward.
@@ -126,9 +125,9 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             suspension.loop();
 
             // controls:
-            double y  = -gamepad1.left_stick_y  ;  // note: pushing stick forward gives negative value
-            double x  =  gamepad1.left_stick_x  ;
-            double rx =  gamepad1.right_stick_x ;
+            double y  = -gamepad1.left_stick_y;  // note: pushing stick forward gives negative value
+            double x  =  gamepad1.left_stick_x;
+            double rx =  gamepad1.right_stick_x;
 
             // use the IMU to determine the orientation of the robot relative to its position when
             // initialized, and then calculate rotation

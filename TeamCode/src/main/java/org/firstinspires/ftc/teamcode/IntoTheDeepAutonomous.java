@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+//import org.firstinspires.ftc.vision.VisionPortal;
+//import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 import java.util.Objects;
@@ -81,7 +81,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     protected IntakeWrist intakeWrist;
     protected LinearLift rampLift;
 
-    protected ElapsedTime runtime = new ElapsedTime();
+    //protected ElapsedTime runtime = new ElapsedTime();
 
     private double robotHeading = 0;
     private double headingOffset = 0;
@@ -99,8 +99,8 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
     double tbegin;
 
-    private AprilTagProcessor tagProcessor;
-    private VisionPortal tagsVisionPortal;
+    //private AprilTagProcessor tagProcessor;
+    //private VisionPortal tagsVisionPortal; what? no, this isn't code, what are you talking about?
 
     double MMperIN = 25.4;
     int wheelDiaMM = 75;
@@ -119,12 +119,12 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     // These constants define the desired driving/control characteristics
     // They can/should be tweaked to suit the specific robot drive train.
     static final double DRIVE_SPEED = 0.45;     // Max driving speed for better distance accuracy.
-    static final double SLOW_DRIVE_SPEED = 0.15;
-    static final double FAST_DRIVE_SPEED = 0.6;
+    //static final double SLOW_DRIVE_SPEED = 0.15;
+    //static final double FAST_DRIVE_SPEED = 0.6; h
     static final double TURN_SPEED = 0.45;     // Max Turn speed to limit turn rate
-    static final double SCORE_DRIVE_SPEED = 0.15;
-    static final double SLOW_TURN_SPEED = 0.15;
-    static final double FAST_TURN_SPEED = 0.6;
+    //static final double SCORE_DRIVE_SPEED = 0.15;
+    //static final double SLOW_TURN_SPEED = 0.15;
+    //static final double FAST_TURN_SPEED = 0.6; h
     static final double HEADING_THRESHOLD = 4.0;    // How close must the heading get to the target before moving to next step.
     // Requiring more accuracy (a smaller number) will often make the turn take longer to get into the final position.
     // Define the Proportional control coefficient (or GAIN) for "heading control".
@@ -206,8 +206,8 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     protected void mechanismLoop() {
         intakeSlide.loop();
         intakeWrist.loop();
-        rampLift.loop( );
-        rampServo.loop();
+        rampLift.loop();
+        rampServo.loop( );
     }
 
     @Override
@@ -218,11 +218,11 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
             if (gamepad1.dpad_right && startingTile > 0) {
                 startingTile -= 1;
-                while (gamepad1.dpad_right);
+                while (gamepad1.dpad_right) STFU();
             }
             if (gamepad1.dpad_left && startingTile < 3) {
                 startingTile += 1;
-                while (gamepad1.dpad_left);
+                while (gamepad1.dpad_left) STFU();
             }
             telemetry.addData("starting tile", startingTile);
             //telemetry.addData("", "Robot Heading = %4.0f", getRawHeading());
@@ -259,7 +259,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
     public void runAutonomousProgram() {
 
-        /*double distanceIN_observationZone_netZone = 94.5;
+        /*double distanceIN_observationZone_netZone = 94.5; h
 
         driveStraight(DRIVE_SPEED, 8, 0);
         turnToHeading(TURN_SPEED, 90);
@@ -276,19 +276,20 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         driveStraight(DRIVE_SPEED, distanceIN_observationZone_netZone, -90);*/
 
         /*driveStraight(DRIVE_SPEED, 6, -45);
-        turnToHeading(TURN_SPEED, 0);*/
+        turnToHeading(TURN_SPEED, 0); h */
 
 
         //eat sample
         /*intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
         runIntake(1, 1250);
         intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
-        runIntake(-1, 1250);*/
+        runIntake(-1, 1250);
+        h */
         //Move away from the starting point and turn towards the net zone.
         driveStraight(DRIVE_SPEED, 6, 0);
         turnToHeading(TURN_SPEED, -90);
         //Lift the slide, (and the ramp (and the sample in the ramp))
-        rampLift.setPosition(LinearLift.HIGH_BUCKET + 40);
+        rampLift.setPosition(LinearLift.HIGH_BUCKET); //it does NOT need +40 anymore. smh my head
         //Move towards the net zone and turn.
         driveStraight(DRIVE_SPEED, -46, -90);
         turnToHeading(TURN_SPEED, -45);
@@ -297,13 +298,13 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
         //while(!rampLift.isAtTarget()) {}
         //Slight delay to avoid shaking messing up our really nice auto
-        sleep(300);
+        //sleep(300);
         //Then tilt the servo (and the bucket (and the sample)) making the sample fall into the bucket.
         rampScore();
-        // Then lower arm, intake sample, move arm (and sample) up and outake sample. Then move the liniar
+        // Then lower arm, intake sample, move arm (and sample) up and eject sample. Then move the linear
         // lift (and ramp (and the sample)) to score position and score. While that's gong, arm goes down and intakes
-        // sample and moves back up with sample and waits for ramp to go back down and outakes it and repeats two times
-        // (three if we can) and go to acsent zone and level one acsends.
+        // sample and moves back up with sample and waits for ramp to go back down and ejects it and repeats two times
+        // (three if we can) and go to ascent zone to perform a level 1 ascension
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
 
         /*
@@ -373,7 +374,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             /*telemetry.addData("left front moved:", frontLeftDrive.getCurrentPosition());
             telemetry.addData("left back moved:", backLeftDrive.getCurrentPosition());
             telemetry.addData("right front moved:", frontRightDrive.getCurrentPosition());
-            telemetry.addData("right back moved:", backRightDrive.getCurrentPosition());*/
+            telemetry.addData("right back moved:", backRightDrive.getCurrentPosition()); h */
 
 
             frontLeftDrive.setTargetPosition(leftTargetF);
@@ -384,7 +385,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             /*telemetry.addData("driveStraight", "opModeIsActive");
             telemetry.addData("targetPositions", "%d : %d : %d : %d", leftTargetF, leftTargetB, rightTargetF, rightTargetB);
             telemetry.addData("move counts:", moveCounts);
-            telemetry.update();*/
+            telemetry.update(); h */
 
             frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -396,7 +397,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             telemetry.addData("ldf", frontLeftDrive.isBusy());
             telemetry.addData("rdf", frontRightDrive.isBusy());
             telemetry.addData("ldb", backLeftDrive.isBusy());
-            telemetry.addData("rdb", backRightDrive.isBusy());*/
+            telemetry.addData("rdb", backRightDrive.isBusy()); h */
             // Unfortunately we need this because sometimes the motor hasn't recognized yet that it's busy!!
             //sleep(1000);
 
@@ -410,7 +411,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             while (opModeIsActive()) {
 
                 /*telemetry.addData("driveStraight", "opModeIsActive and all motors are busy!");
-                telemetry.addData("drive straight loops: ", driveStraightLoops);*/
+                telemetry.addData("drive straight loops: ", driveStraightLoops); h */
 
                 // Determine required steering to keep on heading
                 turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
@@ -600,7 +601,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
     public void strafeMoveRobot(String direction, double drive, double turn) {
         //driveSpeed = drive;     // save this value as a class member so it can be used by telemetry.
-        //turnSpeed = turn;      // save this value as a class member so it can be used by telemetry.
+        //turnSpeed = turn;  h   // save this value as a class member so it can be used by telemetry.
 
         double frontSpeed = drive + turn;
         double backSpeed = drive - turn;
@@ -633,12 +634,12 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         }
     }
 
-    /**
+    /*
      * Display the various control parameters while driving
      *
      * @param straight Set to true if we are driving straight, and the encoder positions should be included in the telemetry.
      */
-    /*private void sendTelemetry(boolean straight) { //SHOULD BE LABELED SOMETHING LIKE "driveSendTelemetry"
+    /*private void sendTelemetry(boolean straight) { h //SHOULD BE LABELED SOMETHING LIKE "driveSendTelemetry"
         if (straight) {
             telemetry.addData("Motion", "Drive Straight");
             telemetry.addData("Target Pos LF:RF:LB:RB", "%7d:%7d:%7d:%7d",
@@ -687,7 +688,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         intake.leftIntakeServo.setPower(power);
         intake.rightIntakeServo.setPower(power);
         sleep(time);
-        intake.leftIntakeServo.setPower(0); //Todo: should these be 0 or no
+        intake.leftIntakeServo.setPower(0);
         intake.rightIntakeServo.setPower(0);
 
     }
@@ -697,9 +698,10 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         sleep(3000);
         rampServo.rampServo.setServoPosition(RampServo.LOAD_POSITION);
     }
-}
-/*todo: Im gonna try to write code
-   intake.intakeSlideMotor.setPosition(LOW_HARDSTOP)
-   intake.intakeSlideMotor.(RUN_TO POSITION)
 
- */
+    /**
+     * Makes empty while() statements stop throwing warnings (yapping).
+     * Add this inside of your empty while() loop for a "wait until" sort of function, like in Scratch.
+     */
+    public void STFU() {}
+}
