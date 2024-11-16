@@ -134,7 +134,9 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     static final double P_TURN_GAIN = 0.02;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_GAIN = 0.03;     // Larger is more responsive, but also less stable
 
-    int startingTile = 0; // which tile our robot starts on. 0 is cornered in the observation zone's triangle.
+    //int startingTile = 0; // which tile our robot starts on. 0 is cornered in the observation zone's triangle. OBSOLETE
+
+    public enum Path { SCORE_SAMPLE, SCORE_SPECIMEN } Path path;
 
     //this sets up for bulk reads!
     protected List<LynxModule> allHubs;
@@ -216,6 +218,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         // Wait for the game to start (Display Gyro value while waiting)
         while (opModeInInit()) {
 
+            /*
             if (gamepad1.dpad_right && startingTile > 0) {
                 startingTile -= 1;
                 while (gamepad1.dpad_right) STFU();
@@ -227,6 +230,20 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             telemetry.addData("starting tile", startingTile);
             //telemetry.addData("", "Robot Heading = %4.0f", getRawHeading());
             telemetry.addData("bot heading:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+            above is setup code from test auto */
+
+            if (gamepad1.dpad_up) {
+                path = Path.SCORE_SPECIMEN;
+                while(gamepad1.dpad_up) STFU();
+            }
+            if (gamepad1.dpad_left) {
+                path = Path.SCORE_SAMPLE;
+                while(gamepad1.dpad_left) STFU();
+            }
+            if (gamepad1.dpad_right) {
+                STFU();
+            } //currently unhandled
 
             telemetry.addData("left front starting:", frontLeftDrive.getCurrentPosition());
             telemetry.addData("left back starting:", backLeftDrive.getCurrentPosition());
