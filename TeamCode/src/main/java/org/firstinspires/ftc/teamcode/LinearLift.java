@@ -109,10 +109,21 @@ public class LinearLift {
     public int getPosition() {
         return liftMotor.getCurrentPosition();
     }
+
+    /**
+     * This method is used to set the encoder target of a motor (in this case, our {@linkplain LinearLift#liftMotor}).
+     * Uses {@link DcMotor#setTargetPosition(int)} to set the target position of the motor,
+     * and updates {@linkplain LinearLift#targetPositionCount} for consistency and for telemetry purposes.
+     * <p> <em> Motor must be set to {@linkplain DcMotor.RunMode#RUN_TO_POSITION}. </em>
+     * <p>Called inside of an empty while loop like this:
+     * <pre> while(runToAndWait); </pre>
+     * <p> usage of doNothing() inside of empty while loops not covered by warranty.
+     * @param ticks Sets the desired encoder position for the motor to run to.
+     */
     public boolean runToAndWait(int ticks) {
         targetPositionCount = ticks;
         liftMotor.setTargetPosition(ticks);
-        return isAtTarget();
+        return !isAtTarget();
     }
     public boolean isAtTarget() {
         return Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 2;

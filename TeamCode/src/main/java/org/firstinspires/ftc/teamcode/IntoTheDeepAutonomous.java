@@ -320,11 +320,11 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         driveStraight(DRIVE_SPEED, -46, -90);
 
         turnToHeading(TURN_SPEED, -45);
-        while (!rampLift.isAtTarget()) STFU();
+        while (!rampLift.isAtTarget()) doNothing();
         rampScore();
 
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
-        while (!rampLift.isAtTarget()) STFU();
+        while (!rampLift.isAtTarget()) doNothing();
 
 
         /*
@@ -723,5 +723,5 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
      * Makes empty while() statements stop throwing warnings (yapping).
      * Add this inside of your empty while() loop for a "wait until" sort of function, like in Scratch.
      */
-    public void STFU() {} //like flip
+    public void doNothing() {} //like flip
 }
