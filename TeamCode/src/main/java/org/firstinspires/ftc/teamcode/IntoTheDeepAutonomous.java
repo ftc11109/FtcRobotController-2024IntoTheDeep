@@ -136,8 +136,6 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
     //int startingTile = 0; // which tile our robot starts on. 0 is cornered in the observation zone's triangle. OBSOLETE
 
-    public enum Path { SCORE_SAMPLE, SCORE_SPECIMEN } Path path;
-
     //this sets up for bulk reads!
     protected List<LynxModule> allHubs;
 
@@ -233,22 +231,13 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
             above is setup code from test auto */
 
-            if (gamepad1.dpad_up) {
-                path = Path.SCORE_SPECIMEN;
-                while(gamepad1.dpad_up) STFU();
-            }
-            if (gamepad1.dpad_left) {
-                path = Path.SCORE_SAMPLE;
-                while(gamepad1.dpad_left) STFU();
-            }
-            if (gamepad1.dpad_right) {
-                STFU();
-            } //currently unhandled
+
 
             telemetry.addData("left front starting:", frontLeftDrive.getCurrentPosition());
             telemetry.addData("left back starting:", backLeftDrive.getCurrentPosition());
             telemetry.addData("right front starting:", frontRightDrive.getCurrentPosition());
             telemetry.addData("right back starting:", backRightDrive.getCurrentPosition());
+            telemetry.addLine("");
 
             //telemetry.addData();
 
@@ -302,7 +291,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
         runIntake(-1, 1250);
         h */
-        //Move away from the starting point and turn towards the net zone.
+        /*//Move away from the starting point and turn towards the net zone.
         driveStraight(DRIVE_SPEED, 6, 0);
         turnToHeading(TURN_SPEED, -90);
         //Lift the slide, (and the ramp (and the sample in the ramp))
@@ -322,7 +311,21 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         // lift (and ramp (and the sample)) to score position and score. While that's gong, arm goes down and intakes
         // sample and moves back up with sample and waits for ramp to go back down and ejects it and repeats two times
         // (three if we can) and go to ascent zone to perform a level 1 ascension
+        rampLift.setPosition(LinearLift.LOW_HARDSTOP);*/
+
+        driveStraight(DRIVE_SPEED, 6, 0);
+        turnToHeading(TURN_SPEED, -90);
+
+        rampLift.setPosition(LinearLift.HIGH_BUCKET);
+        driveStraight(DRIVE_SPEED, -46, -90);
+
+        turnToHeading(TURN_SPEED, -45);
+        while (!rampLift.isAtTarget()) STFU();
+        rampScore();
+
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
+        while (!rampLift.isAtTarget()) STFU();
+
 
         /*
 
@@ -720,5 +723,5 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
      * Makes empty while() statements stop throwing warnings (yapping).
      * Add this inside of your empty while() loop for a "wait until" sort of function, like in Scratch.
      */
-    public void STFU() {}
+    public void STFU() {} //like flip
 }

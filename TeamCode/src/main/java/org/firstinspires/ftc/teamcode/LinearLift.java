@@ -109,12 +109,10 @@ public class LinearLift {
     public int getPosition() {
         return liftMotor.getCurrentPosition();
     }
-    public void runToAndWait(int ticks) {
-        this.setPosition(ticks);
-        //does nothing until done.
-        while (!isAtTarget()) {
-            boolean placeholder = false;
-        }
+    public boolean runToAndWait(int ticks) {
+        targetPositionCount = ticks;
+        liftMotor.setTargetPosition(ticks);
+        return isAtTarget();
     }
     public boolean isAtTarget() {
         return Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 2;
