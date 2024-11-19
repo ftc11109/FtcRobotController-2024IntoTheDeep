@@ -35,7 +35,7 @@ public class LinearLift {
 
     // todo: determine what speed to set the motors to & whether up speed is different than down speed
 
-    public LinearLift( HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
+    public LinearLift(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
         // if linear slide doesn't run in auto, isAutonomous will be unnecessary
 
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor"); // port 2
@@ -126,6 +126,39 @@ public class LinearLift {
         telemetry.addData("Lift power", liftMotor.getPower());
         telemetry.update(); // test
     }
+
+    public void newLoop() {
+        if (!isAutonomous) readGamepad(gamepad);
+        liftMotor.setTargetPosition(targetPositionCount);
+
+        /*
+        if (targetPositionCount == LOW_HARDSTOP && isAtTarget(10)) {
+            liftMotor.setPower(0);
+            //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        } else {
+            if (isAtTarget()) {
+                liftMotor.setPower(0.01);
+            } else {
+                liftMotor.setPower(MAX_SPEED); // this should hopefully stop our lift from falling
+            }
+        }
+        */
+
+        /* 3 conditions:
+         * if at low hardstop,
+         *  set power 0
+         *  stop and reset encoder
+         *
+         *
+
+         */
+
+        if (liftMotor.getMode() != DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+
+        telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
+        telemetry.addData("Lift power", liftMotor.getPower());
+        telemetry.update(); // test
+    }
     public int getPosition() {
         return liftMotor.getCurrentPosition();
     }
@@ -144,6 +177,9 @@ public class LinearLift {
         targetPositionCount = ticks;
         liftMotor.setTargetPosition(ticks);
         return !isAtTarget();
+    }
+    public boolean isAtTarget(int tickThreshold) {
+        return Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) <= tickThreshold;
     }
     public boolean isAtTarget() {
         return Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 20;
