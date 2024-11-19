@@ -317,14 +317,23 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         turnToHeading(TURN_SPEED, -90);
 
         rampLift.setPosition(LinearLift.HIGH_BUCKET);
-        driveStraight(DRIVE_SPEED, -46, -90);
+        driveStraight(DRIVE_SPEED, -14.5, -90);
 
         turnToHeading(TURN_SPEED, -45);
-        while (!rampLift.isAtTarget()) doNothing();
+        driveStraight(DRIVE_SPEED, -3, -45);
+        while (!rampLift.isAtTarget() && opModeIsActive()) {
+            rampLift.loop();
+            telemetry.update();
+        } // todo: maybe do away with the safety and raise the lift sooner
         rampScore();
 
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
-        while (!rampLift.isAtTarget()) doNothing();
+        /*while (!rampLift.isAtTarget() && opModeIsActive()) {
+            rampLift.loop();
+            telemetry.update();
+        }*/
+        turnToHeading(turnSpeed, 0);
+        driveStraight(DRIVE_SPEED, 5, 0);
 
 
         /*
@@ -715,8 +724,9 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
     public void rampScore() {
         rampServo.rampServo.setServoPosition(RampServo.SCORE_POSITION);
-        sleep(3000);
+        sleep(750);
         rampServo.rampServo.setServoPosition(RampServo.LOAD_POSITION);
+        sleep(750);
     }
 
     /**

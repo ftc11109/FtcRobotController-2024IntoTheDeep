@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -24,13 +26,16 @@ public class LinearLift {
 
     static final double MAX_SPEED = 0.85;
 
+    static final int LOW_ERROR_MARGIN = 5;
+    static final int HIGH_ERROR_MARGIN = 20;
+
     final boolean isAutonomous;
 
     public int targetPositionCount;
 
     // todo: determine what speed to set the motors to & whether up speed is different than down speed
 
-    public LinearLift(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
+    public LinearLift( HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad, boolean isAutonomous) {
         // if linear slide doesn't run in auto, isAutonomous will be unnecessary
 
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor"); // port 2
@@ -58,6 +63,7 @@ public class LinearLift {
      */
     public void setPosition(int ticks) {
         targetPositionCount = ticks;
+        liftMotor.setTargetPosition(ticks);
     }
 
     private void readGamepad(Gamepad gamepad) {
@@ -94,17 +100,31 @@ public class LinearLift {
         if (!isAutonomous) readGamepad(gamepad);
         liftMotor.setTargetPosition(targetPositionCount);
 
-        if (targetPositionCount == LOW_HARDSTOP && liftMotor.getCurrentPosition() < 10) {
+        if (targetPositionCount == LOW_HARDSTOP && isAtTarget()) {
             liftMotor.setPower(0);
             //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } else {
-            if (Math.abs(targetPositionCount - liftMotor.getCurrentPosition()) < 5) {
+            if (isAtTarget()) {
                 liftMotor.setPower(0.01);
             } else {
                 liftMotor.setPower(MAX_SPEED); // this should hopefully stop our lift from falling
             }
         }
+
+        /*
+
+        todo: recalibrate the lift once it gets to the low hardstop. whenever we set the lift to
+         max extension and bring it back down, its resting position(at the hardstop) keeps
+         increasing. this could be a hardware issue, but this should be implemented as a safety
+         protocol regardless.
+
+        for now, we are simply increasing the linear slide's margin for error.
+
+           */
+
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
+        telemetry.addData("Lift power", liftMotor.getPower());
+        telemetry.update(); // test
     }
     public int getPosition() {
         return liftMotor.getCurrentPosition();
@@ -126,6 +146,6 @@ public class LinearLift {
         return !isAtTarget();
     }
     public boolean isAtTarget() {
-        return Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 2;
+        return Math.abs(liftMotor.getCurrentPosition() - targetPositionCount) < 20;
     }
 }
