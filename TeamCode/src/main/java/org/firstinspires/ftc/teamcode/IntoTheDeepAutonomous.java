@@ -324,16 +324,33 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         while (!rampLift.isAtTarget() && opModeIsActive()) {
             rampLift.loop();
             telemetry.update();
-        } // todo: maybe do away with the safety and raise the lift sooner
+        }
         rampScore();
 
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
-        /*while (!rampLift.isAtTarget() && opModeIsActive()) {
+
+        turnToHeading(TURN_SPEED, 0);
+        driveStraight(DRIVE_SPEED, 5, 0);
+
+        intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
+
+        while (!rampLift.isAtTarget() && opModeIsActive()) {
             rampLift.loop();
             telemetry.update();
-        }*/
-        turnToHeading(turnSpeed, 0);
-        driveStraight(DRIVE_SPEED, 5, 0);
+        }
+        intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
+        runIntake(-1, 1000);
+
+        rampLift.setPosition(LinearLift.HIGH_BUCKET);
+        rampScore();
+        rampLift.setPosition(LinearLift.LOW_HARDSTOP);
+
+        //todo: find out turn to heading and drive straight ordinates and abscissas (alden and julian finds this very funny (haaaaaahahhhhhhhhhhhhhahahhaahahah-alden))
+
+        intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
+        runIntake(1, 3000);
+        intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
+        runIntake(1, 1000);
 
 
         /*
@@ -503,8 +520,6 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
      */
     public void turnToHeading(double maxTurnSpeed, double heading) {
 
-        //reverse the heading if you start on the left side. this turns a right turn into a left turn and vice versa.
-
         // Run getSteeringCorrection() once to pre-calculate the current error
         getSteeringCorrection(heading, P_DRIVE_GAIN);
 
@@ -655,6 +670,14 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         }
     }
 
+    public boolean closeEnough(int tickThreshold) {
+        return
+                (Math.abs(frontLeftDrive .getCurrentPosition() - frontLeftDrive .getTargetPosition()) >= tickThreshold) &&
+                (Math.abs(backLeftDrive  .getCurrentPosition() - backLeftDrive  .getTargetPosition()) >= tickThreshold) &&
+                (Math.abs(frontRightDrive.getCurrentPosition() - frontRightDrive.getTargetPosition()) >= tickThreshold) &&
+                (Math.abs(backRightDrive .getCurrentPosition() - backRightDrive .getTargetPosition()) >= tickThreshold) ;
+    }
+
     protected void clearBulkCache() {
         // Clears the cache so that it will be refreshed the next time you ask for a sensor value!
         // Be very sure that this gets called in every loop in your code!!!!
@@ -733,5 +756,5 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
      * Makes empty while() statements stop throwing warnings (yapping).
      * Add this inside of your empty while() loop for a "wait until" sort of function, like in Scratch.
      */
-    public void doNothing() {} //like flip
+    public void doNothing() {}
 }
