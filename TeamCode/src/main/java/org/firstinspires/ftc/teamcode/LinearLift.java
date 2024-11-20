@@ -153,8 +153,6 @@ public class LinearLift {
 
          */
 
-        if (liftMotor.getMode() != DcMotor.RunMode.STOP_AND_RESET_ENCODER)
-
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
         telemetry.addData("Lift power", liftMotor.getPower());
         telemetry.update(); // test

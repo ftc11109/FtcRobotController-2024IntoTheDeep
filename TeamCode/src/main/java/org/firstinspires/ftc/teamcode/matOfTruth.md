@@ -18,8 +18,8 @@
 * 0          | "intakeServoL"
 * 1          | "intakeServoR"
 * 2          | 
-* 3          |
-* 4          |
+* 3          | ""
+* 4          | 
 * 5          | "rampServo"
 
 ## Expansion Hub
@@ -32,8 +32,7 @@
 * 3          | "suspensionMotor"
 
 ## ":3" Containment
-**DANGER**
-    DO NOT RELEASE!!!
+**DANGER** DO NOT RELEASE!!!
 
            +--------------+
           /|             /|
