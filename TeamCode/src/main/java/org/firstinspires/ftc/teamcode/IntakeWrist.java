@@ -48,6 +48,7 @@ public class IntakeWrist {
 
     /**
      * utilizes DcMotor.Runmode.RUN_TO_POSITION to set the motor's target
+     *
      * @param ticks the distance the motor must run to, measured in ticks
      */
     public void setPosition(int ticks) {
@@ -57,19 +58,21 @@ public class IntakeWrist {
 
     private void readGamepad(Gamepad gamepad) { // will be unnecessary if wrist is automated
         if (gamepad.dpad_down) setPosition(TRANSFER_POSITION);
-        if (gamepad.dpad_up  ) setPosition(DEPLOYED_POSITION);
+        if (gamepad.dpad_up) setPosition(DEPLOYED_POSITION);
     }
 
     public void loop() {
         if (wristMotor.getCurrentPosition() < -800 && motorTickTarget == DEPLOYED_POSITION) {
             wristMotor.setPower(0);
-        }
-        else if(wristMotor.getCurrentPosition() > -10 && motorTickTarget == TRANSFER_POSITION) {
+        } else if (wristMotor.getCurrentPosition() > -10 && motorTickTarget == TRANSFER_POSITION) {
             wristMotor.setPower(0);
-        }
-        else wristMotor.setPower(1);
+        } else wristMotor.setPower(1);
         if (!isAutonomous) readGamepad(gamepad);
         telemetry.addData("Wrist encoder position", wristMotor.getCurrentPosition());
         telemetry.addData("Wrist motor power", wristMotor.getPower());
+    }
+
+    public boolean isAtTarget(int tickThreshold) {
+        return Math.abs(wristMotor.getCurrentPosition() - wristMotor.getTargetPosition()) <= tickThreshold;
     }
 }

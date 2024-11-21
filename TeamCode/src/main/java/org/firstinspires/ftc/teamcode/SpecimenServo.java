@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class SpecServo {
+public class SpecimenServo {
 
     private final Gamepad gamepad;
     ServoController rampServo  = new ServoController();
@@ -11,7 +11,7 @@ public class SpecServo {
     static final double OPEN_POSITION = 0.5; // servo physical zero position
     static final double CLOSED_POSITION = 0.1; // todo: test different values
     final boolean isAutonomous;
-    public SpecServo(HardwareMap hardwareMap, Gamepad gamepad, boolean isAutonomous) {
+    public SpecimenServo(HardwareMap hardwareMap, Gamepad gamepad, boolean isAutonomous) {
         this.gamepad = gamepad;
         this.isAutonomous = isAutonomous;
         rampServo.init(hardwareMap,"specServo"); // port 3

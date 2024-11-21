@@ -313,12 +313,14 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         // (three if we can) and go to ascent zone to perform a level 1 ascension
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);*/
 
+        // PHASE 0: drive to net zone
         driveStraight(DRIVE_SPEED, 6, 0);
         turnToHeading(TURN_SPEED, -90);
 
         rampLift.setPosition(LinearLift.HIGH_BUCKET);
         driveStraight(DRIVE_SPEED, -14.5, -90);
 
+        // PHASE 1: score preloaded sample
         turnToHeading(TURN_SPEED, -45);
         driveStraight(DRIVE_SPEED, -3, -45);
         while (!rampLift.isAtTarget() && opModeIsActive()) {
@@ -329,28 +331,37 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
 
+        // PHASE 2: eat another sample off the ground
+        // repeat this to score multiple samples. change parameters as necessary
         turnToHeading(TURN_SPEED, 0);
         driveStraight(DRIVE_SPEED, 5, 0);
 
         intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
-
-        while (!rampLift.isAtTarget() && opModeIsActive()) {
+        while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
+            intakeWrist.loop();
             rampLift.loop();
             telemetry.update();
         }
+
+        runIntake(1, 3000);
+
         intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
+        while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
+            intakeWrist.loop();
+            telemetry.update();
+        }
         runIntake(-1, 1000);
 
+            // return to net zone
+        driveStraight(DRIVE_SPEED, -5, 0);
+        turnToHeading(TURN_SPEED, -45);
+
+            // score
         rampLift.setPosition(LinearLift.HIGH_BUCKET);
         rampScore();
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
 
-        //todo: find out turn to heading and drive straight ordinates and abscissas (alden and julian finds this very funny (haaaaaahahhhhhhhhhhhhhahahhaahahah-alden))
-
-        intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
-        runIntake(1, 3000);
-        intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
-        runIntake(1, 1000);
+        turnToHeading(TURN_SPEED, 0);
 
 
         /*

@@ -18,7 +18,7 @@
 * 0          | "intakeServoL"
 * 1          | "intakeServoR"
 * 2          | 
-* 3          | ""
+* 3          | "specimenServo"
 * 4          | 
 * 5          | "rampServo"
 

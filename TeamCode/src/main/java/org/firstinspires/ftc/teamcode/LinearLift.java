@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import androidx.annotation.NonNull;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,6 +21,7 @@ public class LinearLift {
     //limit: 3017 - 3011
     static final int HIGH_BUCKET = 2525;
     static final int LOW_BUCKET = 1710;
+    static final int SPECIMEN_HANG = LOW_BUCKET - 30; //placeholder
 
     static final double MAX_SPEED = 0.85;
 
@@ -94,6 +93,10 @@ public class LinearLift {
         if (gamepad.b) targetPositionCount = LOW_BUCKET;
         if (gamepad.y) targetPositionCount = HIGH_BUCKET;
 
+        if (targetPositionCount == LOW_BUCKET && gamepad.right_bumper) {
+            targetPositionCount = SPECIMEN_HANG;
+        }
+
     }
 
     public void loop() {
@@ -131,27 +134,15 @@ public class LinearLift {
         if (!isAutonomous) readGamepad(gamepad);
         liftMotor.setTargetPosition(targetPositionCount);
 
-        /*
         if (targetPositionCount == LOW_HARDSTOP && isAtTarget(10)) {
             liftMotor.setPower(0);
-            //liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            if (!isAtTarget(1)) liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         } else {
-            if (isAtTarget()) {
-                liftMotor.setPower(0.01);
-            } else {
-                liftMotor.setPower(MAX_SPEED); // this should hopefully stop our lift from falling
-            }
-        }
-        */
+            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        /* 3 conditions:
-         * if at low hardstop,
-         *  set power 0
-         *  stop and reset encoder
-         *
-         *
-
-         */
+            if (isAtTarget()) liftMotor.setPower(0.01); // this is done to stop up & down oscillations
+            else liftMotor.setPower(MAX_SPEED);
+        } // todo: no idea if this will work or not. probably figure that out
 
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
         telemetry.addData("Lift power", liftMotor.getPower());
