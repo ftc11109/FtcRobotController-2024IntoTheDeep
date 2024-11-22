@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -20,8 +22,8 @@ public class LinearLift {
     static final int HIGH_HARDSTOP = 2600;
     //limit: 3017 - 3011
     static final int HIGH_BUCKET = 2525;
-    static final int LOW_BUCKET = 1710;
-    static final int SPECIMEN_HANG = LOW_BUCKET - 30; //placeholder
+    static final int LOW_BUCKET = GoBildaInchesToTicks.InchesToTicks(16.5, GoBildaInchesToTicks.GoBilda_435rpm);
+    static final int SPECIMEN_HANG = GoBildaInchesToTicks.InchesToTicks(12.5, GoBildaInchesToTicks.GoBilda_435rpm);
 
     static final double MAX_SPEED = 0.85;
 
@@ -95,6 +97,10 @@ public class LinearLift {
 
         if (targetPositionCount == LOW_BUCKET && gamepad.right_bumper) {
             targetPositionCount = SPECIMEN_HANG;
+            while (!isAtTarget(3)) Sleep.STFU();
+            SpecimenServo.isOpen = false;
+            Sleep.sleep(250);
+            setPosition(LOW_BUCKET);
         }
 
     }
@@ -127,7 +133,7 @@ public class LinearLift {
 
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
         telemetry.addData("Lift power", liftMotor.getPower());
-        telemetry.update(); // test
+        telemetry.addData("math", SPECIMEN_HANG);
     }
 
     public void newLoop() {

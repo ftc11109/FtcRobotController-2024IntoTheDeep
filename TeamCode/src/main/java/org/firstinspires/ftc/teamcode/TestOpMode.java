@@ -14,6 +14,7 @@ public class TestOpMode extends LinearOpMode {
 
         IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
         RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
+        SpecimenServo specimenServo = new SpecimenServo(hardwareMap, gamepad2, false);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
@@ -30,6 +31,7 @@ public class TestOpMode extends LinearOpMode {
         while (opModeIsActive()) {
             intake.loop();
             ramp.loop();
+            specimenServo.loop();
 
             intakeSlide.loop();
             intakeWrist.loop();

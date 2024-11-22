@@ -342,7 +342,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             rampLift.loop();
             telemetry.update();
         }
-//skibidi
+
         runIntake(1, 3000);
 
         intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
