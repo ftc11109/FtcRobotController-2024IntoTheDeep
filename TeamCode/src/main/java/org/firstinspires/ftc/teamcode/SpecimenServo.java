@@ -10,6 +10,8 @@ public class SpecimenServo {
 
     static boolean isOpen = true;
 
+    static final long ACTUATION_TIME = 300;
+
     static final double OPEN_POSITION = 0.5; // servo physical zero position
     static final double CLOSED_POSITION = 0.15; // todo: test different values
     final boolean isAutonomous;
@@ -20,14 +22,22 @@ public class SpecimenServo {
     }
 
     public void loop() {
-        if (gamepad.x) {
+        /*if (gamepad.x) {
             isOpen = !isOpen;
-            specimenServo.setServoPosition(
-                    isOpen ? OPEN_POSITION : CLOSED_POSITION
-            );
-            while(gamepad.x);
-        }
-
+            specimenServo.setServoPosition(isOpen ? OPEN_POSITION : CLOSED_POSITION);
+            while(gamepad.x) Sleep.STFU();
+        }*/
+        specimenServo.setServoPosition(isOpen ? OPEN_POSITION : CLOSED_POSITION);
     }
 
+    public static void setIsOpen(boolean isOpen) {
+        SpecimenServo.isOpen = isOpen;
+    }
+
+    public static void open() {
+        SpecimenServo.isOpen = true;
+    }
+    public static void close() {
+        SpecimenServo.isOpen = false;
+    }
 }

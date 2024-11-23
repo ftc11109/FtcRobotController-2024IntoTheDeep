@@ -61,6 +61,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
         RampServo    rampServo   = new RampServo    (hardwareMap, /*      */ gamepad1, false);
+        SpecimenServo specimenServo = new SpecimenServo(hardwareMap, gamepad2, false);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
@@ -119,8 +120,15 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
             intakeSlide.loop();
             intakeWrist.loop();
-            rampLift.loop();
+            rampLift.newLoop();
             suspension.loop();
+
+            if (gamepad1.b) {
+                SpecimenServo.close();
+                specimenServo.loop();
+                sleep(SpecimenServo.ACTUATION_TIME);
+                rampLift.setPosition(LinearLift.LOW_BUCKET);
+            }
 
             // controls:
             double y  = -gamepad1.left_stick_y;  // note: pushing stick forward gives negative value

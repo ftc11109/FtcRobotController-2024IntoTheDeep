@@ -91,16 +91,28 @@ public class LinearLift {
         telemetry.addData("target position count", targetPositionCount);
         telemetry.addData("additive math", ADJUSTMENT_MODIFIER*-gamepad.left_stick_y);*/
 
-        if (gamepad.a) targetPositionCount = LOW_HARDSTOP;
-        if (gamepad.b) targetPositionCount = LOW_BUCKET;
-        if (gamepad.y) targetPositionCount = HIGH_BUCKET;
+        if (gamepad.a) {
+            targetPositionCount = LOW_HARDSTOP;
+        }
+        // todo: this is handled in teleop for some reason. fix.
+        /*
+        if (gamepad.b) {
+            targetPositionCount = LOW_BUCKET;
+            SpecimenServo.setIsOpen(false);
+        }
+        */
+        if (gamepad.y) {
+            targetPositionCount = HIGH_BUCKET;
+        }
 
         if (targetPositionCount == LOW_BUCKET && gamepad.right_bumper) {
-            targetPositionCount = SPECIMEN_HANG;
-            while (!isAtTarget(3)) Sleep.STFU();
-            SpecimenServo.isOpen = false;
-            Sleep.sleep(250);
-            setPosition(LOW_BUCKET);
+            setPosition(SPECIMEN_HANG);
+            while (!isAtTarget(3)) {
+                liftMotor.setPower(MAX_SPEED / 3);
+            }
+            SpecimenServo.open();
+            Sleep.sleep(SpecimenServo.ACTUATION_TIME);
+
         }
 
     }
@@ -144,15 +156,17 @@ public class LinearLift {
             liftMotor.setPower(0);
             if (!isAtTarget(1)) liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         } else {
-            liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            if (isAtTarget()) liftMotor.setPower(0.01); // this is done to stop up & down oscillations
-            else liftMotor.setPower(MAX_SPEED);
-        } // todo: no idea if this will work or not. probably figure that out
+            if (isAtTarget(3)) {
+                liftMotor.setPower(0.01); // this is done to stop up & down oscillations
+            } else {
+                    liftMotor.setPower(MAX_SPEED);
+            }
+        }
 
         telemetry.addData("Lift encoder position", liftMotor.getCurrentPosition());
         telemetry.addData("Lift power", liftMotor.getPower());
-        telemetry.update(); // test
     }
     public int getPosition() {
         return liftMotor.getCurrentPosition();

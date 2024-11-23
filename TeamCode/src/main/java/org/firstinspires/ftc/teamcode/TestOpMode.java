@@ -12,8 +12,8 @@ public class TestOpMode extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
-        RampServo    ramp        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
+        IntakeServos  intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
+        RampServo     ramp        = new RampServo    (hardwareMap, /*      */ gamepad1, false);
         SpecimenServo specimenServo = new SpecimenServo(hardwareMap, gamepad2, false);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
@@ -35,11 +35,17 @@ public class TestOpMode extends LinearOpMode {
 
             intakeSlide.loop();
             intakeWrist.loop();
-            rampLift.loop();
+            rampLift.newLoop();
             suspension.loop();
 //            telemetry.addData("Left Servo Position", intake.leftIntakeServo.getServoPosition());
 //            telemetry.addData("Right Servo Position", intake.rightIntakeServo.getServoPosition());
             telemetry.update();
+            if (gamepad1.b) {
+                SpecimenServo.setIsOpen(false);
+                specimenServo.loop();
+                sleep(SpecimenServo.ACTUATION_TIME);
+                rampLift.setPosition(LinearLift.LOW_BUCKET);
+            }
         }
     }
 }
