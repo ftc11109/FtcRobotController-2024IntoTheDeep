@@ -336,26 +336,16 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         turnToHeading(TURN_SPEED, 0);
         driveStraight(DRIVE_SPEED, 5, 0);
 
-        intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
-        while (!intakeWrist.isAtTarget(100) && opModeIsActive()) {
-            intakeWrist.loop();
-            //rampLift.loop();
-            telemetry.addData("m a t h ", Math.abs(IntakeWrist.wristMotor.getCurrentPosition() - IntakeWrist.wristMotor.getTargetPosition()) );
-            telemetry.addData("encoder position 2", IntakeWrist.wristMotor.getCurrentPosition());
-            telemetry.addLine("is at target? " + intakeWrist.isAtTarget(100));
-            telemetry.addData("random number", Math.random());
-            telemetry.update();
-        } //todo: we keep getting stuck in the loop
-
-        telemetry.addLine("loop broke :(");
-
+        /*intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION - 45);
+        intakeWrist.loop();
+        sleep(666);*/
+        runWrist(IntakeWrist.DEPLOYED_POSITION - 45, 1000);
         runIntake(1, 3000);
-
-        intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
-        while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
+        runWrist(IntakeWrist.TRANSFER_POSITION, 1000);
+        /*while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
             intakeWrist.loop();
             telemetry.update();
-        }
+        }*/
 
         runIntake(-1, 1000);
 
@@ -365,6 +355,10 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
             // score
         rampLift.setPosition(LinearLift.HIGH_BUCKET);
+        while (!rampLift.isAtTarget() && opModeIsActive()) {
+            rampLift.loop();
+            telemetry.update();
+        }
         rampScore();
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);
 
@@ -768,6 +762,13 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         sleep(750);
         rampServo.rampServo.setServoPosition(RampServo.LOAD_POSITION);
         sleep(750);
+    }
+
+    public void runWrist(int ticks, long time) {
+        IntakeWrist.wristMotor.setPower(1);
+        intakeWrist.setPosition(ticks);
+        sleep(time);
+        IntakeWrist.wristMotor.setPower(0);
     }
 
     /**

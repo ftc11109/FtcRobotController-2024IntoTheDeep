@@ -16,9 +16,9 @@ public class IntakeSlide {
     private final ElapsedTime runtime = new ElapsedTime();
 
     static final int LOW_HARDSTOP = 2;
-    static final int HIGH_HARDSTOP = 1440; //2880
+    static final int HIGH_HARDSTOP = GoBildaInchesToTicks.InchesToTicks(16.5, GoBildaInchesToTicks.GoBilda_223rpm); //2880
     static final double MAX_SPEED = 1;
-    static final double ADJUSTMENT_MODIFIER = 30;
+    static final double ADJUSTMENT_MODIFIER = 60;
 
     // 120mm per rotation
 
@@ -83,7 +83,7 @@ public class IntakeSlide {
         if (!isAutonomous) readGamepad(gamepad);
         intakeSlideMotor.setTargetPosition(targetPositionCount);
         telemetry.addData("Slide encoder position", intakeSlideMotor.getCurrentPosition());
-        telemetry.addData("The math", GoBildaInchesToTicks.InchesToTicks(1, GoBildaInchesToTicks.GoBilda_223rpm));
+        telemetry.addData("The math", HIGH_HARDSTOP);
     }
 
     /*

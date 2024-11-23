@@ -95,7 +95,7 @@ public class LinearLift {
         if (gamepad.a) {
             targetPositionCount = LOW_HARDSTOP;
         }
-        // todo: this is handled in teleop for some reason. fix.
+        // todo: this is handled in teleop for some reason. fix later
         /*
         if (gamepad.b) {
             targetPositionCount = LOW_BUCKET;
