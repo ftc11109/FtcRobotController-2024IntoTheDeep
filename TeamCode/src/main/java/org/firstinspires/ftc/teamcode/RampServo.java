@@ -8,7 +8,7 @@ public class RampServo {
     private final Gamepad gamepad;
     ServoController rampServo  = new ServoController();
 
-    static final double SCORE_POSITION = 0.2;
+    static final double SCORE_POSITION = 0.4; //max 0.4
     static final double LOAD_POSITION = 0.75;
     final boolean isAutonomous;
     public RampServo(HardwareMap hardwareMap, Gamepad gamepad, boolean isAutonomous) {

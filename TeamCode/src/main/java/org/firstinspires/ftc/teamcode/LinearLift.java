@@ -26,6 +26,7 @@ public class LinearLift {
     static final int SPECIMEN_HANG = GoBildaInchesToTicks.InchesToTicks(12.5, GoBildaInchesToTicks.GoBilda_435rpm);
 
     static final double MAX_SPEED = 0.85;
+    static final double HANG_SPEED = 0.6;
 
     static final int LOW_ERROR_MARGIN = 5;
     static final int HIGH_ERROR_MARGIN = 20;
@@ -105,14 +106,17 @@ public class LinearLift {
             targetPositionCount = HIGH_BUCKET;
         }
 
-        if (targetPositionCount == LOW_BUCKET && gamepad.right_bumper) {
-            setPosition(SPECIMEN_HANG);
-            while (!isAtTarget(3)) {
-                liftMotor.setPower(MAX_SPEED / 3);
+        if (gamepad.right_bumper) {
+            if (targetPositionCount == LOW_BUCKET) {
+                setPosition(SPECIMEN_HANG);
+                while (!isAtTarget(3)) {
+                    liftMotor.setPower(HANG_SPEED);
+                }
+                SpecimenServo.open();
+                Sleep.sleep(SpecimenServo.ACTUATION_TIME);
+            } else {
+                SpecimenServo.open();
             }
-            SpecimenServo.open();
-            Sleep.sleep(SpecimenServo.ACTUATION_TIME);
-
         }
 
     }

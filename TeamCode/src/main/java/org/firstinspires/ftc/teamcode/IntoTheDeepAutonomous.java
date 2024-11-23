@@ -337,11 +337,17 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         driveStraight(DRIVE_SPEED, 5, 0);
 
         intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
-        while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
+        while (!intakeWrist.isAtTarget(100) && opModeIsActive()) {
             intakeWrist.loop();
-            rampLift.loop();
+            //rampLift.loop();
+            telemetry.addData("m a t h ", Math.abs(IntakeWrist.wristMotor.getCurrentPosition() - IntakeWrist.wristMotor.getTargetPosition()) );
+            telemetry.addData("encoder position 2", IntakeWrist.wristMotor.getCurrentPosition());
+            telemetry.addLine("is at target? " + intakeWrist.isAtTarget(100));
+            telemetry.addData("random number", Math.random());
             telemetry.update();
-        }
+        } //todo: we keep getting stuck in the loop
+
+        telemetry.addLine("loop broke :(");
 
         runIntake(1, 3000);
 
@@ -350,6 +356,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             intakeWrist.loop();
             telemetry.update();
         }
+
         runIntake(-1, 1000);
 
             // return to net zone

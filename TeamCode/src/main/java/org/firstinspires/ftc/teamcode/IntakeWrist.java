@@ -13,13 +13,10 @@ public class IntakeWrist {
     private final Gamepad gamepad; //if the wrist is automated, gamepad input might be unnecessary
     private final ElapsedTime runtime = new ElapsedTime();
     private final Telemetry telemetry;
-
-    // todo: figure out values for all placeholders
     static final int ZERO_HARDSTOP = 0;
     static final int DEPLOYED_POSITION = -830; // was -1070
     //static final int LIFTED_POSITION = 0;
     static final int TRANSFER_POSITION = 0;
-    // add statics as necessary
 
     private int motorTickTarget = 0; // this variable is for telemetry
 
@@ -67,9 +64,13 @@ public class IntakeWrist {
         } else if (wristMotor.getCurrentPosition() > -10 && motorTickTarget == TRANSFER_POSITION) {
             wristMotor.setPower(0);
         } else wristMotor.setPower(1);
-        if (!isAutonomous) readGamepad(gamepad);
+        if (!isAutonomous) {
+            readGamepad(gamepad);
+        }
         telemetry.addData("Wrist encoder position", wristMotor.getCurrentPosition());
         telemetry.addData("Wrist motor power", wristMotor.getPower());
+        telemetry.addData("random number (wrist.loop)", Math.random());
+        // todo: current position is always zero, but only in auto
     }
 
     public boolean isAtTarget(int tickThreshold) {

@@ -61,7 +61,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         IntakeServos intake      = new IntakeServos (hardwareMap, /*      */ gamepad2, false);
         RampServo    rampServo   = new RampServo    (hardwareMap, /*      */ gamepad1, false);
-        SpecimenServo specimenServo = new SpecimenServo(hardwareMap, gamepad2, false);
+        SpecimenServo specimenServo = new SpecimenServo(hardwareMap);
 
         IntakeSlide  intakeSlide = new IntakeSlide  (hardwareMap, telemetry, gamepad2, false);
         IntakeWrist  intakeWrist = new IntakeWrist  (hardwareMap, telemetry, gamepad2, false);
@@ -108,6 +108,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        if (opModeIsActive()) {
+            SpecimenServo.open();
+        }
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
@@ -117,6 +121,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
             intake.loop();
             rampServo.loop();
+            specimenServo.loop();
 
             intakeSlide.loop();
             intakeWrist.loop();
@@ -129,6 +134,9 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 sleep(SpecimenServo.ACTUATION_TIME);
                 rampLift.setPosition(LinearLift.LOW_BUCKET);
             }
+
+            double speedModifier = /*gamepad1.left_bumper ? 0.4 :*/ 0.85;
+
 
             // controls:
             double y  = -gamepad1.left_stick_y;  // note: pushing stick forward gives negative value
@@ -188,10 +196,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             }
 
             // send calculated power to wheels
-            frontLeftDrive.setPower(leftFrontPower * 0.85);
-            frontRightDrive.setPower(rightFrontPower * 0.85);
-            backLeftDrive.setPower(leftBackPower * 0.85);
-            backRightDrive.setPower(rightBackPower * 0.85);
+            frontLeftDrive.setPower(leftFrontPower * speedModifier);
+            frontRightDrive.setPower(rightFrontPower * speedModifier);
+            backLeftDrive.setPower(leftBackPower * speedModifier);
+            backRightDrive.setPower(rightBackPower * speedModifier);
 
             // display elapsed game time, wheel power, misc. debug utils
             telemetry.addData("Status", "Run Time: " + runtime);
