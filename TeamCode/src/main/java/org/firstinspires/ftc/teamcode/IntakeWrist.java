@@ -56,6 +56,10 @@ public class IntakeWrist {
     private void readGamepad(Gamepad gamepad) { // will be unnecessary if wrist is automated
         if (gamepad.dpad_down) setPosition(TRANSFER_POSITION);
         if (gamepad.dpad_up) setPosition(DEPLOYED_POSITION);
+        if (gamepad.back) {
+            wristMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            wristMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
     }
 
     public void loop() {

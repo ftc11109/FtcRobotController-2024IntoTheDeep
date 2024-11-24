@@ -18,7 +18,7 @@ public class IntakeSlide {
     static final int LOW_HARDSTOP = 2;
     static final int HIGH_HARDSTOP = GoBildaInchesToTicks.InchesToTicks(16.5, GoBildaInchesToTicks.GoBilda_223rpm); //2880
     static final double MAX_SPEED = 1;
-    static final double ADJUSTMENT_MODIFIER = 60;
+    static final double ADJUSTMENT_MODIFIER = 40;
 
     // 120mm per rotation
 
@@ -84,6 +84,10 @@ public class IntakeSlide {
         intakeSlideMotor.setTargetPosition(targetPositionCount);
         telemetry.addData("Slide encoder position", intakeSlideMotor.getCurrentPosition());
         telemetry.addData("The math", HIGH_HARDSTOP);
+    }
+
+    public boolean isAtTarget(int tickThreshold) {
+        return Math.abs(intakeSlideMotor.getCurrentPosition() - targetPositionCount) <= tickThreshold;
     }
 
     /*

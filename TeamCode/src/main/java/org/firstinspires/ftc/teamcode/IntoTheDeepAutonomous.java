@@ -208,6 +208,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         intakeWrist.loop();
         rampLift.loop();
         rampServo.loop( );
+        telemetry.addData("runtime", getRuntime());
     }
 
     @Override
@@ -265,6 +266,8 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
 
     public void runAutonomousProgram() {
 
+        resetRuntime();
+
         /*double distanceIN_observationZone_netZone = 94.5; h
 
         driveStraight(DRIVE_SPEED, 8, 0);
@@ -285,7 +288,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         turnToHeading(TURN_SPEED, 0); h */
 
 
-        //eat sample
+            //eat sample
         /*intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION);
         runIntake(1, 1250);
         intakeWrist.setPosition(IntakeWrist.TRANSFER_POSITION);
@@ -313,55 +316,82 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         // (three if we can) and go to ascent zone to perform a level 1 ascension
         rampLift.setPosition(LinearLift.LOW_HARDSTOP);*/
 
-        // PHASE 0: drive to net zone
-        driveStraight(DRIVE_SPEED, 6, 0);
-        turnToHeading(TURN_SPEED, -90);
+            // PHASE 0: drive to net zone
+            driveStraight(DRIVE_SPEED, 6, 0);
+            turnToHeading(TURN_SPEED, -90);
 
-        rampLift.setPosition(LinearLift.HIGH_BUCKET);
-        driveStraight(DRIVE_SPEED, -14.5, -90);
+            rampLift.setPosition(LinearLift.HIGH_BUCKET);
+            driveStraight(DRIVE_SPEED, -14.5, -90);
 
-        // PHASE 1: score preloaded sample
-        turnToHeading(TURN_SPEED, -45);
-        driveStraight(DRIVE_SPEED, -3, -45);
-        while (!rampLift.isAtTarget() && opModeIsActive()) {
-            rampLift.loop();
-            telemetry.update();
-        }
-        rampScore();
+            // PHASE 1: score preloaded sample
+            turnToHeading(TURN_SPEED, -45);
+            driveStraight(DRIVE_SPEED, -3, -45);
+            while (!rampLift.isAtTarget() && opModeIsActive()) {
+                rampLift.loop();
+                telemetry.update();
+                clearBulkCache();
+            }
+            rampScore();
+            driveStraight(DRIVE_SPEED, 3, -45);
 
-        rampLift.setPosition(LinearLift.LOW_HARDSTOP);
+            rampLift.setPosition(LinearLift.LOW_HARDSTOP);
 
-        // PHASE 2: eat another sample off the ground
-        // repeat this to score multiple samples. change parameters as necessary
-        turnToHeading(TURN_SPEED, 0);
-        driveStraight(DRIVE_SPEED, 5, 0);
+            // PHASE 2: eat another sample off the ground
+            // repeat this to score multiple samples. change parameters as necessary
+            turnToHeading(TURN_SPEED, 0);
+            driveStraight(DRIVE_SPEED, 5, 0);
 
         /*intakeWrist.setPosition(IntakeWrist.DEPLOYED_POSITION - 45);
         intakeWrist.loop();
         sleep(666);*/
-        runWrist(IntakeWrist.DEPLOYED_POSITION - 45, 1000);
-        runIntake(1, 3000);
-        runWrist(IntakeWrist.TRANSFER_POSITION, 1000);
+
+            runWrist(IntakeWrist.DEPLOYED_POSITION);
+
+            turnToHeading(TURN_SPEED, -17);
+            intake.leftIntakeServo.setPower(1);
+            intake.rightIntakeServo.setPower(1);
+            intakeSlide.setPosition(GoBildaInchesToTicks.InchesToTicks(9.5, GoBildaInchesToTicks.GoBilda_223rpm));
+            while (!intakeSlide.isAtTarget(15) && opModeIsActive()) {
+                mechanismLoop();
+                clearBulkCache();
+                telemetry.update();
+            }
+
+            runIntake(1, 2000);
+            runWrist(IntakeWrist.TRANSFER_POSITION);
         /*while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
             intakeWrist.loop();
             telemetry.update();
+            clearBulkCache();
         }*/
+            intakeSlide.setPosition(IntakeSlide.LOW_HARDSTOP);
+            while (!intakeSlide.isAtTarget(15)) {
+                mechanismLoop();
+                clearBulkCache();
+                telemetry.update();
+            }
 
-        runIntake(-1, 1000);
+            runIntake(-1, 1500);
 
             // return to net zone
-        driveStraight(DRIVE_SPEED, -5, 0);
-        turnToHeading(TURN_SPEED, -45);
+            driveStraight(DRIVE_SPEED, -5, 0);
+            turnToHeading(TURN_SPEED, -45);
+            driveStraight(DRIVE_SPEED, -4, -45);
 
-            // score
-        rampLift.setPosition(LinearLift.HIGH_BUCKET);
-        while (!rampLift.isAtTarget() && opModeIsActive()) {
-            rampLift.loop();
-            telemetry.update();
-        }
-        rampScore();
-        rampLift.setPosition(LinearLift.LOW_HARDSTOP);
+            if (!(getRuntime() > 20)) {
+                // score
+                rampLift.setPosition(LinearLift.HIGH_BUCKET);
+                while (!rampLift.isAtTarget() && opModeIsActive()) {
+                    rampLift.loop();
+                    telemetry.update();
+                    clearBulkCache();
+                }
+                rampScore();
 
+                driveStraight(DRIVE_SPEED, 4, -45);
+                rampLift.setPosition(LinearLift.LOW_HARDSTOP);
+            }
+// PHASE 3: park?
         turnToHeading(TURN_SPEED, 0);
 
 
@@ -506,6 +536,9 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
                 if (!(frontLeftDrive.isBusy() || frontRightDrive.isBusy() || backLeftDrive.isBusy() || backRightDrive.isBusy())) {
                     break;
                 }
+//                if (closeEnough(100)) {
+//                    break;
+//                } todo: test if this will work
 
 
             }
@@ -687,7 +720,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
                 (Math.abs(frontLeftDrive .getCurrentPosition() - frontLeftDrive .getTargetPosition()) >= tickThreshold) &&
                 (Math.abs(backLeftDrive  .getCurrentPosition() - backLeftDrive  .getTargetPosition()) >= tickThreshold) &&
                 (Math.abs(frontRightDrive.getCurrentPosition() - frontRightDrive.getTargetPosition()) >= tickThreshold) &&
-                (Math.abs(backRightDrive .getCurrentPosition() - backRightDrive .getTargetPosition()) >= tickThreshold) ;
+                (Math.abs(backRightDrive .getCurrentPosition() - backRightDrive .getTargetPosition()) >= tickThreshold);
     }
 
     protected void clearBulkCache() {
@@ -764,11 +797,13 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
         sleep(750);
     }
 
-    public void runWrist(int ticks, long time) {
-        IntakeWrist.wristMotor.setPower(1);
+    public void runWrist(int ticks) {
         intakeWrist.setPosition(ticks);
-        sleep(time);
-        IntakeWrist.wristMotor.setPower(0);
+        while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
+            mechanismLoop();
+            telemetry.update();
+            clearBulkCache();
+        }
     }
 
     /**

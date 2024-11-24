@@ -113,7 +113,7 @@ public class LinearLift {
                     liftMotor.setPower(HANG_SPEED);
                 }
                 SpecimenServo.open();
-                Sleep.sleep(SpecimenServo.ACTUATION_TIME);
+                //Sleep.sleep(SpecimenServo.ACTUATION_TIME);
             } else {
                 SpecimenServo.open();
             }
