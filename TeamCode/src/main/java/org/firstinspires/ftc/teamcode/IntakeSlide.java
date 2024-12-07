@@ -17,8 +17,8 @@ public class IntakeSlide {
 
     static final int LOW_HARDSTOP = 2;
     static final int HIGH_HARDSTOP = GoBildaInchesToTicks.InchesToTicks(16.5, GoBildaInchesToTicks.GoBilda_223rpm); //2880
-    static final double MAX_SPEED = 1;
-    static final double ADJUSTMENT_MODIFIER = 40;
+    static double maxSpeed = 1;
+    static double adjustmentModifier = 40;
 
     // 120mm per rotation
 
@@ -37,12 +37,15 @@ public class IntakeSlide {
         this.gamepad = gamepad;
         this.telemetry = telemetry;
 
+        if(isAutonomous) maxSpeed = 0.75;
+        else maxSpeed = 1;
+
         intakeSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // todo: figure out which value is best
         intakeSlideMotor.setDirection(DcMotor.Direction.FORWARD);
         intakeSlideMotor.setTargetPosition(LOW_HARDSTOP);
         intakeSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        intakeSlideMotor.setPower(MAX_SPEED);
+        intakeSlideMotor.setPower(maxSpeed);
 
         telemetry.addData("Intake slide motor position", "%7d", intakeSlideMotor.getCurrentPosition());
 
@@ -61,7 +64,7 @@ public class IntakeSlide {
 
         if (gamepad.right_stick_y > 0.1 || gamepad.right_stick_y < -0.1 ) {
 
-            targetPositionCount = Range.clip((int)(targetPositionCount + ADJUSTMENT_MODIFIER*-gamepad.right_stick_y), LOW_HARDSTOP, HIGH_HARDSTOP);
+            targetPositionCount = Range.clip((int)(targetPositionCount + adjustmentModifier *-gamepad.right_stick_y), LOW_HARDSTOP, HIGH_HARDSTOP);
 
             telemetry.addData("Manual Branch", "Adjustment made");
 

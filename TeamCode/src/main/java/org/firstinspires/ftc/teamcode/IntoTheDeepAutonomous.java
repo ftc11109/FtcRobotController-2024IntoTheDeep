@@ -350,14 +350,14 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             turnToHeading(TURN_SPEED, -17);
             intake.leftIntakeServo.setPower(1);
             intake.rightIntakeServo.setPower(1);
-            intakeSlide.setPosition(GoBildaInchesToTicks.InchesToTicks(9.5, GoBildaInchesToTicks.GoBilda_223rpm)); // might change to 10.5
+            intakeSlide.setPosition(GoBildaInchesToTicks.InchesToTicks(10.5, GoBildaInchesToTicks.GoBilda_223rpm)); // might change to 10.5
             while (!intakeSlide.isAtTarget(15) && opModeIsActive()) {
                 mechanismLoop();
                 clearBulkCache();
                 telemetry.update();
             }
 
-            runIntake(1, 1000); // might change to 1250 or 1500
+            runIntake(1, 500);
             runWrist(IntakeWrist.TRANSFER_POSITION);
         /*while (!intakeWrist.isAtTarget(10) && opModeIsActive()) {
             intakeWrist.loop();
@@ -378,7 +378,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
             turnToHeading(TURN_SPEED, -45);
             driveStraight(DRIVE_SPEED, -4, -45);
 
-            if (!(getRuntime() > 20)) {
+            if (!(getRuntime() > 22.5)) {
                 // score
                 rampLift.setPosition(LinearLift.HIGH_BUCKET);
                 while (!rampLift.isAtTarget() && opModeIsActive()) {
