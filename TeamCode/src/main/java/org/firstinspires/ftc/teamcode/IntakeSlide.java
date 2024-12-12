@@ -18,7 +18,7 @@ public class IntakeSlide {
     static final int LOW_HARDSTOP = 2;
     static final int HIGH_HARDSTOP = GoBildaInchesToTicks.InchesToTicks(16.5, GoBildaInchesToTicks.GoBilda_223rpm); //2880
     static double maxSpeed = 1;
-    static double adjustmentModifier = 40;
+    static double adjustmentModifier = 50;
 
     // 120mm per rotation
 

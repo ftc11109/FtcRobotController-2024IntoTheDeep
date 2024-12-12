@@ -52,7 +52,7 @@ public class Suspension {
         suspensionMotor.setDirection(DcMotor.Direction.FORWARD);
         suspensionMotor.setTargetPosition(LOW_HARDSTOP);
         suspensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        suspensionMotor.setPower(MAX_SPEED);
+        suspensionMotor.setPower(0);
 
         telemetry.addData("Suspension motor position", "%7d", suspensionMotor.getCurrentPosition());
 
@@ -67,6 +67,9 @@ public class Suspension {
     }
 
     private void readGamepad(Gamepad gamepad) {
+        if(gamepad.dpad_left || gamepad.dpad_right || gamepad.dpad_up || gamepad.dpad_down) {
+            suspensionMotor.setPower(MAX_SPEED);
+        }
         if(gamepad.dpad_up) targetPositionCount = HIGH_POSITION;
         if(gamepad.dpad_right) targetPositionCount = ENGAGE_POSITION;
         if(gamepad.dpad_down) targetPositionCount = HANG_POSITION;
@@ -75,19 +78,26 @@ public class Suspension {
 
     public void loop() {
         if (!isAutonomous) readGamepad(gamepad);
+        /*
         if (targetPositionCount == LOW_HARDSTOP && isAtTarget(50)) {
             suspensionMotor.setPower(0);
         } else {
             suspensionMotor.setPower(MAX_SPEED);
         }
+        */
         suspensionMotor.setTargetPosition(targetPositionCount);
         telemetry.addData("Sus encoder position", suspensionMotor.getCurrentPosition());
         telemetry.addData("set position", targetPositionCount);
-        telemetry.addData("Suspension motor power", suspensionMotor.getPower());
+        telemetry.addData("!!! Suspension motor power !!!", suspensionMotor.getPower());
 
     }
+
     public boolean isAtTarget(int tickThreshold) {
         return Math.abs(suspensionMotor.getCurrentPosition() - targetPositionCount) <= tickThreshold;
+    }
+    public boolean isAtTarget(int target, int tickThreshold) {
+        return (Math.abs(suspensionMotor.getCurrentPosition() - targetPositionCount) <= tickThreshold)
+                && targetPositionCount == target;
     }
 }
 
