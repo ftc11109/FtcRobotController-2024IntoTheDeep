@@ -107,7 +107,7 @@ public class IntoTheDeepAutonomous extends LinearOpMode {
     double wheelDiaIN = wheelDiaMM / MMperIN; //or input just inches as constant
     double wheelCircum = wheelDiaIN * Math.PI; //get circum (aka inches per wheel rev)
     int ultPlanHexEncoderTicks = 28; //ticks per motor rotation
-    double threeToOne = 84.0 / 29.0; // real 3:1
+    double threeToOne = 84 / 29; // real 3:1
     double fourToOne = 76.0 / 21.0; // real 4:1
     double drivetrainMotorGearRatio = threeToOne * fourToOne; //get gear ratio
 

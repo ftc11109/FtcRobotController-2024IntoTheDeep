@@ -148,7 +148,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //imu.getRobotOrientation()
             //double botHeading = -imu.getAngularOrientation().firstAngle;
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            double botHeading = orientation.getYaw(AngleUnit.RADIANS);
+            double botHeading = 0; //orientation.getYaw(AngleUnit.RADIANS);
             double rotX =  x * Math.cos(botHeading) + y * Math.sin(botHeading);
             double rotY = -x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
